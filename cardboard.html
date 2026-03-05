@@ -1067,7 +1067,7 @@ function renderCards(){
     const isExp=expandedCardId===c.id;
     const zIdx=total-i;
 
-    const detail=isExp?`<div class="wallet-card-detail">
+    const detail=`<div class="wallet-card-detail" style="display:${isExp?'block':'none'}">
       <div class="wallet-card-detail-row">
         <span class="wallet-card-detail-lbl">締め日 / 引落日</span>
         <div class="wallet-card-detail-val">${c.closeDay===99?'末日':c.closeDay+'日'} / ${c.billDay}日</div>
@@ -1096,11 +1096,12 @@ function renderCards(){
         <button class="btn-d" onclick="delCard(${c.id});event.stopPropagation()">削除</button>
         <button class="btn btn-g btn-sm" onclick="toggleCardVis(${c.id});event.stopPropagation()">${c.visible?'ダッシュ非表示':'ダッシュ表示'}</button>
       </div>
-    </div>`:'';
+    </div>`;
 
     const isLast=i===total-1;
     const mb=isLast?'0':(isExp?'12px':'-72px');
     return`<div class="wallet-card${isExp?' expanded':''}${!c.visible?' wallet-vis-off':''}"
+        data-id="${c.id}"
         style="background:${grad};z-index:${zIdx};margin-bottom:${mb}"
         onclick="toggleWalletCard(${c.id})">
       <!-- 常時表示：カード名とブランド -->
@@ -1120,7 +1121,6 @@ function renderCards(){
         </div>
         <div style="flex-shrink:0;margin-left:8px">${brandIcon(c.brand)}</div>
       </div>
-      <!-- 展開時のみ詳細 -->
       ${detail}
     </div>`;
   }).join('');
@@ -1132,8 +1132,39 @@ function renderCards(){
 }
 
 function toggleWalletCard(id){
-  expandedCardId=(expandedCardId===id?null:id);
-  renderCards();
+  const PEEK=-72, GAP=12;
+  const allCards=document.querySelectorAll('.wallet-card');
+  
+  // 現在の展開カードを閉じる
+  if(expandedCardId!==null){
+    const prevEl=document.querySelector(`.wallet-card[data-id="${expandedCardId}"]`);
+    if(prevEl){
+      prevEl.classList.remove('expanded');
+      const detail=prevEl.querySelector('.wallet-card-detail');
+      if(detail)detail.style.display='none';
+      // last-child以外はpeekに戻す
+      if(prevEl!==allCards[allCards.length-1])prevEl.style.marginBottom=PEEK+'px';
+    }
+  }
+
+  if(expandedCardId===id){
+    // 同じカードをタップ→閉じる
+    expandedCardId=null;
+  }else{
+    // 新しいカードを展開
+    expandedCardId=id;
+    const el=document.querySelector(`.wallet-card[data-id="${id}"]`);
+    if(el){
+      el.classList.add('expanded');
+      const detail=el.querySelector('.wallet-card-detail');
+      if(detail)detail.style.display='block';
+      // 展開後の実際の高さを取得してmarginを設定
+      requestAnimationFrame(()=>{
+        const h=el.getBoundingClientRect().height;
+        if(el!==allCards[allCards.length-1])el.style.marginBottom=GAP+'px';
+      });
+    }
+  }
 }
 function toggleCardVis(id){const c=S.cards.find(x=>x.id===id);if(c){c.visible=!c.visible;save();renderCards();}}
 function delCard(id){
@@ -1197,7 +1228,7 @@ function renderSettings(){
           return`<div class="tab-order-item${isHidden?' hidden-tab':''}" draggable="${!t.fixed}" data-tab-id="${t.id}"
             ondragstart="tabDragStart(event,'${t.id}')" ondragover="tabDragOver(event)" ondrop="tabDrop(event,'${t.id}')">
             <span class="tab-order-handle">${t.fixed?'●':'⠿'}</span>
-            <span class="tab-order-icon">${t.icon}</span>
+            <span class="tab-order-icon">${tabSvg(t.id,false)}</span>
             <span class="tab-order-name">${t.label}</span>
             ${t.fixed
               ?'<span style="font-size:11px;color:var(--t3)">固定</span>'

@@ -65,8 +65,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   .sidebar-btn.on{background:rgba(91,141,238,0.15);color:var(--accent);border:1px solid rgba(91,141,238,0.2);}
   .sidebar-btn-icon{font-size:17px;width:24px;text-align:center;display:flex;align-items:center;justify-content:center;}
   .sidebar-settings{margin-top:auto;}
-  #dash-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;}
+  #dash-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch;}
   #dash-body .hero{grid-column:1/-1;}
+  #dash-body .sec{display:flex;flex-direction:column;}
+  #dash-body .sec .gb{flex:1;display:flex;flex-direction:column;}
 }
 
 /* ── Month switcher ── */
@@ -192,31 +194,25 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 
 /* ── Wallet ── */
 .wallet-wrap{position:relative;display:flex;flex-direction:column;}
-.wallet-stack{position:relative;}
-/* 通常時：重ね表示。カード高さ=peek分だけ見せる */
 .wallet-card{
   position:relative;
   border-radius:18px;
   padding:18px 18px 14px;
   min-height:110px;
   cursor:pointer;
-  transition:transform .28s cubic-bezier(.4,0,.2,1), box-shadow .28s, margin-bottom .28s;
   user-select:none;
   overflow:hidden;
   border:1.5px solid rgba(255,255,255,0.18);
   box-shadow:0 4px 24px rgba(0,0,0,0.35);
-  margin-bottom:-72px; /* 重ね幅 */
+  /* margin-bottomはJS側でinlineスタイルとして設定（トランジション崩れを防ぐ） */
 }
-.wallet-card:last-child{margin-bottom:0;}
-/* 展開済みカードは後続を押し下げる */
+.wallet-card:last-child{margin-bottom:0!important;}
 .wallet-card.expanded{
-  margin-bottom:12px;
   box-shadow:0 16px 48px rgba(0,0,0,0.55);
   border-color:rgba(255,255,255,0.35);
   z-index:50;
 }
-/* ホバーで少し浮かせる */
-.wallet-card:not(.expanded):hover{transform:translateY(-6px);}
+.wallet-card:not(.expanded):hover{transform:translateY(-4px);}
 .wallet-card-brand{position:absolute;top:14px;right:14px;}
 .wallet-card-name{font-size:15px;font-weight:700;color:rgba(255,255,255,0.95);margin-bottom:auto;}
 .wallet-card-meta{display:flex;gap:16px;margin-top:8px;}
@@ -288,6 +284,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .btn-d{background:transparent;color:var(--ng);border:1px solid rgba(232,80,106,0.3);font-size:12px;padding:5px 9px;border-radius:7px;cursor:pointer;}
 .empty{text-align:center;color:var(--t2);font-size:14px;padding:20px 0;}
 .brand-selector{display:flex;flex-wrap:wrap;gap:7px;}
+.input-wrap{display:flex;align-items:center;gap:6px;}
+.input-wrap .finput{flex:1;}
+.input-unit{font-size:13px;color:var(--t2);white-space:nowrap;flex-shrink:0;}
 .brand-opt{background:var(--s2);border:2px solid var(--b1);border-radius:10px;cursor:pointer;padding:8px 10px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);transition:.15s;}
 .brand-opt.on{border-color:var(--accent);color:var(--accent);background:rgba(91,141,238,0.1);}
 
@@ -422,6 +421,7 @@ const BRANDS=[
   {id:'jcb',       label:'JCB'},
   {id:'diners',    label:'Diners'},
   {id:'unionpay',  label:'UnionPay'},
+  {id:'discover',  label:'Discover'},
   {id:'other',     label:'その他'},
 ];
 
@@ -595,15 +595,30 @@ const BRAND_SVG={
   </svg>`,
   diners:`<svg width="40" height="26" viewBox="0 0 40 26" fill="none">
     <rect width="40" height="26" rx="5" fill="white" stroke="#ddd"/>
-    <circle cx="16" cy="13" r="8" fill="none" stroke="#004a97" stroke-width="1.8"/>
-    <circle cx="24" cy="13" r="8" fill="none" stroke="#004a97" stroke-width="1.8"/>
-    <text x="20" y="23" text-anchor="middle" font-size="4" fill="#004a97" font-family="Arial">DINERS CLUB</text>
+    <!-- 外側の円（青塗り） -->
+    <circle cx="20" cy="13" r="9" fill="#004a97"/>
+    <!-- 内側の白い縦長楕円でくり抜き表現 -->
+    <ellipse cx="20" cy="13" rx="4.5" ry="7.5" fill="white"/>
+    <!-- 中央縦線 -->
+    <line x1="20" y1="5.5" x2="20" y2="20.5" stroke="#004a97" stroke-width="1.2"/>
   </svg>`,
   unionpay:`<svg width="40" height="26" viewBox="0 0 40 26" fill="none">
     <rect width="40" height="26" rx="5" fill="#e21836"/>
-    <rect x="15" y="0" width="11" height="26" fill="white"/>
-    <rect x="26" y="0" width="14" height="26" rx="5" fill="#007b5e"/>
-    <text x="9" y="17" text-anchor="middle" font-size="9" font-weight="900" fill="white" font-family="Arial">UP</text>
+    <!-- 紺帯（中央やや左） -->
+    <rect x="13" y="0" width="10" height="26" fill="#1a3065"/>
+    <!-- 緑帯（右） -->
+    <rect x="23" y="0" width="17" height="26" rx="5" fill="#007b5e"/>
+    <!-- 右端のrx調整用マスク -->
+    <rect x="23" y="0" width="5" height="26" fill="#007b5e"/>
+  </svg>`,
+  discover:`<svg width="40" height="26" viewBox="0 0 40 26" fill="none">
+    <rect width="40" height="26" rx="5" fill="white" stroke="#ddd"/>
+    <!-- オレンジの円（右側） -->
+    <circle cx="28" cy="13" r="10" fill="#f76f20"/>
+    <!-- 左側白でクリップ -->
+    <rect x="0" y="0" width="22" height="26" fill="white"/>
+    <!-- DISCOVER文字 -->
+    <text x="8" y="16" font-size="6" font-weight="900" fill="#231f20" font-family="Arial" letter-spacing="0.3">DISCOVER</text>
   </svg>`,
   other:`<svg width="40" height="26" viewBox="0 0 40 26" fill="none">
     <rect width="40" height="26" rx="5" fill="#2a2f45"/>
@@ -618,7 +633,12 @@ function brandIcon(brand){return BRAND_SVG[brand]||BRAND_SVG.other;}
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-let activeTab='dash';
+let activeTab=(()=>{
+  const saved=localStorage.getItem('cb6_tab')||'dash';
+  const hidden=JSON.parse(localStorage.getItem(SK)||'{}').tabHidden||[];
+  const valid=['dash','cal','cards','settings'];
+  return valid.includes(saved)&&!hidden.includes(saved)?saved:'dash';
+})();
 
 function buildTabs(){
   const order=S.tabOrder||TAB_DEFS.map(t=>t.id);
@@ -644,18 +664,17 @@ function buildTabs(){
 
 function goTab(id){
   activeTab=id;
+  localStorage.setItem('cb6_tab',id);
+  // buildTabs内でbtab/sidebar-btnのon状態を再生成
   buildTabs();
+  // ページ切り替え
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   const pg=document.getElementById('pg-'+id);
   if(pg)pg.classList.add('on');
-  document.querySelectorAll('.btab').forEach(b=>b.classList.remove('on'));
-  const btab=document.querySelector(`.btab[data-tab="${id}"]`);
-  if(btab)btab.classList.add('on');
-  document.querySelectorAll('.sidebar-btn[data-tab]').forEach(b=>b.classList.remove('on'));
-  const sbtn=document.querySelector(`.sidebar-btn[data-tab="${id}"]`);
-  if(sbtn)sbtn.classList.add('on');
+  // settingsボタン（sidebar固定枠）のon状態
   const stBtn=document.querySelector('.sidebar-settings .sidebar-btn');
   if(stBtn)stBtn.classList.toggle('on',id==='settings');
+  // 各タブのレンダリング
   if(id==='dash')    renderDash();
   if(id==='cal')     renderCal();
   if(id==='cards')   renderCards();
@@ -1079,8 +1098,10 @@ function renderCards(){
       </div>
     </div>`:'';
 
+    const isLast=i===total-1;
+    const mb=isLast?'0':(isExp?'12px':'-72px');
     return`<div class="wallet-card${isExp?' expanded':''}${!c.visible?' wallet-vis-off':''}"
-        style="background:${grad};z-index:${zIdx}"
+        style="background:${grad};z-index:${zIdx};margin-bottom:${mb}"
         onclick="toggleWalletCard(${c.id})">
       <!-- 常時表示：カード名とブランド -->
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -1107,9 +1128,7 @@ function renderCards(){
   const addBtn=`<div style="display:flex;justify-content:flex-end;margin-bottom:12px">
     <button class="edit-mode-btn" onclick="openModal('addCard')">＋ カードを追加</button>
   </div>`;
-  // 末尾のspacerはカード枚数×重ね幅＋余白
-  const spacer=`<div style="height:${total*72+32}px"></div>`;
-  body.innerHTML=addBtn+`<div class="wallet-wrap">${cards}</div>`+spacer;
+  body.innerHTML=addBtn+`<div class="wallet-wrap">${cards}</div><div style="height:32px"></div>`;
 }
 
 function toggleWalletCard(id){
@@ -1338,7 +1357,7 @@ function bCardForm(card){
 
   const phoneRows=phones.map((p,i)=>`<div class="fgrid" style="margin-bottom:6px">
     <input class="finput" id="ph_l_${i}" value="${p.label}" placeholder="例: コンシェルジュ">
-    <input class="finput" id="ph_n_${i}" value="${p.number}" placeholder="0120-000-000" type="tel">
+    <input class="finput" id="ph_n_${i}" value="${p.number}" placeholder="0120-000-000" type="tel" oninput="fmtPhoneInput(this)">
   </div>`).join('');
 
   mOpen(card?'カードを編集':'カードを追加',
@@ -1350,18 +1369,18 @@ function bCardForm(card){
      <input class="finput" id="fc_n" value="${c.name}" placeholder="例: VISA GOLD"></div>
      <div class="fgrid">
        <div class="frow"><label class="flbl">締め日（末日=99）<span class="req">*必須</span></label>
-       <input class="finput" id="fc_cl" type="number" value="${c.closeDay||''}"></div>
+       <div class="input-wrap"><input class="finput" id="fc_cl" type="text" inputmode="numeric" value="${c.closeDay||''}" oninput="this.value=toHalf(this.value).replace(/\D/g,'')"><span class="input-unit">日</span></div></div>
        <div class="frow"><label class="flbl">引き落とし日<span class="req">*必須</span></label>
-       <input class="finput" id="fc_bl" type="number" value="${c.billDay||''}"></div>
+       <div class="input-wrap"><input class="finput" id="fc_bl" type="text" inputmode="numeric" value="${c.billDay||''}" oninput="this.value=toHalf(this.value).replace(/\D/g,'')"><span class="input-unit">日</span></div></div>
      </div>
      <div class="fgrid">
        <div class="frow"><label class="flbl">年会費（0=無料）</label>
-       <input class="finput" id="fc_af" type="number" value="${c.annualFee||0}"></div>
+       <div class="input-wrap"><input class="finput" id="fc_af" type="text" inputmode="numeric" value="${fmtAmt(c.annualFee||0)}" oninput="this.value=fmtAmtInput(this.value)"><span class="input-unit">円</span></div></div>
        <div class="frow"><label class="flbl">年会費請求月</label>
-       <input class="finput" id="fc_am" type="number" value="${c.annualMonth||0}"></div>
+       <div class="input-wrap"><input class="finput" id="fc_am" type="text" inputmode="numeric" value="${c.annualMonth||0}" oninput="this.value=toHalf(this.value).replace(/\D/g,'')"><span class="input-unit">月</span></div></div>
      </div>
      <div class="frow"><label class="flbl">年会費請求日</label>
-     <input class="finput" id="fc_ad" type="number" value="${c.annualDay||0}"></div>
+     <div class="input-wrap"><input class="finput" id="fc_ad" type="text" inputmode="numeric" value="${c.annualDay||0}" oninput="this.value=toHalf(this.value).replace(/\D/g,'')"><span class="input-unit">日</span></div></div>
      <div class="frow"><label class="flbl">電話番号</label>
      <div id="phone-list">${phoneRows}</div>
      <button class="add-pill" style="margin-top:6px;width:100%" onclick="addPhoneRow();return false">＋ 電話番号を追加</button></div>
@@ -1384,13 +1403,41 @@ function selectGrad(i){
     el.style.border=el.id===`grad-opt-${i}`?'2px solid var(--accent)':'2px solid transparent';
   });
 }
+function fmtPhoneInput(el){
+  let v=toHalf(el.value).replace(/[^\d]/g,'').slice(0,11);
+  let out='';
+  if(v.startsWith('0120')||v.startsWith('0570')||v.startsWith('0800')){
+    // 0120-XXX-XXX / 0570-XXX-XXX
+    if(v.length<=4)out=v;
+    else if(v.length<=7)out=v.slice(0,4)+'-'+v.slice(4);
+    else out=v.slice(0,4)+'-'+v.slice(4,7)+'-'+v.slice(7);
+  }else if(v.startsWith('090')||v.startsWith('080')||v.startsWith('070')||v.startsWith('050')){
+    // 090-XXXX-XXXX
+    if(v.length<=3)out=v;
+    else if(v.length<=7)out=v.slice(0,3)+'-'+v.slice(3);
+    else out=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7);
+  }else if(v.startsWith('03')||v.startsWith('06')){
+    // 03-XXXX-XXXX
+    if(v.length<=2)out=v;
+    else if(v.length<=6)out=v.slice(0,2)+'-'+v.slice(2);
+    else out=v.slice(0,2)+'-'+v.slice(2,6)+'-'+v.slice(6);
+  }else if(v.startsWith('0')){
+    // その他市外局番4桁: 0XXX-XX-XXXX
+    if(v.length<=4)out=v;
+    else if(v.length<=6)out=v.slice(0,4)+'-'+v.slice(4);
+    else out=v.slice(0,4)+'-'+v.slice(4,6)+'-'+v.slice(6);
+  }else{
+    out=v;
+  }
+  el.value=out;
+}
 function addPhoneRow(){
   const list=document.getElementById('phone-list');if(!list)return;
   const i=list.children.length;
   const div=document.createElement('div');
   div.className='fgrid';div.style.marginBottom='6px';
   div.innerHTML=`<input class="finput" id="ph_l_${i}" placeholder="例: コンシェルジュ">
-    <input class="finput" id="ph_n_${i}" placeholder="0120-000-000" type="tel">`;
+    <input class="finput" id="ph_n_${i}" placeholder="0120-000-000" type="tel" oninput="fmtPhoneInput(this)">`;
   list.appendChild(div);
 }
 
@@ -1398,7 +1445,7 @@ function _saveCard(id){
   const n=document.getElementById('fc_n').value.trim();
   const cl=parseInt(toHalf(document.getElementById('fc_cl').value));
   const bl=parseInt(toHalf(document.getElementById('fc_bl').value));
-  const af=parseFloat(document.getElementById('fc_af').value)||0;
+  const af=parseAmt(document.getElementById('fc_af').value)||0;
   const am=parseInt(document.getElementById('fc_am').value)||0;
   const ad=parseInt(document.getElementById('fc_ad').value)||0;
   const nt=document.getElementById('fc_nt').value.trim();
@@ -1429,7 +1476,7 @@ function _saveCard(id){
 // ═══════════════════════════════════════════
 buildTabs();
 checkBackupReminder();
-renderDash();
+goTab(activeTab);
 
 </script>
 </body>

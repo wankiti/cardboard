@@ -479,7 +479,7 @@ const TAB_DEFS = [
   {id:'dash',    icon:'⊞', label:'ダッシュボード', fixed:true},
   {id:'cal',     icon:'◫', label:'カレンダー'},
   {id:'stats',   icon:'◈', label:'統計'},
-  {id:'mission', icon:'🎯', label:'修行'},
+  {id:'mission', icon:'◉', label:'修行'},
 ];
 
 // month data schema:
@@ -645,8 +645,9 @@ function goTab(id, el) {
   document.querySelectorAll('.btab').forEach(t=>t.classList.remove('on'));
   const pg = document.getElementById('pg-'+id);
   if(pg) pg.classList.add('on');
-  if(el) el.classList.add('on');
-  else { const b=document.querySelector(`.btab[data-tab="${id}"]`); if(b) b.classList.add('on'); }
+  // elの有無に関わらず必ずdata-tabで引き当てて更新
+  const b = document.querySelector(`.btab[data-tab="${id}"]`);
+  if(b) b.classList.add('on');
   if(id==='dash')     renderDash();
   if(id==='cal')      renderCal();
   if(id==='stats')    renderStats();
@@ -697,8 +698,9 @@ function renderDash() {
         ② 各カードをタップして今月の利用額を入力<br>
         ③ 固定項目のチェックで残高に反映されます
       </div>
-      <div class="tutorial-banner-close">
-        <button class="btn btn-sm btn-p" onclick="dismissTutorial()">はじめる</button>
+      <div class="tutorial-banner-close" style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-sm btn-g" onclick="dismissTutorial(true)">デモデータを消してはじめる</button>
+        <button class="btn btn-sm btn-p" onclick="dismissTutorial(false)">そのままはじめる</button>
       </div>
     </div>`;
   } else { tutEl.innerHTML = ''; }
@@ -800,7 +802,19 @@ function renderDash() {
   `;
 }
 
-function dismissTutorial(){ S.firstLaunch=false; save(); renderDash(); }
+function dismissTutorial(clearData){
+  S.firstLaunch=false;
+  if(clearData){
+    // 月次データとミッションをリセット、カードは残す
+    S.months={};
+    S.missions=[];
+    S.nxtItem=1;
+    S.nxtMission=1;
+    // 今月・来月の空データを作成
+    getDisplayYms().forEach(y=>getMD(y));
+  }
+  save(); renderDash();
+}
 
 function toggleAcc(cid) {
   const body=document.getElementById('acc-'+cid);

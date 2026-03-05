@@ -380,18 +380,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 /* ── PC OVERRIDES ── */
 body { overflow: auto !important; }
 .topbar {
-  position: fixed; top: 0; left: 220px; right: 0;
+  position: fixed; top: 0; left: 240px; right: 0;
   height: 52px; padding-top: 0;
   padding-left: 24px; padding-right: 24px;
 }
 .topbar-logo { font-size: 18px; }
 .sidebar {
-  position: fixed; top: 0; left: 0; bottom: 0; width: 220px;
+  position: fixed; top: 0; left: 0; bottom: 0; width: 240px;
   background: rgba(13,15,24,0.95);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255,255,255,0.07);
   display: flex; flex-direction: column;
-  padding: 20px 12px;
+  padding: 24px 14px;
   z-index: 300;
 }
 .sidebar-logo { font-size: 18px; font-weight: 700; padding: 8px 10px 24px; letter-spacing: .2px; }
@@ -406,13 +406,21 @@ body { overflow: auto !important; }
 .sidebar-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
 .sidebar-btn.on { background: rgba(91,141,238,0.15); color: var(--accent); border: 1px solid rgba(91,141,238,0.2); }
 .sidebar-btn-icon { font-size: 18px; width: 24px; text-align: center; }
+
+/* PC 2-column dashboard */
+@media(min-width:900px){
+  #dash-body { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+  #dash-body .hero { grid-column: 1 / -1; }
+  #dash-body .net-bar { grid-column: 1 / -1; }
+}
+
 .sidebar-settings { margin-top: auto; }
 .btabs { display: none !important; }
 .pages {
   top: 52px !important; bottom: 0 !important;
-  left: 220px !important; right: 0 !important;
+  left: 240px !important; right: 0 !important;
 }
-.page { max-width: 720px; margin: 0 auto; }
+.page { max-width: 1080px; margin: 0 auto; }
 .hero-val { font-size: 40px !important; }
 </style>
 </head>
@@ -423,7 +431,7 @@ body { overflow: auto !important; }
   <div class="sidebar-logo">Card<em>Board</em></div>
   <div id="sidebar-nav"></div>
   <div class="sidebar-settings">
-    <button class="sidebar-btn" onclick="goTab('settings',this)">
+    <button class="sidebar-btn" onclick="goTabPC('settings')">
       <span class="sidebar-btn-icon">⚙</span>設定
     </button>
   </div>
@@ -529,7 +537,7 @@ const TAB_DEFS = [
   {id:'dash',    icon:'⊞', label:'ダッシュボード', fixed:true},
   {id:'cal',     icon:'◫', label:'カレンダー'},
   {id:'stats',   icon:'◈', label:'統計'},
-  {id:'mission', icon:'🎯', label:'修行'},
+  {id:'mission', icon:'◉', label:'修行'},
 ];
 
 // month data schema:
@@ -747,8 +755,9 @@ function renderDash() {
         ② 各カードをタップして今月の利用額を入力<br>
         ③ 固定項目のチェックで残高に反映されます
       </div>
-      <div class="tutorial-banner-close">
-        <button class="btn btn-sm btn-p" onclick="dismissTutorial()">はじめる</button>
+      <div class="tutorial-banner-close" style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-sm btn-g" onclick="dismissTutorial(true)">デモデータを消してはじめる</button>
+        <button class="btn btn-sm btn-p" onclick="dismissTutorial(false)">そのままはじめる</button>
       </div>
     </div>`;
   } else { tutEl.innerHTML = ''; }
@@ -850,7 +859,19 @@ function renderDash() {
   `;
 }
 
-function dismissTutorial(){ S.firstLaunch=false; save(); renderDash(); }
+function dismissTutorial(clearData){
+  S.firstLaunch=false;
+  if(clearData){
+    // 月次データとミッションをリセット、カードは残す
+    S.months={};
+    S.missions=[];
+    S.nxtItem=1;
+    S.nxtMission=1;
+    // 今月・来月の空データを作成
+    getDisplayYms().forEach(y=>getMD(y));
+  }
+  save(); renderDash();
+}
 
 function toggleAcc(cid) {
   const body=document.getElementById('acc-'+cid);
@@ -1396,11 +1417,33 @@ function buildTabs() {
   const order = (S.tabOrder||TAB_DEFS.map(t=>t.id));
   const defs = order.map(id=>TAB_DEFS.find(t=>t.id===id)).filter(Boolean);
   TAB_DEFS.forEach(t=>{ if(!defs.find(d=>d.id===t.id)) defs.push(t); });
-  document.getElementById('sidebar-nav').innerHTML = defs.map(t =>
-    `<button class="sidebar-btn${t.id===activeTab?' on':''}" data-tab="${t.id}" onclick="goTab('${t.id}',this)">
+  const nav = document.getElementById('sidebar-nav');
+  if(!nav) return;
+  nav.innerHTML = defs.map(t =>
+    `<button class="sidebar-btn${t.id===activeTab?' on':''}" data-tab="${t.id}" onclick="goTabPC('${t.id}')">
       <span class="sidebar-btn-icon">${t.icon}</span>${t.label}
     </button>`
   ).join('');
+}
+function goTabPC(id) {
+  activeTab = id;
+  // ページ切り替え
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  const pg = document.getElementById('pg-'+id);
+  if(pg) pg.classList.add('on');
+  // サイドバーボタンのon状態を更新
+  document.querySelectorAll('.sidebar-btn[data-tab]').forEach(b=>{
+    b.classList.toggle('on', b.dataset.tab===id);
+  });
+  // 設定ボタンのon状態
+  const stBtn = document.querySelector('.sidebar-settings .sidebar-btn');
+  if(stBtn) stBtn.classList.toggle('on', id==='settings');
+  // レンダリング
+  if(id==='dash')     renderDash();
+  if(id==='cal')      renderCal();
+  if(id==='stats')    renderStats();
+  if(id==='mission')  renderMission();
+  if(id==='settings') renderSettingsPage();
 }
 buildTabs();
 checkBackupReminder();

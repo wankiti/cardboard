@@ -686,16 +686,7 @@ function calcNet(ymStr){ return calcAssets(ymStr) - calcLiab(ymStr); }
 // ═══════════════════════════════════════════
 let activeTab = 'dash';
 
-function buildTabs() {
-  const order = (S.tabOrder||TAB_DEFS.map(t=>t.id));
-  const defs = order.map(id=>TAB_DEFS.find(t=>t.id===id)).filter(Boolean);
-  TAB_DEFS.forEach(t=>{ if(!defs.find(d=>d.id===t.id)) defs.push(t); });
-  document.getElementById('btabs').innerHTML = defs.map(t =>
-    `<button class="btab${t.id===activeTab?' on':''}" data-tab="${t.id}" onclick="goTab('${t.id}',this)">
-      <span class="btab-icon">${t.icon}</span><span>${t.label}</span>
-    </button>`
-  ).join('');
-}
+// buildTabs: PC版はサイドバー版を使用
 
 function goTab(id, el) {
   activeTab = id;
@@ -1485,16 +1476,6 @@ renderDash();
 
 <script>
 // PC: サイドバーナビ生成
-function buildTabs() {
-  const order = (S.tabOrder||TAB_DEFS.map(t=>t.id));
-  const defs = order.map(id=>TAB_DEFS.find(t=>t.id===id)).filter(Boolean);
-  TAB_DEFS.forEach(t=>{ if(!defs.find(d=>d.id===t.id)) defs.push(t); });
-  document.getElementById('sidebar-nav').innerHTML = defs.map(t =>
-    `<button class="sidebar-btn${t.id===activeTab?' on':''}" data-tab="${t.id}" onclick="goTab('${t.id}',this)">
-      <span class="sidebar-btn-icon">${t.icon}</span>${t.label}
-    </button>`
-  ).join('');
-}
 buildTabs();
 checkBackupReminder();
 renderDash();

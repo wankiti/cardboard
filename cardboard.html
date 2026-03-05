@@ -266,6 +266,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .tab-order-item{display:flex;align-items:center;gap:9px;background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:11px 13px;margin-bottom:7px;cursor:grab;user-select:none;transition:.15s;}
 .tab-order-item.dragging{opacity:.4;border-color:var(--accent);}
 .tab-order-item.drag-over{border-color:var(--accent);background:var(--s3);}
+.tab-order-item.dim{opacity:.5;}
 .tab-order-handle{color:var(--t2);font-size:14px;flex-shrink:0;}
 .tab-order-icon{font-size:18px;flex-shrink:0;width:22px;text-align:center;}
 .tab-order-name{flex:1;font-size:14px;font-weight:500;}
@@ -294,6 +295,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .btn-sm{padding:5px 11px;font-size:12px;border-radius:7px;}
 .btn-d{background:transparent;color:var(--ng);border:1px solid rgba(232,80,106,0.3);font-size:12px;padding:5px 9px;border-radius:7px;cursor:pointer;}
 .empty{text-align:center;color:var(--t2);font-size:14px;padding:20px 0;}
+
+/* ── Brand icons ── */
+.brand-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:24px;border-radius:4px;flex-shrink:0;overflow:hidden;}
+
 </style>
 </head>
 <body>
@@ -419,7 +424,8 @@ const TAB_DEFS = [
 
 // ─── schema ───
 // month: { ym, balance, items:[{id,label,amount,checked,isFixed,order,day?}], cardAmounts:{} }
-// item.day: optional. null=カレンダー非表示, number=その日(前営業日計算)
+// item.day: optional. null=カレンダー非表示, number=日付
+// item.dayMode: 'prev'=前営業日, 'next'=後営業日, 'exact'=そのまま (default:'prev')
 
 const DEMO_CARDS = [
   {id:1,  name:'AMEX PLTAINUM',         closeDay:19, billDay:10, annualFee:165000, annualMonth:2,  annualDay:10, note:'メイン',             visible:true},
@@ -449,23 +455,24 @@ function loadState(){
   const m0=mkMonth(y0);
   m0.balance=9999000;
   m0.items=[
-    {id:1,label:'給与',    amount:280000, checked:false,isFixed:true, order:0,day:25},
-    {id:2,label:'積立NISA',amount:-100000,checked:false,isFixed:true, order:1,day:27},
-    {id:3,label:'iDeCo',   amount:-23000, checked:false,isFixed:true, order:2,day:27},
-    {id:4,label:'純金積立',amount:-3000,  checked:false,isFixed:true, order:3,day:null},
+    {id:1,label:'給与',    amount:280000, checked:false,isFixed:true, order:0,day:25,dayMode:'prev'},
+    {id:2,label:'積立NISA',amount:-100000,checked:false,isFixed:true, order:1,day:27,dayMode:'prev'},
+    {id:3,label:'iDeCo',   amount:-23000, checked:false,isFixed:true, order:2,day:27,dayMode:'prev'},
+    {id:4,label:'純金積立',amount:-3000,  checked:false,isFixed:true, order:3,day:null,dayMode:'prev'},
   ];
   m0.cardAmounts={1:38000,2:0,3:45000,4:0,5:1234,6:12345,7:0,8:6789,9:4321,10:440,11:3210};
   const m1=mkMonth(y1);
   m1.items=[
-    {id:1,label:'給与',    amount:280000, checked:false,isFixed:true, order:0,day:25},
-    {id:2,label:'積立NISA',amount:-100000,checked:false,isFixed:true, order:1,day:27},
-    {id:3,label:'iDeCo',   amount:-23000, checked:false,isFixed:true, order:2,day:27},
-    {id:4,label:'純金積立',amount:-3000,  checked:false,isFixed:true, order:3,day:null},
+    {id:1,label:'給与',    amount:280000, checked:false,isFixed:true, order:0,day:25,dayMode:'prev'},
+    {id:2,label:'積立NISA',amount:-100000,checked:false,isFixed:true, order:1,day:27,dayMode:'prev'},
+    {id:3,label:'iDeCo',   amount:-23000, checked:false,isFixed:true, order:2,day:27,dayMode:'prev'},
+    {id:4,label:'純金積立',amount:-3000,  checked:false,isFixed:true, order:3,day:null,dayMode:'prev'},
   ];
   return {
     cards:DEMO_CARDS, months:{[y0]:m0,[y1]:m1}, missions:[],
     nxtCard:12, nxtItem:10, nxtMission:1,
     tabOrder:TAB_DEFS.map(t=>t.id),
+    tabHidden:[],
     firstLaunch:true, lastBackup:null, backupCreatedAt:null,
   };
 }
@@ -538,9 +545,11 @@ function fy(n){ if(isNaN(n)||n==null) return '¥0'; const a=Math.abs(Math.round(
 function ymLbl(y){ const[yr,mo]=y.split('-'); return `${yr}年${parseInt(mo)}月`; }
 function todayStr(){ return fmtD(new Date()); }
 
+// 全角→半角変換
+function toHalf(v){ return String(v).replace(/[０-９－＋．]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/[ー−]/g,'-'); }
 // 3桁カンマ表示フォーマット（入力欄用）
 function fmtAmt(v){ if(v===''||v==null) return ''; const n=parseFloat(String(v).replace(/,/g,'')); return isNaN(n)?'':n.toLocaleString('ja-JP'); }
-function parseAmt(v){ return parseFloat(String(v).replace(/,/g,''))||0; }
+function parseAmt(v){ return parseFloat(toHalf(String(v)).replace(/,/g,''))||0; }
 
 function calcAssets(ymStr){
   const md=getMD(ymStr);
@@ -563,12 +572,12 @@ let activeTab='dash';
 
 function buildTabs(){
   const order=S.tabOrder||TAB_DEFS.map(t=>t.id);
-  // tabOrderにcardsが無い場合（旧データ）は末尾に追加
   if(!order.includes('cards')) order.push('cards');
   const defs=order.map(id=>TAB_DEFS.find(t=>t.id===id)).filter(Boolean);
   TAB_DEFS.forEach(t=>{ if(!defs.find(d=>d.id===t.id)) defs.push(t); });
-  // settingsはタブバーに出さない
-  const tabDefs=defs.filter(t=>t.id!=='settings');
+  const hidden=S.tabHidden||[];
+  // settings・固定タブ・非表示タブはタブバーに出さない
+  const tabDefs=defs.filter(t=>t.id!=='settings'&&!(!t.fixed&&hidden.includes(t.id)));
 
   document.getElementById('btabs').innerHTML=tabDefs.map(t=>
     `<button class="btab${t.id===activeTab?' on':''}" data-tab="${t.id}" onclick="goTab('${t.id}')">
@@ -676,14 +685,14 @@ function renderDash(){
 
     return `
     <div class="cacc-head" onclick="toggleAcc(${c.id})">
-      <span class="cacc-name">${c.name}</span>
+      ${brandIcon(c.name)}<span class="cacc-name">${c.name}</span>
       ${ann?`<span class="ann-badge">年会費 ${fy(ann.annualFee)}</span>`:''}
       <span class="${dc}">${m}/${act.getDate()}${shifted?'*':''}</span>
       <span class="cacc-amt${amt===0?' zero':''}">${amt===0?'—':fy(amt)}</span>
       <span class="cacc-chev" id="chev-${c.id}">▾</span>
     </div>
     <div class="cacc-body" id="acc-${c.id}">
-      <div class="cacc-meta">締め日 ${c.closeDay===99?'末日':c.closeDay+'日'} ／ 引落 ${m}/${act.getDate()}日${shifted?' (振替)':''}</div>
+      <div class="cacc-meta">締め日 ${c.closeDay===99?'末日':c.closeDay+'日'} / 引落 ${m}月${act.getDate()}日${shifted?' (振替)':''}</div>
       <div class="cacc-months">
         <div class="cacc-month-row">
           <span class="cacc-month-lbl">${ymLbl(ym0)}</span>
@@ -712,7 +721,7 @@ function renderDash(){
       <div class="chk${it.checked?' on':''}" onclick="toggleItem('${ymStr}',${it.id})">${it.checked?'✓':''}</div>
       <span class="row-lbl${it.checked?' done':''}" style="cursor:pointer" onclick="editItem('${ymStr}',${it.id})">${it.label}</span>
       <span class="row-val${it.amount<0?' neg':' pos'}" style="cursor:pointer" onclick="editItem('${ymStr}',${it.id})">${fy(it.amount)}</span>
-      ${it.day!=null?`<span style="font-size:11px;color:var(--t2);font-family:var(--mono);flex-shrink:0">${it.day}日</span>`:`<span style="font-size:11px;color:var(--t3);flex-shrink:0">日付未設定</span>`}
+      ${it.day!=null?`<span style="font-size:11px;color:var(--t2);font-family:var(--mono);flex-shrink:0">${it.day}日<span style="opacity:.6;font-size:10px">(${{'prev':'前営','next':'後営','exact':'当日'}[it.dayMode||'prev']})</span></span>`:`<span style="font-size:11px;color:var(--t3);flex-shrink:0">日付未設定</span>`}
       <button class="rdel" onclick="delItem('${ymStr}',${it.id})">×</button>
     </div>`;
 
@@ -763,7 +772,8 @@ function dismissTutorial(clearData){
 
 // カード金額3桁カンマリアルタイム
 function fmtAmtInput(v){
-  const raw=v.replace(/[^0-9\-]/g,'');
+  const h=toHalf(v);
+  const raw=h.replace(/[^0-9\-]/g,'');
   if(raw===''||raw==='-') return raw;
   const neg=raw.startsWith('-');
   const num=parseInt(raw.replace('-',''),10);
@@ -822,9 +832,17 @@ function editItem(ymStr,id){
        oninput="this.value=fmtAmtInput(this.value)"
        onkeydown="if(event.key==='Enter') _saveEditItem(${id},${it.isFixed})">
      </div>
-     <div class="frow"><label class="flbl">カレンダー表示日（空白=非表示）</label>
-     <input class="finput" id="ei_d" type="number" min="1" max="31"
-       value="${it.day!=null?it.day:''}" placeholder="例: 25（前営業日計算）">
+     <div class="fgrid">
+       <div class="frow"><label class="flbl">カレンダー表示日（空=非表示）</label>
+       <input class="finput" id="ei_d" type="number" min="1" max="31"
+         value="${it.day!=null?it.day:''}" placeholder="例: 25"
+         oninput="this.value=toHalf(this.value)"></div>
+       <div class="frow"><label class="flbl">日付の計算方法</label>
+       <select class="finput" id="ei_dm">
+         <option value="prev" ${(it.dayMode||'prev')==='prev'?'selected':''}>前営業日</option>
+         <option value="next" ${(it.dayMode||'prev')==='next'?'selected':''}>後営業日</option>
+         <option value="exact" ${(it.dayMode||'prev')==='exact'?'selected':''}>そのまま</option>
+       </select></div>
      </div>`,
     `<button class="btn btn-g" onclick="mClose()">キャンセル</button>
      <button class="btn btn-p" onclick="_saveEditItem(${id},${it.isFixed})">保存</button>`);
@@ -832,15 +850,16 @@ function editItem(ymStr,id){
 function _saveEditItem(id,isFixed){
   const l=document.getElementById('ei_l').value.trim();
   const a=parseAmt(document.getElementById('ei_a').value);
-  const dv=document.getElementById('ei_d').value.trim();
+  const dv=toHalf(document.getElementById('ei_d').value.trim());
   const day=dv===''?null:parseInt(dv);
+  const dayMode=document.getElementById('ei_dm').value;
   if(!l){ alert('項目名を入力してください'); return; }
   // 固定項目は両月に反映
   const yms=getDisplayYms();
   const targets=isFixed?yms:[_mYm];
   targets.forEach(y=>{
     const it=(getMD(y).items||[]).find(x=>x.id===id);
-    if(it){ it.label=l; it.amount=a; it.day=day; }
+    if(it){ it.label=l; it.amount=a; it.day=day; it.dayMode=dayMode; }
   });
   save(); mClose(); renderDash();
 }
@@ -896,10 +915,16 @@ function renderCal(){
     add(fmtD(nextBiz(y,m,c.annualDay)),{cls:'ann',lbl:`年会費 ${fy(c.annualFee)}`});
   });
 
-  // 収支項目：day指定があれば前営業日計算でカレンダーに表示
+  // 収支項目：day指定があれば営業日計算でカレンダーに表示
   (md.items||[]).forEach(it=>{
-    if(it.day==null) return; // 日付未設定はスキップ
-    const d=prevBiz(y,m,Math.min(it.day,new Date(y,m,0).getDate()));
+    if(it.day==null) return;
+    const dim=new Date(y,m,0).getDate();
+    const safeDay=Math.min(it.day,dim);
+    const mode=it.dayMode||'prev';
+    let d;
+    if(mode==='prev') d=prevBiz(y,m,safeDay);
+    else if(mode==='next') d=nextBiz(y,m,safeDay);
+    else d=new Date(y,m-1,safeDay);
     add(fmtD(d),{cls:it.amount>0?'inc':'io',lbl:`${it.label} ${fy(it.amount)}`});
   });
 
@@ -1101,8 +1126,8 @@ function renderCards(){
       const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
       html+=`<div class="card-item">
         <div class="card-item-info">
-          <div class="card-item-name">${c.name}</div>
-          <div class="card-item-meta">締め日 ${c.closeDay===99?'末日':c.closeDay+'日'} ／ 引落 ${raw}日</div>
+          <div class="card-item-name" style="display:flex;align-items:center;gap:8px">${brandIcon(c.name)}<span>${c.name}</span></div>
+          <div class="card-item-meta">締め日 ${c.closeDay===99?'末日':c.closeDay+'日'} / 引落 ${raw}日</div>
           ${c.annualFee?`<div class="card-item-ann">年会費 ${fy(c.annualFee)}（${c.annualMonth}月請求）</div>`:`<div class="card-item-meta">年会費無料</div>`}
           ${c.note?`<div class="card-item-note">${c.note}</div>`:''}
         </div>
@@ -1166,14 +1191,19 @@ function renderSettings(){
     <div class="st-sec"><div class="st-sec-title">タブの並び順・表示</div>
       <div class="st-hint">ドラッグで並び替え（ダッシュボードは固定）</div>
       <div id="st-tab-list">
-        ${settingsDefs.map(t=>`
-        <div class="tab-order-item" draggable="${!t.fixed}" data-tab-id="${t.id}"
-          ondragstart="tabDragStart(event,'${t.id}')" ondragover="tabDragOver(event)" ondrop="tabDrop(event,'${t.id}')">
-          <span class="tab-order-handle">${t.fixed?'📌':'⠿'}</span>
-          <span class="tab-order-icon">${t.icon}</span>
-          <span class="tab-order-name">${t.label}</span>
-          ${t.fixed?'<span style="font-size:11px;color:var(--t3)">固定</span>':''}
-        </div>`).join('')}
+        ${settingsDefs.map(t=>{
+          const hidden=(S.tabHidden||[]).includes(t.id);
+          return `<div class="tab-order-item${hidden?' dim':''}" draggable="${!t.fixed}" data-tab-id="${t.id}"
+            ondragstart="tabDragStart(event,'${t.id}')" ondragover="tabDragOver(event)" ondrop="tabDrop(event,'${t.id}')">
+            <span class="tab-order-handle">${t.fixed?'📌':'⠿'}</span>
+            <span class="tab-order-icon">${t.icon}</span>
+            <span class="tab-order-name">${t.label}</span>
+            ${t.fixed
+              ? '<span style="font-size:11px;color:var(--t3)">固定</span>'
+              : `<button onclick="toggleTabHidden('${t.id}')" style="background:${hidden?'rgba(255,255,255,0.05)':'rgba(91,141,238,0.15)'};border:1px solid ${hidden?'rgba(255,255,255,0.1)':'rgba(91,141,238,0.3)'};border-radius:16px;color:${hidden?'var(--t2)':'var(--accent)'};cursor:pointer;font-size:11px;font-weight:700;padding:3px 9px;white-space:nowrap">${hidden?'非表示':'表示中'}</button>`
+            }
+          </div>`;
+        }).join('')}
       </div>
     </div>
 
@@ -1201,6 +1231,15 @@ function tabDrop(e,targetId){
   if(si<0||ti<0) return;
   order.splice(si,1); order.splice(ti,0,_dragTabId);
   S.tabOrder=order; save(); buildTabs(); renderSettings();
+}
+function toggleTabHidden(id){
+  if(!S.tabHidden) S.tabHidden=[];
+  const idx=S.tabHidden.indexOf(id);
+  if(idx>=0) S.tabHidden.splice(idx,1);
+  else S.tabHidden.push(id);
+  // 非表示にしたタブを開いていたらdashに戻す
+  if(S.tabHidden.includes(activeTab)) goTab('dash');
+  save(); buildTabs(); renderSettings();
 }
 
 // Backup
@@ -1282,8 +1321,17 @@ function bAddItem(isFixed){
      <input class="finput" id="mi_a" type="text" inputmode="numeric" placeholder="-100000"
        oninput="this.value=fmtAmtInput(this.value)"
        onkeydown="if(event.key==='Enter') _saveItem(${isFixed})"></div>
-     <div class="frow"><label class="flbl">カレンダー表示日（空白=非表示）</label>
-     <input class="finput" id="mi_d" type="number" min="1" max="31" placeholder="例: 25（前営業日計算）"></div>`,
+     <div class="fgrid">
+       <div class="frow"><label class="flbl">カレンダー表示日（空=非表示）</label>
+       <input class="finput" id="mi_d" type="number" min="1" max="31" placeholder="例: 25"
+         oninput="this.value=toHalf(this.value)"></div>
+       <div class="frow"><label class="flbl">日付の計算方法</label>
+       <select class="finput" id="mi_dm">
+         <option value="prev">前営業日</option>
+         <option value="next">後営業日</option>
+         <option value="exact">そのまま</option>
+       </select></div>
+     </div>`,
     `<button class="btn btn-g" onclick="mClose()">キャンセル</button>
      <button class="btn btn-p" onclick="_saveItem(${isFixed})">追加</button>`);
   setTimeout(()=>document.getElementById('mi_l')?.focus(),100);
@@ -1291,12 +1339,13 @@ function bAddItem(isFixed){
 function _saveItem(isFixed){
   const l=document.getElementById('mi_l').value.trim();
   const a=parseAmt(document.getElementById('mi_a').value);
-  const dv=document.getElementById('mi_d').value.trim();
+  const dv=toHalf(document.getElementById('mi_d').value.trim());
   const day=dv===''?null:parseInt(dv);
+  const dayMode=document.getElementById('mi_dm').value;
   if(!l||isNaN(a)){ alert('項目名と金額を入力してください'); return; }
   const md=getMD(_mYm); if(!md.items) md.items=[];
   const maxOrder=md.items.reduce((m,it)=>Math.max(m,it.order||0),-1);
-  md.items.push({id:S.nxtItem++,label:l,amount:a,checked:false,isFixed,order:maxOrder+1,day});
+  md.items.push({id:S.nxtItem++,label:l,amount:a,checked:false,isFixed,order:maxOrder+1,day,dayMode});
   save(); mClose(); renderDash();
 }
 
@@ -1362,6 +1411,70 @@ function _saveCard(id){
   if(id){ const c=S.cards.find(c=>c.id===id); if(c) Object.assign(c,{name:n,closeDay:cl,billDay:bl,annualFee:af,annualMonth:am,annualDay:ad,note:nt}); }
   else S.cards.push({id:S.nxtCard++,name:n,closeDay:cl,billDay:bl,annualFee:af,annualMonth:am,annualDay:ad,note:nt,visible:true});
   save(); mClose(); renderCards();
+}
+
+
+// ═══════════════════════════════════════════
+// BRAND ICONS
+// ═══════════════════════════════════════════
+const BRAND_SVGS = {
+  visa: `<svg viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:24px">
+    <rect width="36" height="24" rx="4" fill="#1a1f71"/>
+    <text x="18" y="16" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="900" font-style="italic" fill="#fff" letter-spacing="-0.5">VISA</text>
+  </svg>`,
+  mastercard: `<svg viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:24px">
+    <rect width="36" height="24" rx="4" fill="#252525"/>
+    <circle cx="14" cy="12" r="7" fill="#eb001b"/>
+    <circle cx="22" cy="12" r="7" fill="#f79e1b"/>
+    <path d="M18 6.8a7 7 0 010 10.4A7 7 0 0118 6.8z" fill="#ff5f00"/>
+  </svg>`,
+  amex: `<svg viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:24px">
+    <rect width="36" height="24" rx="4" fill="#2e77bc"/>
+    <text x="18" y="15" text-anchor="middle" font-family="Arial,sans-serif" font-size="7" font-weight="900" fill="#fff" letter-spacing="0.5">AMERICAN</text>
+    <text x="18" y="21" text-anchor="middle" font-family="Arial,sans-serif" font-size="5.5" font-weight="700" fill="#fff" letter-spacing="1">EXPRESS</text>
+  </svg>`,
+  jcb: `<svg viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:24px">
+    <rect width="36" height="24" rx="4" fill="#fff"/>
+    <rect x="4" y="4" width="9" height="16" rx="3" fill="#003087"/>
+    <rect x="13.5" y="4" width="9" height="16" rx="3" fill="#cc0000"/>
+    <rect x="23" y="4" width="9" height="16" rx="3" fill="#007b40"/>
+    <text x="8.5" y="15.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="7" font-weight="900" fill="#fff">J</text>
+    <text x="18" y="15.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="7" font-weight="900" fill="#fff">C</text>
+    <text x="27.5" y="15.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="7" font-weight="900" fill="#fff">B</text>
+  </svg>`,
+  diners: `<svg viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:24px">
+    <rect width="36" height="24" rx="4" fill="#fff" stroke="#ddd" stroke-width="0.5"/>
+    <circle cx="14" cy="12" r="7.5" fill="none" stroke="#004a97" stroke-width="1.5"/>
+    <circle cx="22" cy="12" r="7.5" fill="none" stroke="#004a97" stroke-width="1.5"/>
+    <text x="18" y="20.5" text-anchor="middle" font-family="Arial,sans-serif" font-size="4" fill="#004a97" letter-spacing="0.3">DINERS CLUB</text>
+  </svg>`,
+  unionpay: `<svg viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:24px">
+    <rect width="36" height="24" rx="4" fill="#e21836"/>
+    <rect x="14" y="0" width="8" height="24" rx="0" fill="#fff"/>
+    <rect x="22" y="0" width="14" height="24" rx="0" fill="#007b5e"/>
+    <rect x="22" y="0" width="14" height="24" rx="4" fill="#007b5e"/>
+    <text x="8" y="15" text-anchor="middle" font-family="Arial,sans-serif" font-size="7.5" font-weight="900" fill="#fff">UP</text>
+  </svg>`,
+  default: `<svg viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:36px;height:24px">
+    <rect width="36" height="24" rx="4" fill="#2a2f45"/>
+    <rect x="4" y="7" width="28" height="3" rx="1" fill="rgba(255,255,255,0.3)"/>
+    <rect x="4" y="14" width="10" height="3" rx="1" fill="rgba(255,255,255,0.5)"/>
+  </svg>`,
+};
+
+function detectBrand(name){
+  const n=(name||'').toLowerCase();
+  if(/visa/.test(n)) return 'visa';
+  if(/master|mc/.test(n)) return 'mastercard';
+  if(/amex|american express/.test(n)) return 'amex';
+  if(/jcb/.test(n)) return 'jcb';
+  if(/diners/.test(n)) return 'diners';
+  if(/union.?pay|up/.test(n)) return 'unionpay';
+  return 'default';
+}
+
+function brandIcon(name){
+  return `<span class="brand-icon">${BRAND_SVGS[detectBrand(name)]}</span>`;
 }
 
 // ═══════════════════════════════════════════

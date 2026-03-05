@@ -1190,6 +1190,11 @@ function renderSettingsPage(){
         <span class="st-arr">›</span>
       </div>
       <input type="file" id="st-file" accept=".json" style="display:none" onchange="doImport(event)">
+      <div class="st-row" style="border-color:rgba(232,80,106,0.2)" onclick="confirmReset()">
+        <span class="st-icon" style="color:var(--ng)">🗑</span>
+        <div class="st-body"><div class="st-lbl" style="color:var(--ng)">全データを削除</div><div class="st-sub">カード・月次データ・修行をすべて消去</div></div>
+        <span class="st-arr">›</span>
+      </div>
     </div>
 
     <div class="st-sec"><div class="st-sec-title">保有カード</div>
@@ -1242,6 +1247,30 @@ function tabDrop(e,targetId){
 }
 
 // Backup
+function confirmReset(){
+  mOpen('全データを削除',
+    `<div style="font-size:13px;line-height:1.8;color:var(--t2)">
+      すべてのデータが削除されます。<br>この操作は取り消せません。<br><br>
+      <span style="color:var(--warn)">先にバックアップを取ることをおすすめします。</span>
+    </div>`,
+    `<button class="btn btn-g" onclick="mClose()">キャンセル</button>
+     <button class="btn btn-g" style="color:var(--warn);border-color:rgba(240,156,42,0.3)" onclick="doExport();mClose();setTimeout(doReset,800)">バックアップして削除</button>
+     <button class="btn" style="background:var(--ng);color:#fff" onclick="doReset()">そのまま削除</button>`
+  );
+}
+function doReset(){
+  S.months={};
+  S.missions=[];
+  S.cards=[];
+  S.nxtItem=1;
+  S.nxtMission=1;
+  S.nxtCard=1;
+  S.firstLaunch=true;
+  save();
+  mClose();
+  renderDash();
+  renderSettingsPage();
+}
 function doExport(){
   const now=new Date();
   const dateStr=`${now.getFullYear()}${z2(now.getMonth()+1)}${z2(now.getDate())}_${z2(now.getHours())}${z2(now.getMinutes())}`;

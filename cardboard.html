@@ -194,6 +194,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 
 /* ── Wallet ── */
 .wallet-wrap{position:relative;display:flex;flex-direction:column;}
+/* PC: グリッド並列表示 */
+@media(min-width:768px){
+  .wallet-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+  .wallet-card{margin-bottom:0!important;min-height:130px;}
+  .wallet-card:last-child{margin-bottom:0!important;}
+  .wallet-card:not(.expanded):hover{transform:translateY(-4px);}
+  .wallet-card.expanded{z-index:10;}
+}
 .wallet-card{
   position:relative;
   border-radius:18px;
@@ -1099,10 +1107,11 @@ function renderCards(){
     </div>`;
 
     const isLast=i===total-1;
-    const mb=isLast?'0':(isExp?'12px':'-72px');
+    const isPC=window.innerWidth>=768;
+    const mb=isPC?'':(isLast?'0':(isExp?'12px':'-72px'));
     return`<div class="wallet-card${isExp?' expanded':''}${!c.visible?' wallet-vis-off':''}"
         data-id="${c.id}"
-        style="background:${grad};z-index:${zIdx};margin-bottom:${mb}"
+        style="background:${grad};z-index:${zIdx};${mb?'margin-bottom:'+mb:''}"
         onclick="toggleWalletCard(${c.id})">
       <!-- 常時表示：カード名とブランド -->
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -1133,8 +1142,9 @@ function renderCards(){
 
 function toggleWalletCard(id){
   const PEEK=-72, GAP=12;
+  const isPC=window.innerWidth>=768;
   const allCards=document.querySelectorAll('.wallet-card');
-  
+
   // 現在の展開カードを閉じる
   if(expandedCardId!==null){
     const prevEl=document.querySelector(`.wallet-card[data-id="${expandedCardId}"]`);
@@ -1142,27 +1152,24 @@ function toggleWalletCard(id){
       prevEl.classList.remove('expanded');
       const detail=prevEl.querySelector('.wallet-card-detail');
       if(detail)detail.style.display='none';
-      // last-child以外はpeekに戻す
-      if(prevEl!==allCards[allCards.length-1])prevEl.style.marginBottom=PEEK+'px';
+      if(!isPC&&prevEl!==allCards[allCards.length-1])prevEl.style.marginBottom=PEEK+'px';
     }
   }
 
   if(expandedCardId===id){
-    // 同じカードをタップ→閉じる
     expandedCardId=null;
   }else{
-    // 新しいカードを展開
     expandedCardId=id;
     const el=document.querySelector(`.wallet-card[data-id="${id}"]`);
     if(el){
       el.classList.add('expanded');
       const detail=el.querySelector('.wallet-card-detail');
       if(detail)detail.style.display='block';
-      // 展開後の実際の高さを取得してmarginを設定
-      requestAnimationFrame(()=>{
-        const h=el.getBoundingClientRect().height;
-        if(el!==allCards[allCards.length-1])el.style.marginBottom=GAP+'px';
-      });
+      if(!isPC){
+        requestAnimationFrame(()=>{
+          if(el!==allCards[allCards.length-1])el.style.marginBottom=GAP+'px';
+        });
+      }
     }
   }
 }

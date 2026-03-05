@@ -12,254 +12,180 @@
 <style>
 :root {
   --bg:#0d0f18; --s1:#161927; --s2:#1c2030; --s3:#232740;
-  --b1:rgba(255,255,255,0.07); --b2:rgba(255,255,255,0.13);
+  --b1:rgba(255,255,255,0.07); --b2:rgba(255,255,255,0.14);
   --accent:#5b8dee; --a2:#7c5cfc;
   --ok:#27c485; --ng:#e8506a; --warn:#f09c2a;
-  --text:#dde2f2; --t2:#6b748f; --t3:#363c52;
+  --text:#dde2f2; --t2:#7a849f; --t3:#3a4058;
   --mono:'DM Mono',monospace; --sans:'Noto Sans JP',sans-serif;
-  --st:env(safe-area-inset-top,0px);
-  --sb:env(safe-area-inset-bottom,0px);
-  --sl:env(safe-area-inset-left,0px);
-  --sr:env(safe-area-inset-right,0px);
-  --tbh:58px;
+  --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
+  --sl:env(safe-area-inset-left,0px); --sr:env(safe-area-inset-right,0px);
+  --tbh:62px; --fs:14px; --fs-sm:12px; --fs-xs:11px; --fs-lg:16px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden;}
-/* ── Top bar ── */
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:var(--fs);overflow:hidden;}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:2px;}
+* { scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.12) transparent; }
+
+/* ── Topbar ── */
 .topbar{
   position:fixed;top:0;left:0;right:0;z-index:200;
-  height:calc(44px + var(--st));
-  padding-top:var(--st);
+  height:calc(46px + var(--st));padding-top:var(--st);
   display:flex;align-items:center;justify-content:space-between;
-  padding-left:calc(16px + var(--sl));
-  padding-right:calc(16px + var(--sr));
-  background:rgba(13,15,24,0.85);
-  backdrop-filter:saturate(180%) blur(28px);
-  -webkit-backdrop-filter:saturate(180%) blur(28px);
+  padding-left:calc(16px + var(--sl));padding-right:calc(16px + var(--sr));
+  background:rgba(13,15,24,0.88);
+  backdrop-filter:saturate(180%) blur(28px);-webkit-backdrop-filter:saturate(180%) blur(28px);
   border-bottom:1px solid rgba(255,255,255,0.07);
 }
-.topbar-logo{font-size:16px;font-weight:700;letter-spacing:.2px;}
+.topbar-logo{font-size:17px;font-weight:700;letter-spacing:.2px;}
 .topbar-logo em{color:var(--accent);font-style:normal;}
-.topbar-right{display:flex;align-items:center;gap:8px;}
-.icon-btn{
-  background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);
-  border-radius:8px;color:var(--t2);cursor:pointer;
-  font-size:16px;padding:5px 9px;line-height:1;transition:.15s;
-}
+.icon-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--t2);cursor:pointer;font-size:17px;padding:5px 10px;line-height:1;transition:.15s;}
 .icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+
 /* ── Pages ── */
-.pages{
-  position:fixed;
-  top:calc(44px + var(--st));
-  bottom:calc(var(--tbh) + var(--sb));
-  left:0;right:0;
-  overflow:hidden;
-}
-.page{
-  display:none;height:100%;overflow-y:auto;
-  padding:12px calc(14px + var(--sr)) 12px calc(14px + var(--sl));
-  -webkit-overflow-scrolling:touch;
-}
+.pages{position:fixed;top:calc(46px + var(--st));bottom:calc(var(--tbh) + var(--sb));left:0;right:0;overflow:hidden;}
+.page{display:none;height:100%;overflow-y:auto;padding:14px calc(14px + var(--sr)) 14px calc(14px + var(--sl));-webkit-overflow-scrolling:touch;}
 .page.on{display:block;}
+
 /* ── Bottom tabs ── */
 .btabs{
   position:fixed;bottom:0;left:0;right:0;z-index:200;
-  height:calc(var(--tbh) + var(--sb));
-  padding-bottom:var(--sb);
-  padding-left:var(--sl);padding-right:var(--sr);
-  display:flex;
-  background:rgba(13,15,24,0.85);
-  backdrop-filter:saturate(180%) blur(28px);
-  -webkit-backdrop-filter:saturate(180%) blur(28px);
+  height:calc(var(--tbh) + var(--sb));padding-bottom:var(--sb);
+  padding-left:var(--sl);padding-right:var(--sr);display:flex;
+  background:rgba(13,15,24,0.88);
+  backdrop-filter:saturate(180%) blur(28px);-webkit-backdrop-filter:saturate(180%) blur(28px);
   border-top:1px solid rgba(255,255,255,0.07);
 }
-.btab{
-  flex:1;background:none;border:none;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;color:var(--t2);font-family:var(--sans);
-  font-size:9px;font-weight:600;letter-spacing:.2px;padding:5px 2px;
-  transition:color .18s;position:relative;
-}
+.btab{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--t2);font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.2px;padding:5px 2px;transition:color .18s;position:relative;}
 .btab.on{color:var(--accent);}
-.btab-icon{font-size:19px;line-height:1;}
-.btab.on::after{
-  content:'';position:absolute;top:6px;
-  width:38px;height:38px;border-radius:11px;
-  background:rgba(91,141,238,0.12);border:1px solid rgba(91,141,238,0.2);
-  z-index:-1;
+.btab-icon{font-size:20px;line-height:1;}
+.btab.on::after{content:'';position:absolute;top:6px;width:40px;height:40px;border-radius:12px;background:rgba(91,141,238,0.12);border:1px solid rgba(91,141,238,0.2);z-index:-1;}
+
+/* ── PC Sidebar ── */
+.sidebar{display:none;}
+@media(min-width:768px){
+  body{overflow:auto!important;}
+  .topbar{left:250px;height:50px;padding-top:0;padding-left:24px;padding-right:24px;}
+  .topbar-logo{font-size:18px;}
+  .btabs{display:none!important;}
+  .pages{top:50px!important;bottom:0!important;left:250px!important;right:0!important;}
+  .page{max-width:1120px;margin:0 auto;}
+  .hero-val{font-size:42px!important;}
+  .sidebar{
+    display:flex!important;flex-direction:column;
+    position:fixed;top:0;left:0;bottom:0;width:250px;
+    background:rgba(13,15,24,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-right:1px solid rgba(255,255,255,0.07);padding:22px 14px;z-index:300;
+  }
+  .sidebar-logo{font-size:18px;font-weight:700;padding:8px 10px 22px;letter-spacing:.2px;}
+  .sidebar-logo em{color:var(--accent);font-style:normal;}
+  .sidebar-btn{display:flex;align-items:center;gap:10px;background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--t2);padding:10px 12px;border-radius:10px;margin-bottom:3px;transition:.15s;text-align:left;width:100%;}
+  .sidebar-btn:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+  .sidebar-btn.on{background:rgba(91,141,238,0.15);color:var(--accent);border:1px solid rgba(91,141,238,0.2);}
+  .sidebar-btn-icon{font-size:18px;width:24px;text-align:center;}
+  .sidebar-settings{margin-top:auto;}
+  #dash-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;}
+  #dash-body .hero{grid-column:1/-1;}
 }
-/* ── Tutorial banner ── */
-.tutorial-banner{
-  background:linear-gradient(135deg,rgba(91,141,238,0.15),rgba(124,92,252,0.15));
-  border:1px solid rgba(91,141,238,0.3);border-radius:12px;
-  padding:12px 14px;margin-bottom:12px;
-}
-.tutorial-banner-title{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px;}
-.tutorial-banner-body{font-size:12px;color:var(--t2);line-height:1.6;}
-.tutorial-banner-close{
-  display:flex;justify-content:flex-end;margin-top:8px;
-}
-/* ── Backup reminder ── */
-.backup-banner{
-  background:rgba(240,156,42,0.12);border:1px solid rgba(240,156,42,0.3);
-  border-radius:10px;padding:9px 13px;margin-bottom:10px;
-  font-size:12px;color:var(--warn);
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
-}
+
 /* ── Month switcher ── */
-.month-sw{
-  display:flex;gap:3px;background:var(--s2);border-radius:11px;
-  padding:3px;margin-bottom:12px;border:1px solid var(--b1);
-}
-.msw-btn{
-  flex:1;background:none;border:none;cursor:pointer;
-  font-family:var(--sans);font-size:12px;font-weight:600;
-  color:var(--t2);padding:8px 6px;border-radius:8px;
-  transition:.18s;text-align:center;
-}
+.month-sw{display:flex;gap:3px;background:var(--s2);border-radius:11px;padding:3px;margin-bottom:13px;border:1px solid var(--b1);}
+.msw-btn{flex:1;background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--t2);padding:9px 6px;border-radius:8px;transition:.18s;text-align:center;}
 .msw-btn.on{background:var(--s3);color:var(--text);box-shadow:0 1px 6px #0005;}
 .msw-btn.on.cur{color:var(--accent);}
 .msw-btn.on.nxt{color:var(--a2);}
-/* ── Hero card ── */
-.hero{
-  background:var(--s1);border:1px solid var(--b1);
-  border-radius:16px;padding:16px;margin-bottom:12px;
-}
-.hero-lbl{font-size:10px;color:var(--t2);letter-spacing:.4px;margin-bottom:5px;}
-.hero-val{font-family:var(--mono);font-size:32px;font-weight:500;letter-spacing:-1px;line-height:1;}
+
+/* ── Hero ── */
+.hero{background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:18px;margin-bottom:13px;}
+.hero-lbl{font-size:11px;color:var(--t2);letter-spacing:.4px;margin-bottom:5px;}
+.hero-val{font-family:var(--mono);font-size:34px;font-weight:500;letter-spacing:-1px;line-height:1;}
 .hero-val.ok{color:var(--ok);}
 .hero-val.warn{color:var(--warn);}
 .hero-val.ng{color:var(--ng);}
-.hero-sub{font-size:11px;color:var(--t2);margin-top:4px;}
-.hero-pills{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--b1);}
+.hero-sub{font-size:12px;color:var(--t2);margin-top:5px;}
+.hero-pills{display:flex;gap:8px;margin-top:13px;padding-top:13px;border-top:1px solid var(--b1);}
 .hero-pill{flex:1;background:var(--s2);border-radius:10px;padding:10px 12px;border:1px solid var(--b1);}
-.hero-pill-lbl{font-size:9px;color:var(--t2);margin-bottom:3px;letter-spacing:.3px;}
-.hero-pill-val{font-family:var(--mono);font-size:14px;font-weight:500;}
+.hero-pill-lbl{font-size:10px;color:var(--t2);margin-bottom:3px;letter-spacing:.3px;}
+.hero-pill-val{font-family:var(--mono);font-size:15px;font-weight:500;}
 .hero-pill-val.pos{color:var(--ok);}
 .hero-pill-val.neg{color:var(--ng);}
+
 /* ── Section ── */
-.sec{margin-bottom:12px;}
+.sec{margin-bottom:13px;}
 .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
-.sec-title{font-size:10px;font-weight:700;color:var(--t2);letter-spacing:.6px;text-transform:uppercase;}
-/* ── Glass block ── */
+.sec-title{font-size:11px;font-weight:700;color:var(--t2);letter-spacing:.6px;text-transform:uppercase;}
 .gb{background:var(--s1);border:1px solid var(--b1);border-radius:14px;overflow:hidden;}
+.sec-divider{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;padding:6px 13px 4px;background:var(--s2);border-bottom:1px solid rgba(255,255,255,0.04);}
+
 /* ── Row ── */
-.row{
-  display:flex;align-items:center;gap:9px;
-  padding:10px 13px;border-bottom:1px solid rgba(255,255,255,0.04);
-  transition:background .1s;
-}
+.row{display:flex;align-items:center;gap:9px;padding:11px 13px;border-bottom:1px solid rgba(255,255,255,0.04);transition:background .1s;}
 .row:last-child{border-bottom:none;}
-.row-drag{cursor:grab;color:var(--t3);font-size:13px;flex-shrink:0;}
-.row-lbl{flex:1;font-size:13px;}
+.row-drag{cursor:grab;color:var(--t3);font-size:14px;flex-shrink:0;}
+.row-lbl{flex:1;font-size:var(--fs);}
 .row-lbl.done{color:var(--t2);text-decoration:line-through;}
-.row-val{font-family:var(--mono);font-size:13px;}
+.row-val{font-family:var(--mono);font-size:var(--fs);}
 .row-val.pos{color:var(--ok);}
 .row-val.neg{color:var(--ng);}
 .row-val.zero{color:var(--t3);}
-.row-val.tap{cursor:pointer;border-radius:6px;padding:2px 6px;transition:.1s;}
-.row-val.tap:hover{background:rgba(91,141,238,0.12);color:var(--accent);}
-.row-edit{
-  background:none;border:1px solid var(--b2);border-radius:6px;
-  color:var(--t2);cursor:pointer;font-size:10px;padding:3px 7px;flex-shrink:0;transition:.15s;
-}
-.row-edit:hover{border-color:var(--accent);color:var(--accent);}
-.chk{
-  width:20px;height:20px;border-radius:6px;border:1.5px solid var(--b2);
-  background:none;cursor:pointer;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;transition:.15s;
-}
+.row-edit-btn{background:none;border:1px solid var(--b2);border-radius:6px;color:var(--t2);cursor:pointer;font-size:11px;padding:3px 8px;flex-shrink:0;transition:.15s;}
+.row-edit-btn:hover{border-color:var(--accent);color:var(--accent);}
+.chk{width:21px;height:21px;border-radius:6px;border:1.5px solid var(--b2);background:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:.15s;}
 .chk.on{background:var(--ok);border-color:var(--ok);color:#fff;}
-.rdel{background:none;border:none;color:var(--t3);cursor:pointer;font-size:15px;padding:0 2px;flex-shrink:0;transition:.15s;}
+.rdel{background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:0 2px;flex-shrink:0;transition:.15s;}
 .rdel:hover{color:var(--ng);}
-.add-strip{display:flex;gap:6px;padding:8px 13px;border-top:1px solid rgba(255,255,255,0.04);}
-.add-pill{
-  background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.1);
-  border-radius:7px;color:var(--t2);cursor:pointer;
-  font-family:var(--sans);font-size:11px;padding:5px 9px;transition:.15s;
-}
+.add-strip{display:flex;gap:6px;padding:9px 13px;border-top:1px solid rgba(255,255,255,0.04);}
+.add-pill{background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.1);border-radius:7px;color:var(--t2);cursor:pointer;font-family:var(--sans);font-size:12px;padding:6px 10px;transition:.15s;}
 .add-pill:hover{border-color:var(--accent);color:var(--accent);}
-/* ── Section divider label ── */
-.sec-divider{
-  font-size:9px;font-weight:700;color:var(--t3);
-  text-transform:uppercase;letter-spacing:.8px;
-  padding:6px 13px 4px;background:var(--s2);
-  border-bottom:1px solid rgba(255,255,255,0.04);
-}
+
 /* ── Card accordion ── */
-.cacc-head{
-  display:flex;align-items:center;gap:8px;
-  padding:10px 13px;cursor:pointer;
-  border-bottom:1px solid rgba(255,255,255,0.04);transition:background .1s;
-}
+.cacc-head{display:flex;align-items:center;gap:8px;padding:11px 13px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);transition:background .1s;}
 .cacc-head:last-child{border-bottom:none;}
-.cacc-name{flex:1;font-size:13px;font-weight:500;}
-.cacc-date{font-size:10px;color:var(--t2);font-family:var(--mono);white-space:nowrap;}
+.cacc-name{flex:1;font-size:var(--fs);font-weight:500;}
+.cacc-date{font-size:11px;color:var(--t2);font-family:var(--mono);white-space:nowrap;}
 .cacc-date.soon{color:var(--warn);}
 .cacc-date.tod{color:var(--ng);font-weight:700;}
-.cacc-amt{font-family:var(--mono);font-size:13px;min-width:68px;text-align:right;}
+.cacc-amt{font-family:var(--mono);font-size:var(--fs);min-width:72px;text-align:right;}
 .cacc-amt.zero{color:var(--t3);}
-.cacc-chev{font-size:10px;color:var(--t2);transition:transform .2s;flex-shrink:0;}
+.cacc-chev{font-size:11px;color:var(--t2);transition:transform .2s;flex-shrink:0;}
 .cacc-chev.open{transform:rotate(180deg);}
-.cacc-body{
-  display:none;padding:8px 13px 11px;
-  background:rgba(0,0,0,0.18);
-  border-bottom:1px solid rgba(255,255,255,0.04);
-}
+.cacc-body{display:none;padding:10px 13px 13px;background:rgba(0,0,0,0.18);border-bottom:1px solid rgba(255,255,255,0.04);}
 .cacc-body.open{display:block;}
-.cacc-meta{font-size:11px;color:var(--t2);margin-bottom:7px;line-height:1.8;}
-.cacc-edit{display:flex;gap:7px;margin-top:6px;}
-.cacc-input{
-  flex:1;background:var(--bg);border:1px solid var(--b2);
-  border-radius:8px;color:var(--text);font-family:var(--mono);
-  font-size:14px;padding:7px 10px;outline:none;transition:.15s;-webkit-appearance:none;
-}
+.cacc-meta{font-size:12px;color:var(--t2);margin-bottom:8px;line-height:1.8;}
+.cacc-months{display:flex;flex-direction:column;gap:6px;}
+.cacc-month-row{display:flex;align-items:center;gap:7px;}
+.cacc-month-lbl{font-size:11px;color:var(--t2);width:48px;flex-shrink:0;}
+.cacc-input{flex:1;background:var(--bg);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:15px;padding:8px 10px;outline:none;transition:.15s;-webkit-appearance:none;text-align:right;}
 .cacc-input:focus{border-color:var(--accent);}
-.cacc-save{
-  background:var(--accent);border:none;border-radius:8px;
-  color:#fff;cursor:pointer;font-family:var(--sans);
-  font-size:12px;font-weight:700;padding:7px 12px;transition:.15s;
-}
-.ann-badge{
-  font-size:9px;background:rgba(240,156,42,0.15);color:var(--warn);
-  border:1px solid rgba(240,156,42,0.25);border-radius:4px;padding:1px 5px;flex-shrink:0;
-}
-/* ── Net bar ── */
-.net-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:11px 13px;
-  background:rgba(31,35,53,0.7);border:1px solid var(--b1);
-  border-radius:0 0 14px 14px;border-top:none;margin-top:-1px;
-}
-.net-lbl{font-size:11px;color:var(--t2);}
-.net-val{font-family:var(--mono);font-size:15px;font-weight:600;}
-.net-val.ok{color:var(--ok);}
-.net-val.warn{color:var(--warn);}
-.net-val.ng{color:var(--ng);}
+.cacc-save{background:var(--accent);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:700;padding:8px 13px;transition:.15s;white-space:nowrap;}
+.cacc-save:hover{opacity:.85;}
+.ann-badge{font-size:10px;background:rgba(240,156,42,0.15);color:var(--warn);border:1px solid rgba(240,156,42,0.25);border-radius:4px;padding:1px 5px;flex-shrink:0;}
+
+/* ── Banners ── */
+.tutorial-banner{background:linear-gradient(135deg,rgba(91,141,238,0.15),rgba(124,92,252,0.15));border:1px solid rgba(91,141,238,0.3);border-radius:12px;padding:13px 14px;margin-bottom:13px;}
+.tutorial-banner-title{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+.tutorial-banner-body{font-size:12px;color:var(--t2);line-height:1.7;}
+.tutorial-banner-close{display:flex;justify-content:flex-end;gap:8px;margin-top:9px;}
+.backup-banner{background:rgba(240,156,42,0.12);border:1px solid rgba(240,156,42,0.3);border-radius:10px;padding:9px 13px;margin-bottom:11px;font-size:12px;color:var(--warn);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+
 /* ── Calendar ── */
-.cal-nav{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-.cal-nav h2{font-size:15px;font-weight:700;flex:1;text-align:center;}
-.cal-nav-btn{
-  background:var(--s2);border:1px solid var(--b1);border-radius:8px;
-  color:var(--t2);cursor:pointer;font-size:16px;padding:5px 11px;line-height:1;transition:.15s;
-}
+.cal-nav{display:flex;align-items:center;gap:8px;margin-bottom:11px;}
+.cal-nav h2{font-size:16px;font-weight:700;flex:1;text-align:center;}
+.cal-nav-btn{background:var(--s2);border:1px solid var(--b1);border-radius:8px;color:var(--t2);cursor:pointer;font-size:17px;padding:5px 12px;line-height:1;transition:.15s;}
 .cal-nav-btn:hover{border-color:var(--accent);color:var(--accent);}
-.cal-wrap{background:var(--s1);border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.cal-wrap{background:var(--s1);border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:13px;}
 .cal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);background:var(--s2);border-bottom:1px solid var(--b1);}
-.cal-dow{padding:6px 2px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.3px;color:var(--t2);}
+.cal-dow{padding:7px 2px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.3px;color:var(--t2);}
 .cal-dow.sun{color:#ff7088;}
 .cal-dow.sat{color:var(--accent);}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);}
-.ccell{
-  border-right:1px solid rgba(255,255,255,0.04);
-  border-bottom:1px solid rgba(255,255,255,0.04);
-  min-height:66px;padding:4px 3px;
-}
+.ccell{border-right:1px solid rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.04);min-height:70px;padding:4px 3px;}
 .ccell:nth-child(7n){border-right:none;}
 .ccell.dim{opacity:.22;}
 .ccell.today{background:rgba(91,141,238,0.06);}
-.cday{font-size:11px;font-weight:700;font-family:var(--mono);margin-bottom:2px;}
+.cday{font-size:12px;font-weight:700;font-family:var(--mono);margin-bottom:2px;}
 .ccell.csun .cday,.ccell.chol .cday{color:#ff7088;}
 .ccell.csat .cday{color:var(--accent);}
 .holnm{font-size:8px;color:#ff7088;line-height:1;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -269,180 +195,122 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .cchip.io{background:rgba(124,92,252,0.15);color:#b8a4ff;border-left:2px solid var(--a2);}
 .cchip.ann{background:rgba(240,156,42,0.15);color:#ffc060;border-left:2px solid var(--warn);}
 .cal-legend{display:flex;gap:9px;padding:8px 13px;border-top:1px solid var(--b1);flex-wrap:wrap;}
-.leg{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--t2);}
+.leg{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--t2);}
 .leg-dot{width:7px;height:7px;border-radius:2px;}
-/* Calendar pie */
-.cal-pie-wrap{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:14px;margin-bottom:12px;}
-.cal-pie-title{font-size:10px;font-weight:700;color:var(--t2);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px;}
+.cal-pie-wrap{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:14px;margin-bottom:13px;}
+.cal-pie-title{font-size:11px;font-weight:700;color:var(--t2);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px;}
 .cal-pie-inner{display:flex;gap:12px;align-items:center;}
 .cal-pie-canvas-wrap{position:relative;width:130px;height:130px;flex-shrink:0;}
 .cal-pie-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
-.cal-pie-center-lbl{font-size:9px;color:var(--t2);}
-.cal-pie-center-val{font-family:var(--mono);font-size:13px;font-weight:500;}
-.pie-leg-row{display:flex;align-items:center;gap:5px;margin-bottom:4px;overflow:hidden;}
-.pie-leg-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
-.pie-leg-name{font-size:11px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pie-leg-val{font-family:var(--mono);font-size:10px;color:var(--t2);flex-shrink:0;}
-/* ── Stats tabs ── */
-.stat-tabs{display:flex;gap:3px;background:var(--s2);border-radius:10px;padding:3px;margin-bottom:12px;border:1px solid var(--b1);}
-.stat-tab{flex:1;background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--t2);padding:7px 4px;border-radius:7px;transition:.15s;text-align:center;}
+.cal-pie-center-lbl{font-size:10px;color:var(--t2);}
+.cal-pie-center-val{font-family:var(--mono);font-size:14px;font-weight:500;}
+.pie-leg-row{display:flex;align-items:center;gap:5px;margin-bottom:5px;overflow:hidden;}
+.pie-leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.pie-leg-name{font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pie-leg-val{font-family:var(--mono);font-size:11px;color:var(--t2);flex-shrink:0;}
+
+/* ── Stats ── */
+.stat-tabs{display:flex;gap:3px;background:var(--s2);border-radius:10px;padding:3px;margin-bottom:13px;border:1px solid var(--b1);}
+.stat-tab{flex:1;background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--t2);padding:8px 4px;border-radius:7px;transition:.15s;text-align:center;}
 .stat-tab.on{background:var(--s3);color:var(--text);box-shadow:0 1px 6px #0005;}
-.stat-period-bar{display:flex;gap:3px;background:var(--s2);border-radius:8px;padding:3px;margin-bottom:10px;border:1px solid var(--b1);}
-.spill{flex:1;background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:600;color:var(--t2);padding:6px 4px;border-radius:6px;transition:.15s;text-align:center;}
+.stat-period-bar{display:flex;gap:3px;background:var(--s2);border-radius:8px;padding:3px;margin-bottom:11px;border:1px solid var(--b1);}
+.spill{flex:1;background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--t2);padding:7px 4px;border-radius:6px;transition:.15s;text-align:center;}
 .spill.on{background:var(--s3);color:var(--text);box-shadow:0 1px 5px #0004;}
-.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:12px;margin-bottom:10px;}
-.stat-sec-title{font-size:10px;font-weight:700;color:var(--t2);letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px;}
-/* ── Mission tab ── */
-.mission-card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:10px;}
-.mission-head{padding:12px 13px 8px;}
-.mission-name{font-size:14px;font-weight:700;margin-bottom:2px;}
-.mission-meta{font-size:11px;color:var(--t2);}
-.mission-progress-wrap{padding:0 13px 12px;}
-.mission-bar-bg{background:var(--s3);border-radius:6px;height:8px;overflow:hidden;margin-bottom:6px;}
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:13px;margin-bottom:11px;}
+.stat-sec-title{font-size:11px;font-weight:700;color:var(--t2);letter-spacing:.6px;text-transform:uppercase;margin-bottom:9px;}
+
+/* ── Mission ── */
+.mission-card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:11px;}
+.mission-head{padding:13px 13px 8px;}
+.mission-name{font-size:15px;font-weight:700;margin-bottom:2px;}
+.mission-meta{font-size:12px;color:var(--t2);}
+.mission-progress-wrap{padding:0 13px 13px;}
+.mission-bar-bg{background:var(--s3);border-radius:6px;height:9px;overflow:hidden;margin-bottom:7px;}
 .mission-bar-fill{height:100%;border-radius:6px;transition:width .4s;}
 .mission-bar-fill.ok{background:linear-gradient(90deg,var(--ok),#52e0a4);}
 .mission-bar-fill.warn{background:linear-gradient(90deg,var(--warn),#ffc060);}
 .mission-bar-fill.ng{background:linear-gradient(90deg,var(--ng),#ff8098);}
-.mission-nums{display:flex;justify-content:space-between;font-size:11px;}
+.mission-nums{display:flex;justify-content:space-between;font-size:12px;}
 .mission-cur{font-family:var(--mono);font-weight:600;}
 .mission-goal{font-family:var(--mono);color:var(--t2);}
-.mission-pct{font-size:10px;color:var(--t2);}
-.mission-add-btn{
-  width:100%;background:rgba(91,141,238,0.1);border:1px dashed rgba(91,141,238,0.3);
-  border-radius:12px;color:var(--accent);cursor:pointer;font-family:var(--sans);
-  font-size:13px;font-weight:600;padding:12px;margin-bottom:10px;transition:.15s;
-}
+.mission-add-btn{width:100%;background:rgba(91,141,238,0.1);border:1px dashed rgba(91,141,238,0.3);border-radius:12px;color:var(--accent);cursor:pointer;font-family:var(--sans);font-size:14px;font-weight:600;padding:13px;margin-bottom:11px;transition:.15s;}
 .mission-add-btn:hover{background:rgba(91,141,238,0.18);}
+
+/* ── Cards tab ── */
+.card-item{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:13px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:10px;}
+.card-item-info{flex:1;min-width:0;}
+.card-item-name{font-size:15px;font-weight:700;margin-bottom:3px;}
+.card-item-meta{font-size:12px;color:var(--t2);font-family:var(--mono);margin-bottom:2px;}
+.card-item-note{font-size:12px;color:var(--t2);}
+.card-item-ann{font-size:12px;color:var(--warn);}
+.card-item-actions{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0;}
+.vis-toggle{display:flex;align-items:center;gap:4px;border-radius:20px;padding:4px 9px 4px 6px;cursor:pointer;font-size:11px;font-weight:700;transition:.15s;}
+.vis-toggle.on{background:rgba(91,141,238,0.15);border:1px solid rgba(91,141,238,0.3);color:var(--accent);}
+.vis-toggle.off{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--t2);}
+.vis-dot{width:8px;height:8px;border-radius:50%;background:currentColor;}
+.card-add-btn{width:100%;background:rgba(91,141,238,0.1);border:1px dashed rgba(91,141,238,0.3);border-radius:12px;color:var(--accent);cursor:pointer;font-family:var(--sans);font-size:14px;font-weight:600;padding:13px;margin-bottom:11px;transition:.15s;}
+.card-add-btn:hover{background:rgba(91,141,238,0.18);}
+
 /* ── Settings ── */
 .st-wrap{padding-bottom:8px;}
 .st-sec{margin-bottom:18px;}
-.st-sec-title{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
-.st-row{
-  display:flex;align-items:center;gap:10px;
-  background:var(--s2);border:1px solid var(--b1);
-  border-radius:10px;padding:11px 12px;margin-bottom:6px;
-  cursor:pointer;transition:.15s;
-}
+.st-sec-title{font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;}
+.st-row{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:12px 13px;margin-bottom:7px;cursor:pointer;transition:.15s;}
 .st-row:hover{border-color:var(--b2);}
-.st-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center;}
+.st-icon{font-size:17px;flex-shrink:0;width:22px;text-align:center;}
 .st-body{flex:1;}
-.st-lbl{font-size:13px;font-weight:500;}
-.st-sub{font-size:11px;color:var(--t2);margin-top:2px;}
-.st-arr{color:var(--t2);font-size:16px;}
-.st-hint{font-size:11px;color:var(--t3);margin-bottom:6px;}
-.tab-order-item{
-  display:flex;align-items:center;gap:9px;
-  background:var(--s2);border:1px solid var(--b1);border-radius:10px;
-  padding:10px 12px;margin-bottom:6px;cursor:grab;user-select:none;transition:.15s;
-}
+.st-lbl{font-size:14px;font-weight:500;}
+.st-sub{font-size:12px;color:var(--t2);margin-top:2px;}
+.st-arr{color:var(--t2);font-size:17px;}
+.st-hint{font-size:12px;color:var(--t3);margin-bottom:7px;}
+.tab-order-item{display:flex;align-items:center;gap:9px;background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:11px 13px;margin-bottom:7px;cursor:grab;user-select:none;transition:.15s;}
 .tab-order-item.dragging{opacity:.4;border-color:var(--accent);}
 .tab-order-item.drag-over{border-color:var(--accent);background:var(--s3);}
-.tab-order-handle{color:var(--t2);font-size:13px;flex-shrink:0;}
-.tab-order-icon{font-size:17px;flex-shrink:0;width:22px;text-align:center;}
-.tab-order-name{flex:1;font-size:13px;font-weight:500;}
-/* Author banner */
-.author-banner{
-  background:linear-gradient(135deg,rgba(91,141,238,0.1),rgba(124,92,252,0.1));
-  border:1px solid rgba(91,141,238,0.2);border-radius:12px;
-  padding:14px;text-align:center;margin-bottom:6px;cursor:pointer;transition:.15s;
-}
+.tab-order-handle{color:var(--t2);font-size:14px;flex-shrink:0;}
+.tab-order-icon{font-size:18px;flex-shrink:0;width:22px;text-align:center;}
+.tab-order-name{flex:1;font-size:14px;font-weight:500;}
+.author-banner{background:linear-gradient(135deg,rgba(91,141,238,0.1),rgba(124,92,252,0.1));border:1px solid rgba(91,141,238,0.2);border-radius:12px;padding:15px;text-align:center;margin-bottom:7px;cursor:pointer;transition:.15s;}
 .author-banner:hover{border-color:rgba(91,141,238,0.4);}
-.author-banner-name{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:3px;}
-.author-banner-x{font-size:12px;color:var(--t2);}
+.author-banner-name{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:3px;}
+.author-banner-x{font-size:13px;color:var(--t2);}
+
 /* ── Modal ── */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:500;align-items:flex-end;justify-content:center;}
 .ov.on{display:flex;}
 @media(min-width:500px){.ov{align-items:center;}}
-.modal{
-  background:rgba(18,21,34,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.1);border-radius:20px 20px 0 0;
-  padding:6px 16px calc(16px + var(--sb));
-  width:100%;max-width:480px;max-height:88vh;overflow-y:auto;
-}
-@media(min-width:500px){.modal{border-radius:20px;padding:18px;}}
+.modal{background:rgba(18,21,34,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px 20px 0 0;padding:6px 16px calc(16px + var(--sb));width:100%;max-width:500px;max-height:90vh;overflow-y:auto;}
+@media(min-width:500px){.modal{border-radius:20px;padding:20px;}}
 .modal-handle{width:36px;height:4px;background:rgba(255,255,255,0.14);border-radius:2px;margin:12px auto 16px;}
-.modal h3{font-size:15px;font-weight:700;margin-bottom:14px;}
-.frow{margin-bottom:11px;}
-.flbl{display:block;font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.finput{width:100%;background:rgba(13,15,24,0.9);border:1px solid rgba(255,255,255,0.1);border-radius:9px;color:var(--text);font-family:var(--sans);font-size:15px;padding:10px 12px;outline:none;transition:.15s;-webkit-appearance:none;}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:15px;}
+.frow{margin-bottom:12px;}
+.flbl{display:block;font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.finput{width:100%;background:rgba(13,15,24,0.9);border:1px solid rgba(255,255,255,0.1);border-radius:9px;color:var(--text);font-family:var(--sans);font-size:15px;padding:11px 12px;outline:none;transition:.15s;-webkit-appearance:none;}
 .finput:focus{border-color:var(--accent);}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-.mact{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;}
-.btn{border:none;border-radius:10px;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:700;padding:10px 18px;transition:.15s;}
+.mact{display:flex;justify-content:flex-end;gap:8px;margin-top:15px;}
+.btn{border:none;border-radius:10px;cursor:pointer;font-family:var(--sans);font-size:14px;font-weight:700;padding:11px 18px;transition:.15s;}
 .btn-p{background:var(--accent);color:#fff;}
 .btn-g{background:rgba(255,255,255,0.07);color:var(--t2);border:1px solid rgba(255,255,255,0.1);}
-.btn-sm{padding:5px 10px;font-size:11px;border-radius:7px;}
-.btn-d{background:transparent;color:var(--ng);border:1px solid rgba(232,80,106,0.3);font-size:11px;padding:4px 8px;border-radius:7px;cursor:pointer;}
-.empty{text-align:center;color:var(--t2);font-size:13px;padding:18px 0;}
-
-/* ═══════════════════════════════
-   PC LAYOUT (min-width: 768px)
-═══════════════════════════════ */
-@media(min-width:768px){
-  body { overflow: auto !important; }
-  .topbar {
-    left: 240px; height: 52px; padding-top: 0;
-    padding-left: 24px; padding-right: 24px;
-  }
-  .topbar-logo { font-size: 18px; }
-  .btabs { display: none !important; }
-  .pages {
-    top: 52px !important; bottom: 0 !important;
-    left: 240px !important; right: 0 !important;
-  }
-  .page { max-width: 1080px; margin: 0 auto; }
-  .hero-val { font-size: 40px !important; }
-  /* サイドバー */
-  .sidebar {
-    display: flex !important; flex-direction: column;
-    position: fixed; top: 0; left: 0; bottom: 0; width: 240px;
-    background: rgba(13,15,24,0.95);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(255,255,255,0.07);
-    padding: 24px 14px; z-index: 300;
-  }
-  .sidebar-logo { font-size: 18px; font-weight: 700; padding: 8px 10px 24px; letter-spacing: .2px; }
-  .sidebar-logo em { color: var(--accent); font-style: normal; }
-  .sidebar-btn {
-    display: flex; align-items: center; gap: 10px;
-    background: none; border: none; cursor: pointer;
-    font-family: var(--sans); font-size: 13px; font-weight: 600;
-    color: var(--t2); padding: 10px 12px; border-radius: 10px;
-    margin-bottom: 3px; transition: .15s; text-align: left; width: 100%;
-  }
-  .sidebar-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
-  .sidebar-btn.on { background: rgba(91,141,238,0.15); color: var(--accent); border: 1px solid rgba(91,141,238,0.2); }
-  .sidebar-btn-icon { font-size: 18px; width: 24px; text-align: center; }
-  .sidebar-settings { margin-top: auto; }
-  /* ダッシュボード2カラム */
-  #dash-body { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
-  #dash-body .hero { grid-column: 1 / -1; }
-  #dash-body .net-bar { grid-column: 1 / -1; }
-}
-/* SP: サイドバー非表示 */
-@media(max-width:767px){
-  .sidebar { display: none !important; }
-}
-
+.btn-sm{padding:5px 11px;font-size:12px;border-radius:7px;}
+.btn-d{background:transparent;color:var(--ng);border:1px solid rgba(232,80,106,0.3);font-size:12px;padding:5px 9px;border-radius:7px;cursor:pointer;}
+.empty{text-align:center;color:var(--t2);font-size:14px;padding:20px 0;}
 </style>
 </head>
 <body>
+
 <!-- SIDEBAR (PC only) -->
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-logo">Card<em>Board</em></div>
   <div id="sidebar-nav"></div>
   <div class="sidebar-settings">
-    <button class="sidebar-btn" onclick="goTab('settings',null)">
-      <span class="sidebar-btn-icon">⚙</span>設定
-    </button>
+    <button class="sidebar-btn" onclick="goTab('settings')"><span class="sidebar-btn-icon">⚙</span>設定</button>
   </div>
 </nav>
+
 <!-- TOP BAR -->
 <header class="topbar">
   <div class="topbar-logo">Card<em>Board</em></div>
-  <div class="topbar-right">
-    <button class="icon-btn" onclick="openSettings()" title="設定">⚙</button>
-  </div>
+  <div><button class="icon-btn" onclick="goTab('settings')" title="設定">⚙</button></div>
 </header>
 
 <!-- PAGES -->
@@ -475,7 +343,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
       <div class="cal-legend">
         <div class="leg"><div class="leg-dot" style="background:var(--ng)"></div>引き落とし</div>
         <div class="leg"><div class="leg-dot" style="background:var(--ok)"></div>収入</div>
-        <div class="leg"><div class="leg-dot" style="background:var(--a2)"></div>その他</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--a2)"></div>支出</div>
         <div class="leg"><div class="leg-dot" style="background:var(--warn)"></div>年会費</div>
       </div>
     </div>
@@ -508,6 +376,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     <div id="mission-body"></div>
   </div>
 
+  <!-- CARDS -->
+  <div id="pg-cards" class="page">
+    <div id="cards-body"></div>
+  </div>
+
   <!-- SETTINGS -->
   <div id="pg-settings" class="page">
     <div class="st-wrap" id="settings-body"></div>
@@ -529,23 +402,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 </div>
 
 <script>
+
 // ═══════════════════════════════════════════
-// CONSTANTS & DATA
+// CONSTANTS
 // ═══════════════════════════════════════════
 const SK = 'cb6';
 const CARD_COLORS = ['#5b8dee','#7c5cfc','#27c485','#e8506a','#f09c2a','#e060d0','#40c8e0','#a0d040','#f06090','#80a0ff','#ffb040'];
 
 const TAB_DEFS = [
-  {id:'dash',    icon:'⊞', label:'ダッシュボード', fixed:true},
-  {id:'cal',     icon:'◫', label:'カレンダー'},
-  {id:'stats',   icon:'◈', label:'統計'},
-  {id:'mission', icon:'◉', label:'修行'},
+  {id:'dash',     icon:'⊞', label:'ダッシュボード', fixed:true},
+  {id:'cal',      icon:'◫', label:'カレンダー'},
+  {id:'stats',    icon:'◈', label:'統計'},
+  {id:'mission',  icon:'◉', label:'修行'},
+  {id:'cards',    icon:'▤', label:'カード'},
 ];
 
-// month data schema:
-// { ym, balance, items:[{id,label,amount,checked,isFixed,order}], cardAmounts:{} }
-// items: isFixed=true → 毎月固定（翌月へ引き継ぎ）, isFixed=false → 当月のみ
-// balance of next month auto-calculated from prev
+// ─── schema ───
+// month: { ym, balance, items:[{id,label,amount,checked,isFixed,order,day?}], cardAmounts:{} }
+// item.day: optional. null=カレンダー非表示, number=その日(前営業日計算)
 
 const DEMO_CARDS = [
   {id:1,  name:'AMEX PLTAINUM',         closeDay:19, billDay:10, annualFee:165000, annualMonth:2,  annualDay:10, note:'メイン',             visible:true},
@@ -561,76 +435,67 @@ const DEMO_CARDS = [
   {id:11, name:'PayPay CARD',           closeDay:99, billDay:27, annualFee:0,      annualMonth:0,  annualDay:0,  note:'PayPay用',          visible:true},
 ];
 
-// missions: [{id, cardId, label, goalAmount, startDate, endDate}]
+function mkMonth(ymStr){ return {ym:ymStr, balance:0, items:[], cardAmounts:{}}; }
 
-function mkMonth(ymStr) {
-  return {ym:ymStr, balance:0, items:[], cardAmounts:{}};
-}
-
-function getDisplayYms() {
+function getDisplayYms(){
   const d=new Date(), y=d.getFullYear(), m=d.getMonth()+1;
   return [ym(y,m), ym(m===12?y+1:y, m===12?1:m+1)];
 }
 function ym(y,m){ return `${y}-${z2(m)}`; }
 
-function loadState() {
-  try { const r=localStorage.getItem(SK); if(r) return JSON.parse(r); } catch(e){}
-  // Demo seed
-  const [y0,y1] = getDisplayYms();
-  const m0 = mkMonth(y0);
-  m0.balance = 9999000;
-  m0.items = [
-    {id:1, label:'給与',     amount:280000, checked:false, isFixed:true,  order:0},
-    {id:2, label:'積立NISA', amount:-100000,checked:false, isFixed:true,  order:1},
-    {id:3, label:'iDeCo',    amount:-23000, checked:false, isFixed:true,  order:2},
-    {id:4, label:'純金積立', amount:-3000,  checked:false, isFixed:true,  order:3},
+function loadState(){
+  try{ const r=localStorage.getItem(SK); if(r) return JSON.parse(r); }catch(e){}
+  const [y0,y1]=getDisplayYms();
+  const m0=mkMonth(y0);
+  m0.balance=9999000;
+  m0.items=[
+    {id:1,label:'給与',    amount:280000, checked:false,isFixed:true, order:0,day:25},
+    {id:2,label:'積立NISA',amount:-100000,checked:false,isFixed:true, order:1,day:27},
+    {id:3,label:'iDeCo',   amount:-23000, checked:false,isFixed:true, order:2,day:27},
+    {id:4,label:'純金積立',amount:-3000,  checked:false,isFixed:true, order:3,day:null},
   ];
-  m0.cardAmounts = {1:38000,2:0,3:45000,4:0,5:1234,6:12345,7:0,8:6789,9:4321,10:440,11:3210};
-  const m1 = mkMonth(y1);
-  // balance of m1 will be auto-calculated
-  m1.items = [
-    {id:1, label:'給与',     amount:280000, checked:false, isFixed:true,  order:0},
-    {id:2, label:'積立NISA', amount:-100000,checked:false, isFixed:true,  order:1},
-    {id:3, label:'iDeCo',    amount:-23000, checked:false, isFixed:true,  order:2},
-    {id:4, label:'純金積立', amount:-3000,  checked:false, isFixed:true,  order:3},
+  m0.cardAmounts={1:38000,2:0,3:45000,4:0,5:1234,6:12345,7:0,8:6789,9:4321,10:440,11:3210};
+  const m1=mkMonth(y1);
+  m1.items=[
+    {id:1,label:'給与',    amount:280000, checked:false,isFixed:true, order:0,day:25},
+    {id:2,label:'積立NISA',amount:-100000,checked:false,isFixed:true, order:1,day:27},
+    {id:3,label:'iDeCo',   amount:-23000, checked:false,isFixed:true, order:2,day:27},
+    {id:4,label:'純金積立',amount:-3000,  checked:false,isFixed:true, order:3,day:null},
   ];
   return {
-    cards: DEMO_CARDS,
-    months: {[y0]:m0, [y1]:m1},
-    missions: [],
+    cards:DEMO_CARDS, months:{[y0]:m0,[y1]:m1}, missions:[],
     nxtCard:12, nxtItem:10, nxtMission:1,
-    tabOrder: TAB_DEFS.map(t=>t.id),
-    firstLaunch: true,
-    lastBackup: null,
-    backupCreatedAt: null,
+    tabOrder:TAB_DEFS.map(t=>t.id),
+    firstLaunch:true, lastBackup:null, backupCreatedAt:null,
   };
 }
-function save(){ localStorage.setItem(SK, JSON.stringify(S)); }
-let S = loadState();
+function save(){ localStorage.setItem(SK,JSON.stringify(S)); }
+let S=loadState();
 
-function getMD(ymStr) {
+function getMD(ymStr){
   if(!S.months[ymStr]) S.months[ymStr]=mkMonth(ymStr);
   return S.months[ymStr];
 }
 
-// 翌月balanceを自動計算（前月の引き落とし後残高）
-function syncNextMonthBalance() {
-  const [y0,y1] = getDisplayYms();
-  const md0 = getMD(y0);
-  const net = calcNet(y0);
-  const md1 = getMD(y1);
-  // 翌月に固定項目をコピー（存在しない場合）
-  const fixedFromPrev = md0.items.filter(it=>it.isFixed);
-  if(md1.items.length === 0) {
-    md1.items = fixedFromPrev.map(it=>({...it, checked:false}));
-  } else {
-    // 固定項目のみ同期（当月項目は触らない）
-    fixedFromPrev.forEach(src => {
-      const exists = md1.items.find(it=>it.id===src.id&&it.isFixed);
-      if(!exists) md1.items.push({...src, checked:false});
-    });
-  }
-  md1.balance = Math.max(0, net); // 引き落とし後残高を翌月月初残高に
+// 翌月balance自動計算・固定項目引き継ぎ（並び順含む）
+function syncNextMonthBalance(){
+  const [y0,y1]=getDisplayYms();
+  const md0=getMD(y0), md1=getMD(y1);
+  const net=calcNet(y0);
+  md1.balance=Math.max(0,net);
+  const fixedFromPrev=md0.items.filter(it=>it.isFixed).sort((a,b)=>(a.order||0)-(b.order||0));
+  // 既存固定項目を更新、なければ追加
+  fixedFromPrev.forEach(src=>{
+    const ex=md1.items.find(it=>it.id===src.id&&it.isFixed);
+    if(ex){
+      // 並び順・ラベル・金額・dayを同期
+      ex.order=src.order; ex.label=src.label; ex.amount=src.amount; ex.day=src.day;
+    } else {
+      md1.items.push({...src,checked:false});
+    }
+  });
+  // 翌月側にあって今月に存在しない固定項目は削除
+  md1.items=md1.items.filter(it=>!it.isFixed||fixedFromPrev.find(s=>s.id===it.id));
 }
 
 // ═══════════════════════════════════════════
@@ -642,8 +507,7 @@ const HL={
   '2025-04-29':'昭和の日','2025-05-03':'憲法記念日','2025-05-04':'みどりの日',
   '2025-05-05':'こどもの日','2025-05-06':'振替休日','2025-07-21':'海の日',
   '2025-08-11':'山の日','2025-09-15':'敬老の日','2025-09-23':'秋分の日',
-  '2025-10-13':'スポーツの日','2025-11-03':'文化の日','2025-11-23':'勤労感謝の日',
-  '2025-11-24':'振替休日',
+  '2025-10-13':'スポーツの日','2025-11-03':'文化の日','2025-11-23':'勤労感謝の日','2025-11-24':'振替休日',
   '2026-01-01':'元日','2026-01-12':'成人の日','2026-02-11':'建国記念日',
   '2026-02-23':'天皇誕生日','2026-03-20':'春分の日','2026-04-29':'昭和の日',
   '2026-05-03':'憲法記念日','2026-05-04':'みどりの日','2026-05-05':'こどもの日',
@@ -654,6 +518,12 @@ const HL={
 function fmtD(d){ return `${d.getFullYear()}-${z2(d.getMonth()+1)}-${z2(d.getDate())}`; }
 function isHL(d){ return HL[fmtD(d)]||null; }
 function isNBD(d){ const w=d.getDay(); return w===0||w===6||!!isHL(d); }
+function prevBiz(y,m,day){
+  // 前営業日計算（土日祝なら前の営業日へ）
+  let d=new Date(y,m-1,day);
+  while(isNBD(d)) d=new Date(d.getTime()-864e5);
+  return d;
+}
 function nextBiz(y,m,day){
   let d=new Date(y,m-1,day);
   while(isNBD(d)) d=new Date(d.getTime()+864e5);
@@ -668,95 +538,142 @@ function fy(n){ if(isNaN(n)||n==null) return '¥0'; const a=Math.abs(Math.round(
 function ymLbl(y){ const[yr,mo]=y.split('-'); return `${yr}年${parseInt(mo)}月`; }
 function todayStr(){ return fmtD(new Date()); }
 
-function calcAssets(ymStr) {
-  const md = getMD(ymStr);
-  const checkedAmt = (md.items||[]).filter(it=>it.checked).reduce((s,it)=>s+it.amount,0);
-  return (md.balance||0) + checkedAmt;
+// 3桁カンマ表示フォーマット（入力欄用）
+function fmtAmt(v){ if(v===''||v==null) return ''; const n=parseFloat(String(v).replace(/,/g,'')); return isNaN(n)?'':n.toLocaleString('ja-JP'); }
+function parseAmt(v){ return parseFloat(String(v).replace(/,/g,''))||0; }
+
+function calcAssets(ymStr){
+  const md=getMD(ymStr);
+  const chk=(md.items||[]).filter(it=>it.checked&&it.amount>0).reduce((s,it)=>s+it.amount,0);
+  const exp=(md.items||[]).filter(it=>it.checked&&it.amount<0).reduce((s,it)=>s+it.amount,0);
+  return (md.balance||0)+chk+exp;
 }
-function calcLiab(ymStr) {
-  const md = getMD(ymStr);
-  const [,m] = ymStr.split('-').map(Number);
-  const vis = S.cards.filter(c=>c.visible);
-  const cardTot = vis.reduce((s,c)=>s+(md.cardAmounts[c.id]||0),0);
-  const annTot = vis.filter(c=>c.annualFee>0&&c.annualMonth===m).reduce((s,c)=>s+c.annualFee,0);
-  return cardTot + annTot;
+function calcLiab(ymStr){
+  const md=getMD(ymStr),[,m]=ymStr.split('-').map(Number);
+  const vis=S.cards.filter(c=>c.visible);
+  return vis.reduce((s,c)=>s+(md.cardAmounts[c.id]||0),0)
+        +vis.filter(c=>c.annualFee>0&&c.annualMonth===m).reduce((s,c)=>s+c.annualFee,0);
 }
-function calcNet(ymStr){ return calcAssets(ymStr) - calcLiab(ymStr); }
+function calcNet(ymStr){ return calcAssets(ymStr)-calcLiab(ymStr); }
 
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-let activeTab = 'dash';
+let activeTab='dash';
 
-// buildTabs: 統合版は下部で定義
+function buildTabs(){
+  const order=S.tabOrder||TAB_DEFS.map(t=>t.id);
+  // tabOrderにcardsが無い場合（旧データ）は末尾に追加
+  if(!order.includes('cards')) order.push('cards');
+  const defs=order.map(id=>TAB_DEFS.find(t=>t.id===id)).filter(Boolean);
+  TAB_DEFS.forEach(t=>{ if(!defs.find(d=>d.id===t.id)) defs.push(t); });
+  // settingsはタブバーに出さない
+  const tabDefs=defs.filter(t=>t.id!=='settings');
 
-// goTab: 統合版は下部で定義
+  document.getElementById('btabs').innerHTML=tabDefs.map(t=>
+    `<button class="btab${t.id===activeTab?' on':''}" data-tab="${t.id}" onclick="goTab('${t.id}')">
+      <span class="btab-icon">${t.icon}</span><span>${t.label}</span>
+    </button>`
+  ).join('');
+
+  const nav=document.getElementById('sidebar-nav');
+  if(nav) nav.innerHTML=tabDefs.map(t=>
+    `<button class="sidebar-btn${t.id===activeTab?' on':''}" data-tab="${t.id}" onclick="goTab('${t.id}')">
+      <span class="sidebar-btn-icon">${t.icon}</span>${t.label}
+    </button>`
+  ).join('');
+}
+
+function goTab(id){
+  activeTab=id;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  const pg=document.getElementById('pg-'+id);
+  if(pg) pg.classList.add('on');
+
+  document.querySelectorAll('.btab').forEach(b=>b.classList.remove('on'));
+  const btab=document.querySelector(`.btab[data-tab="${id}"]`);
+  if(btab) btab.classList.add('on');
+
+  document.querySelectorAll('.sidebar-btn[data-tab]').forEach(b=>b.classList.remove('on'));
+  const sbtn=document.querySelector(`.sidebar-btn[data-tab="${id}"]`);
+  if(sbtn) sbtn.classList.add('on');
+
+  const stBtn=document.querySelector('.sidebar-settings .sidebar-btn');
+  if(stBtn) stBtn.classList.toggle('on',id==='settings');
+
+  if(id==='dash')     renderDash();
+  if(id==='cal')      renderCal();
+  if(id==='stats')    renderStats();
+  if(id==='mission')  renderMission();
+  if(id==='cards')    renderCards();
+  if(id==='settings') renderSettings();
+}
+
+window.addEventListener('resize',()=>buildTabs());
 
 
 // ═══════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════
-let dashIdx = 0;
+let dashIdx=0;
 
-function switchMonth(idx) {
-  dashIdx = idx;
-  document.getElementById('msw0').classList.toggle('on', idx===0);
-  document.getElementById('msw1').classList.toggle('on', idx===1);
+function switchMonth(idx){
+  dashIdx=idx;
   renderDash();
 }
 
-function renderDash() {
+function renderDash(){
   syncNextMonthBalance();
-  const yms = getDisplayYms();
-  document.getElementById('msw0').textContent = ymLbl(yms[0]);
-  document.getElementById('msw1').textContent = ymLbl(yms[1]);
-  document.getElementById('msw0').classList.toggle('on', dashIdx===0);
-  document.getElementById('msw1').classList.toggle('on', dashIdx===1);
+  const yms=getDisplayYms();
+  const cur=document.getElementById('msw0'), nxt=document.getElementById('msw1');
+  cur.textContent=ymLbl(yms[0]); nxt.textContent=ymLbl(yms[1]);
+  cur.classList.toggle('on',dashIdx===0); nxt.classList.toggle('on',dashIdx===1);
 
-  const ymStr = yms[dashIdx];
-  const md = getMD(ymStr);
-  const [y,m] = ymStr.split('-').map(Number);
-  const vis = S.cards.filter(c=>c.visible);
-  const assets = calcAssets(ymStr);
-  const liab = calcLiab(ymStr);
-  const net = assets - liab;
-  const netCls = net>=0?'ok':net>=-50000?'warn':'ng';
-  const ts = todayStr();
-  const annuals = vis.filter(c=>c.annualFee>0&&c.annualMonth===m);
+  const ymStr=yms[dashIdx];
+  const md=getMD(ymStr);
+  const [y,m]=ymStr.split('-').map(Number);
+  const vis=S.cards.filter(c=>c.visible);
+  const assets=calcAssets(ymStr), liab=calcLiab(ymStr), net=assets-liab;
+  const netCls=net>=0?'ok':net>=-50000?'warn':'ng';
+  const ts=todayStr();
+  const annuals=vis.filter(c=>c.annualFee>0&&c.annualMonth===m);
 
-  // Tutorial
-  const tutEl = document.getElementById('dash-tutorial');
-  if(S.firstLaunch) {
-    tutEl.innerHTML = `<div class="tutorial-banner">
-      <div class="tutorial-banner-title">🎉 CardBoardへようこそ</div>
-      <div class="tutorial-banner-body">
-        デモデータが入っています。<br>
-        ① 口座残高の「編集」で実際の残高を入力<br>
-        ② 各カードをタップして今月の利用額を入力<br>
-        ③ 固定項目のチェックで残高に反映されます
-      </div>
-      <div class="tutorial-banner-close" style="display:flex;gap:8px;justify-content:flex-end">
-        <button class="btn btn-sm btn-g" onclick="dismissTutorial(true)">デモデータを消してはじめる</button>
-        <button class="btn btn-sm btn-p" onclick="dismissTutorial(false)">そのままはじめる</button>
-      </div>
-    </div>`;
-  } else { tutEl.innerHTML = ''; }
+  // tutorial
+  const tutEl=document.getElementById('dash-tutorial');
+  tutEl.innerHTML=S.firstLaunch?`<div class="tutorial-banner">
+    <div class="tutorial-banner-title">🎉 CardBoardへようこそ</div>
+    <div class="tutorial-banner-body">デモデータが入っています。<br>① 口座残高の「編集」で実際の残高を入力<br>② 各カードをタップして今月の利用額を入力<br>③ 固定項目のチェックで残高に反映されます</div>
+    <div class="tutorial-banner-close">
+      <button class="btn btn-sm btn-g" onclick="dismissTutorial(true)">デモデータを消してはじめる</button>
+      <button class="btn btn-sm btn-p" onclick="dismissTutorial(false)">そのままはじめる</button>
+    </div>
+  </div>`:'';
 
-  // items sorted by order
-  const sortedItems = [...(md.items||[])].sort((a,b)=>(a.order||0)-(b.order||0));
-  const fixedItems = sortedItems.filter(it=>it.isFixed);
-  const otherItems = sortedItems.filter(it=>!it.isFixed);
+  checkBackupReminder();
 
-  // Card rows
-  const cardRows = vis.map(c => {
-    const amt = md.cardAmounts[c.id]||0;
-    const raw = c.billDay===99?new Date(y,m,0).getDate():c.billDay;
-    const act = nextBiz(y,m,raw);
-    const diff = (act-new Date(ts))/864e5;
+  const sorted=[...(md.items||[])].sort((a,b)=>(a.order||0)-(b.order||0));
+  const fixedItems=sorted.filter(it=>it.isFixed);
+  const otherItems=sorted.filter(it=>!it.isFixed);
+
+  // カードアコーディオン（当月・翌月両方入力可）
+  const [ym0,ym1]=yms;
+  const md0=getMD(ym0), md1=getMD(ym1);
+  const cardRows=vis.map(c=>{
+    const amt=md.cardAmounts[c.id]||0;
+    const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
+    const act=nextBiz(y,m,raw);
+    const diff=(act-new Date(ts))/864e5;
     let dc='cacc-date';
     if(diff>=0&&diff<1) dc+=' tod'; else if(diff>=0&&diff<=5) dc+=' soon';
-    const shifted = fmtD(act)!==`${y}-${z2(m)}-${z2(raw)}`;
-    const ann = annuals.find(a=>a.id===c.id);
+    const shifted=fmtD(act)!==`${y}-${z2(m)}-${z2(raw)}`;
+    const ann=annuals.find(a=>a.id===c.id);
+
+    const amt0=md0.cardAmounts[c.id]||0;
+    const amt1=md1.cardAmounts[c.id]||0;
+    const [y1p,m1p]=ym1.split('-').map(Number);
+    const raw1=c.billDay===99?new Date(y1p,m1p,0).getDate():c.billDay;
+    const act1=nextBiz(y1p,m1p,raw1);
+
     return `
     <div class="cacc-head" onclick="toggleAcc(${c.id})">
       <span class="cacc-name">${c.name}</span>
@@ -767,27 +684,46 @@ function renderDash() {
     </div>
     <div class="cacc-body" id="acc-${c.id}">
       <div class="cacc-meta">締め日 ${c.closeDay===99?'末日':c.closeDay+'日'} ／ 引落 ${m}/${act.getDate()}日${shifted?' (振替)':''}</div>
-      <div class="cacc-edit">
-        <input class="cacc-input" id="ci-${c.id}" type="number" value="${amt}" placeholder="利用額を入力">
-        <button class="cacc-save" onclick="saveAmt('${ymStr}',${c.id})">保存</button>
+      <div class="cacc-months">
+        <div class="cacc-month-row">
+          <span class="cacc-month-lbl">${ymLbl(ym0)}</span>
+          <input class="cacc-input" id="ci0-${c.id}" type="text" inputmode="numeric"
+            value="${amt0?fmtAmt(amt0):''}" placeholder="0"
+            oninput="this.value=fmtAmtInput(this.value)"
+            onkeydown="if(event.key==='Enter'){saveAmt2(${c.id});this.blur();}">
+          <button class="cacc-save" onclick="saveAmt2(${c.id})">保存</button>
+        </div>
+        <div class="cacc-month-row">
+          <span class="cacc-month-lbl">${ymLbl(ym1)}</span>
+          <input class="cacc-input" id="ci1-${c.id}" type="text" inputmode="numeric"
+            value="${amt1?fmtAmt(amt1):''}" placeholder="0"
+            oninput="this.value=fmtAmtInput(this.value)"
+            onkeydown="if(event.key==='Enter'){saveAmt2(${c.id});this.blur();}">
+          <button class="cacc-save" onclick="saveAmt2(${c.id})">保存</button>
+        </div>
       </div>
     </div>`;
   }).join('');
 
-  document.getElementById('dash-body').innerHTML = `
+  const itemRow=(it,drag)=>`
+    <div class="row"${drag?` draggable="true" data-item-id="${it.id}" data-ym="${ymStr}"
+      ondragstart="itemDragStart(event)" ondragover="itemDragOver(event)" ondrop="itemDrop(event,'${ymStr}')"`:''}>
+      ${drag?`<span class="row-drag">⠿</span>`:''}
+      <div class="chk${it.checked?' on':''}" onclick="toggleItem('${ymStr}',${it.id})">${it.checked?'✓':''}</div>
+      <span class="row-lbl${it.checked?' done':''}" style="cursor:pointer" onclick="editItem('${ymStr}',${it.id})">${it.label}</span>
+      <span class="row-val${it.amount<0?' neg':' pos'}" style="cursor:pointer" onclick="editItem('${ymStr}',${it.id})">${fy(it.amount)}</span>
+      ${it.day!=null?`<span style="font-size:11px;color:var(--t2);font-family:var(--mono);flex-shrink:0">${it.day}日</span>`:`<span style="font-size:11px;color:var(--t3);flex-shrink:0">日付未設定</span>`}
+      <button class="rdel" onclick="delItem('${ymStr}',${it.id})">×</button>
+    </div>`;
+
+  document.getElementById('dash-body').innerHTML=`
     <div class="hero">
       <div class="hero-lbl">引き落とし後の予測残高</div>
       <div class="hero-val ${netCls}">${fy(net)}</div>
       <div class="hero-sub">${net>=0?'問題なし':'⚠ 残高不足の可能性あり'}</div>
       <div class="hero-pills">
-        <div class="hero-pill">
-          <div class="hero-pill-lbl">残高合計</div>
-          <div class="hero-pill-val pos">${fy(assets)}</div>
-        </div>
-        <div class="hero-pill">
-          <div class="hero-pill-lbl">引き落とし合計</div>
-          <div class="hero-pill-val neg">${fy(liab)}</div>
-        </div>
+        <div class="hero-pill"><div class="hero-pill-lbl">残高合計</div><div class="hero-pill-val pos">${fy(assets)}</div></div>
+        <div class="hero-pill"><div class="hero-pill-lbl">引き落とし合計</div><div class="hero-pill-val neg">${fy(liab)}</div></div>
       </div>
     </div>
 
@@ -797,26 +733,12 @@ function renderDash() {
         <div class="row">
           <span class="row-lbl">口座残高</span>
           <span class="row-val${md.balance?'':' zero'}">${md.balance?fy(md.balance):'未入力'}</span>
-          <button class="row-edit" onclick="editBal('${ymStr}')">編集</button>
+          <button class="row-edit-btn" onclick="editBal('${ymStr}')">編集</button>
         </div>
         ${fixedItems.length?`<div class="sec-divider">固定項目（毎月）</div>`:''}
-        ${fixedItems.map(it=>`
-        <div class="row" draggable="true" data-item-id="${it.id}" data-ym="${ymStr}"
-          ondragstart="itemDragStart(event)" ondragover="itemDragOver(event)" ondrop="itemDrop(event,true,'${ymStr}')">
-          <span class="row-drag">⠿</span>
-          <div class="chk${it.checked?' on':''}" onclick="toggleItem('${ymStr}',${it.id})">${it.checked?'✓':''}</div>
-          <span class="row-lbl${it.checked?' done':''}">${it.label}</span>
-          <span class="row-val${it.amount<0?' neg':' pos'}">${fy(it.amount)}</span>
-          <button class="rdel" onclick="delItem('${ymStr}',${it.id})">×</button>
-        </div>`).join('')}
+        ${fixedItems.map(it=>itemRow(it,true)).join('')}
         ${otherItems.length?`<div class="sec-divider">当月のみ</div>`:''}
-        ${otherItems.map(it=>`
-        <div class="row">
-          <div class="chk${it.checked?' on':''}" onclick="toggleItem('${ymStr}',${it.id})">${it.checked?'✓':''}</div>
-          <span class="row-lbl${it.checked?' done':''}">${it.label}</span>
-          <span class="row-val${it.amount<0?' neg':' pos'}">${fy(it.amount)}</span>
-          <button class="rdel" onclick="delItem('${ymStr}',${it.id})">×</button>
-        </div>`).join('')}
+        ${otherItems.map(it=>itemRow(it,false)).join('')}
         <div class="add-strip">
           <button class="add-pill" onclick="openModal('addFixed','${ymStr}')">＋ 固定項目</button>
           <button class="add-pill" onclick="openModal('addOther','${ymStr}')">＋ 当月のみ</button>
@@ -828,48 +750,58 @@ function renderDash() {
       <div class="sec-head"><span class="sec-title">引き落とし予定</span></div>
       <div class="gb">
         ${cardRows}
-        ${vis.length===0?'<div class="empty">表示中のカードなし<br><small style="color:var(--t3)">設定 › 保有カードで設定してください</small></div>':''}
+        ${vis.length===0?`<div class="empty">表示中のカードなし<br><small style="color:var(--t3)">カードタブで設定してください</small></div>`:''}
       </div>
-    </div>
-
-    <div class="net-bar">
-      <span class="net-lbl">引き落とし後の予測残高</span>
-      <span class="net-val ${netCls}">${fy(net)}</span>
-    </div>
-  `;
+    </div>`;
 }
 
 function dismissTutorial(clearData){
   S.firstLaunch=false;
-  if(clearData){
-    // 月次データとミッションをリセット、カードは残す
-    S.months={};
-    S.missions=[];
-    S.nxtItem=1;
-    S.nxtMission=1;
-    // 今月・来月の空データを作成
-    getDisplayYms().forEach(y=>getMD(y));
-  }
+  if(clearData){ S.months={}; S.missions=[]; S.nxtItem=1; S.nxtMission=1; getDisplayYms().forEach(y=>getMD(y)); }
   save(); renderDash();
 }
 
-function toggleAcc(cid) {
+// カード金額3桁カンマリアルタイム
+function fmtAmtInput(v){
+  const raw=v.replace(/[^0-9\-]/g,'');
+  if(raw===''||raw==='-') return raw;
+  const neg=raw.startsWith('-');
+  const num=parseInt(raw.replace('-',''),10);
+  if(isNaN(num)) return '';
+  return (neg?'-':'')+num.toLocaleString('ja-JP');
+}
+
+function toggleAcc(cid){
   const body=document.getElementById('acc-'+cid);
   const chev=document.getElementById('chev-'+cid);
   if(!body) return;
   const open=body.classList.toggle('open');
   chev.classList.toggle('open',open);
 }
-function saveAmt(ymStr,cid){
-  const v=parseFloat(document.getElementById('ci-'+cid).value)||0;
-  getMD(ymStr).cardAmounts[cid]=v; save(); renderDash();
+
+function saveAmt2(cid){
+  const yms=getDisplayYms();
+  const v0=parseAmt(document.getElementById('ci0-'+cid)?.value);
+  const v1=parseAmt(document.getElementById('ci1-'+cid)?.value);
+  getMD(yms[0]).cardAmounts[cid]=v0;
+  getMD(yms[1]).cardAmounts[cid]=v1;
+  save(); renderDash();
 }
+
 function editBal(ymStr){
+  const cur=getMD(ymStr).balance||0;
   mOpen('口座残高を入力',
-    `<div class="frow"><label class="flbl">金額（円）</label><input class="finput" id="mi_b" type="number" value="${getMD(ymStr).balance||0}"></div>`,
-    `<button class="btn btn-g" onclick="mClose()">キャンセル</button><button class="btn btn-p" onclick="_saveBal('${ymStr}')">保存</button>`);
+    `<div class="frow"><label class="flbl">金額（円）</label>
+     <input class="finput" id="mi_b" type="text" inputmode="numeric"
+       value="${cur?fmtAmt(cur):''}" placeholder="0"
+       oninput="this.value=fmtAmtInput(this.value)"
+       onkeydown="if(event.key==='Enter') _saveBal('${ymStr}')">
+     </div>`,
+    `<button class="btn btn-g" onclick="mClose()">キャンセル</button>
+     <button class="btn btn-p" onclick="_saveBal('${ymStr}')">保存</button>`);
+  setTimeout(()=>document.getElementById('mi_b')?.focus(),100);
 }
-function _saveBal(y){ getMD(y).balance=parseFloat(document.getElementById('mi_b').value)||0; save(); mClose(); renderDash(); }
+function _saveBal(y){ getMD(y).balance=parseAmt(document.getElementById('mi_b').value); save(); mClose(); renderDash(); }
 
 function toggleItem(ymStr,id){
   const it=(getMD(ymStr).items||[]).find(x=>x.id===id);
@@ -878,22 +810,63 @@ function toggleItem(ymStr,id){
 function delItem(ymStr,id){
   const md=getMD(ymStr); md.items=(md.items||[]).filter(x=>x.id!==id); save(); renderDash();
 }
+function editItem(ymStr,id){
+  const it=(getMD(ymStr).items||[]).find(x=>x.id===id); if(!it) return;
+  _mYm=ymStr;
+  mOpen('項目を編集',
+    `<div class="frow"><label class="flbl">項目名</label>
+     <input class="finput" id="ei_l" value="${it.label}"></div>
+     <div class="frow"><label class="flbl">金額（支出はマイナス）</label>
+     <input class="finput" id="ei_a" type="text" inputmode="numeric"
+       value="${fmtAmt(it.amount)}"
+       oninput="this.value=fmtAmtInput(this.value)"
+       onkeydown="if(event.key==='Enter') _saveEditItem(${id},${it.isFixed})">
+     </div>
+     <div class="frow"><label class="flbl">カレンダー表示日（空白=非表示）</label>
+     <input class="finput" id="ei_d" type="number" min="1" max="31"
+       value="${it.day!=null?it.day:''}" placeholder="例: 25（前営業日計算）">
+     </div>`,
+    `<button class="btn btn-g" onclick="mClose()">キャンセル</button>
+     <button class="btn btn-p" onclick="_saveEditItem(${id},${it.isFixed})">保存</button>`);
+}
+function _saveEditItem(id,isFixed){
+  const l=document.getElementById('ei_l').value.trim();
+  const a=parseAmt(document.getElementById('ei_a').value);
+  const dv=document.getElementById('ei_d').value.trim();
+  const day=dv===''?null:parseInt(dv);
+  if(!l){ alert('項目名を入力してください'); return; }
+  // 固定項目は両月に反映
+  const yms=getDisplayYms();
+  const targets=isFixed?yms:[_mYm];
+  targets.forEach(y=>{
+    const it=(getMD(y).items||[]).find(x=>x.id===id);
+    if(it){ it.label=l; it.amount=a; it.day=day; }
+  });
+  save(); mClose(); renderDash();
+}
 
-// Item drag & drop for reorder
-let _dragItemId = null;
+// Item drag & drop
+let _dragItemId=null;
 function itemDragStart(e){ _dragItemId=parseInt(e.currentTarget.dataset.itemId); e.dataTransfer.effectAllowed='move'; }
 function itemDragOver(e){ e.preventDefault(); }
-function itemDrop(e, isFixed, ymStr){
+function itemDrop(e,ymStr){
   e.preventDefault();
   const targetId=parseInt(e.currentTarget.dataset.itemId);
   if(!_dragItemId||_dragItemId===targetId) return;
   const md=getMD(ymStr), items=md.items;
   const src=items.find(i=>i.id===_dragItemId), tgt=items.find(i=>i.id===targetId);
-  if(!src||!tgt) return;
-  const so=src.order, to=tgt.order;
-  src.order=to; tgt.order=so;
+  if(!src||!tgt||src.isFixed!==tgt.isFixed) return;
+  const so=src.order, to=tgt.order; src.order=to; tgt.order=so;
+  // 翌月固定項目にも反映
+  if(src.isFixed){
+    const yms=getDisplayYms();
+    const md1=getMD(yms[1]);
+    const s1=md1.items.find(i=>i.id===src.id), t1=md1.items.find(i=>i.id===tgt.id);
+    if(s1&&t1){ s1.order=to; t1.order=so; }
+  }
   save(); renderDash();
 }
+
 
 // ═══════════════════════════════════════════
 // CALENDAR
@@ -903,14 +876,13 @@ const _calCharts={};
 
 function calMove(d){ let[y,m]=calYm.split('-').map(Number); m+=d; if(m>12){m=1;y++;} if(m<1){m=12;y--;} calYm=ym(y,m); renderCal(); }
 
-function renderCal() {
-  document.getElementById('cal-lbl').textContent = ymLbl(calYm);
+function renderCal(){
+  document.getElementById('cal-lbl').textContent=ymLbl(calYm);
   const [y,m]=calYm.split('-').map(Number), md=getMD(calYm);
-
   const ev={};
   function add(ds,e){ if(!ev[ds])ev[ds]=[]; ev[ds].push(e); }
 
-  // billing grouped by date
+  // カード引き落とし
   const billByDate={};
   S.cards.filter(c=>c.visible).forEach(c=>{
     const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
@@ -919,14 +891,16 @@ function renderCal() {
   });
   Object.entries(billByDate).forEach(([ds,t])=>{ if(t>0) add(ds,{cls:'bill',lbl:`引き落とし ${fy(t)}`}); });
 
-  // annuals
+  // 年会費
   S.cards.filter(c=>c.visible&&c.annualFee>0&&c.annualMonth===m).forEach(c=>{
     add(fmtD(nextBiz(y,m,c.annualDay)),{cls:'ann',lbl:`年会費 ${fy(c.annualFee)}`});
   });
-  // items with checked → income/expense events on 1st / 25th
+
+  // 収支項目：day指定があれば前営業日計算でカレンダーに表示
   (md.items||[]).forEach(it=>{
-    const day = it.amount>0 ? 25 : 1;
-    add(fmtD(nextBiz(y,m,day)),{cls:it.amount>0?'inc':'io',lbl:`${it.label} ${fy(it.amount)}`});
+    if(it.day==null) return; // 日付未設定はスキップ
+    const d=prevBiz(y,m,Math.min(it.day,new Date(y,m,0).getDate()));
+    add(fmtD(d),{cls:it.amount>0?'inc':'io',lbl:`${it.label} ${fy(it.amount)}`});
   });
 
   const fd=new Date(y,m-1,1).getDay(), dim=new Date(y,m,0).getDate(), pd=new Date(y,m-1,0).getDate();
@@ -936,9 +910,7 @@ function renderCal() {
   const rem=(7-((fd+dim)%7))%7;
   for(let i=1;i<=rem;i++) html+=ccell(new Date(y,m,i),true,ev);
   document.getElementById('cal-grid').innerHTML=html;
-
-  // Pie chart
-  renderCalPie(ymStr=calYm);
+  renderCalPie(calYm);
 }
 
 function ccell(d,dim,ev){
@@ -952,10 +924,9 @@ function ccell(d,dim,ev){
   return `<div class="${cls}"><div class="cday">${d.getDate()}</div>${holN}${chips}</div>`;
 }
 
-function renderCalPie(ymStr) {
-  const [,m]=ymStr.split('-').map(Number);
-  const md=getMD(ymStr);
-  document.getElementById('cal-pie-title').textContent = `${ymLbl(ymStr)} カード別利用額`;
+function renderCalPie(ymStr){
+  const [,m]=ymStr.split('-').map(Number), md=getMD(ymStr);
+  document.getElementById('cal-pie-title').textContent=`${ymLbl(ymStr)} カード別利用額`;
   const vis=S.cards.filter(c=>c.visible);
   const entries=vis.map((c,i)=>({
     name:c.name,
@@ -966,20 +937,16 @@ function renderCalPie(ymStr) {
   document.getElementById('cal-pie-total').textContent=fy(total);
   const ctx=document.getElementById('cal-pie-canvas').getContext('2d');
   if(_calCharts.pie){_calCharts.pie.destroy();}
-  if(!entries.length){
-    document.getElementById('cal-pie-legend').innerHTML='<div class="empty">データなし</div>';
-    return;
-  }
+  if(!entries.length){ document.getElementById('cal-pie-legend').innerHTML='<div class="empty">データなし</div>'; return; }
   _calCharts.pie=new Chart(ctx,{
     type:'doughnut',
     data:{labels:entries.map(e=>e.name),datasets:[{data:entries.map(e=>e.amt),backgroundColor:entries.map(e=>e.color),borderWidth:2,borderColor:'#161927',hoverOffset:5}]},
-    options:{cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${fy(ctx.parsed)} (${Math.round(ctx.parsed/total*100)}%)`}}},animation:{duration:400}}
+    options:{cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fy(c.parsed)} (${Math.round(c.parsed/total*100)}%)`}}},animation:{duration:400}}
   });
   document.getElementById('cal-pie-legend').innerHTML=entries.slice(0,8).map(e=>
     `<div class="pie-leg-row"><div class="pie-leg-dot" style="background:${e.color}"></div><span class="pie-leg-name">${e.name}</span><span class="pie-leg-val">${fy(e.amt)}</span></div>`
   ).join('');
 }
-
 
 // ═══════════════════════════════════════════
 // STATS
@@ -993,52 +960,38 @@ function switchStatTab(idx){
   document.getElementById('stab1').classList.toggle('on',idx===1);
   renderStats();
 }
+function setStatPeriod(n){ statPeriod=n; renderStats(); }
 
 function renderStats(){
   const body=document.getElementById('stats-body');
   const yms=getStatYms(statPeriod);
-
-  const periodBar=`<div class="stat-period-bar">${[3,6,12].map(n=>`<button class="spill${statPeriod===n?' on':''}" onclick="setStatPeriod(${n})">${n}ヶ月</button>`).join('')}</div>`;
-
+  const pb=`<div class="stat-period-bar">${[3,6,12].map(n=>`<button class="spill${statPeriod===n?' on':''}" onclick="setStatPeriod(${n})">${n}ヶ月</button>`).join('')}</div>`;
   if(statTab===0){
-    body.innerHTML=periodBar+`
-      <div class="stat-card"><div class="stat-sec-title">月別 引き落とし合計</div><canvas id="sc-monthly" height="180"></canvas></div>
-      <div class="stat-card"><div class="stat-sec-title">残高推移</div><canvas id="sc-balance" height="180"></canvas></div>`;
-    requestAnimationFrame(()=>{
-      drawMonthlyBar(yms);
-      drawBalanceLine(yms);
-    });
+    body.innerHTML=pb+`<div class="stat-card"><div class="stat-sec-title">月別 引き落とし合計</div><canvas id="sc-monthly" height="180"></canvas></div><div class="stat-card"><div class="stat-sec-title">残高推移</div><canvas id="sc-balance" height="180"></canvas></div>`;
+    requestAnimationFrame(()=>{ drawMonthlyBar(yms); drawBalanceLine(yms); });
   } else {
-    body.innerHTML=periodBar+`
-      <div class="stat-card"><div class="stat-sec-title">カード別 月次積み上げ</div><div style="overflow-x:auto"><canvas id="sc-stacked" height="220"></canvas></div></div>`;
+    body.innerHTML=pb+`<div class="stat-card"><div class="stat-sec-title">カード別 月次積み上げ</div><div style="overflow-x:auto"><canvas id="sc-stacked" height="220"></canvas></div></div>`;
     requestAnimationFrame(()=>drawStacked(yms));
   }
 }
 
-function setStatPeriod(n){ statPeriod=n; renderStats(); }
-
 function getStatYms(n){
-  const now=new Date(), res=[];
-  for(let i=n-1;i>=0;i--){
-    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    res.push(ym(d.getFullYear(),d.getMonth()+1));
-  }
+  const now=new Date(),res=[];
+  for(let i=n-1;i>=0;i--){ const d=new Date(now.getFullYear(),now.getMonth()-i,1); res.push(ym(d.getFullYear(),d.getMonth()+1)); }
   return res;
 }
-
 function getCardTotalForYm(ymStr){
   const md=getMD(ymStr),[,m]=ymStr.split('-').map(Number);
   const vis=S.cards.filter(c=>c.visible);
   return vis.reduce((s,c)=>s+(md.cardAmounts[c.id]||0),0)+vis.filter(c=>c.annualFee>0&&c.annualMonth===m).reduce((s,c)=>s+c.annualFee,0);
 }
-
-function chartBaseOpts(yShorten=true){
+function chartBaseOpts(){
   return {
     responsive:true,maintainAspectRatio:true,animation:{duration:350},
     plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(18,21,34,0.95)',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,titleColor:'#dde2f2',bodyColor:'#dde2f2',padding:9}},
     scales:{
-      x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#6b748f',font:{size:10,family:"'Noto Sans JP'"}}},
-      y:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#6b748f',font:{size:10,family:"'DM Mono'"},callback:v=>yShorten?(Math.abs(v)>=10000?(v/10000).toFixed(0)+'万':fy(v)):fy(v)}}
+      x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#7a849f',font:{size:11,family:"'Noto Sans JP'"}}},
+      y:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#7a849f',font:{size:11,family:"'DM Mono'"},callback:v=>Math.abs(v)>=10000?(v/10000).toFixed(0)+'万':fy(v)}}
     }
   };
 }
@@ -1049,20 +1002,19 @@ function drawMonthlyBar(yms){
   const ctx=document.getElementById('sc-monthly'); if(!ctx) return;
   const labels=yms.map(y=>{const[,m]=y.split('-');return parseInt(m)+'月';});
   const data=yms.map(y=>getCardTotalForYm(y));
-  _stCharts['sc-monthly']=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:yms.map((_,i)=>i===yms.length-1?'rgba(91,141,238,0.85)':'rgba(91,141,238,0.35)'),borderRadius:5,borderSkipped:false}]},options:{...chartBaseOpts(),plugins:{...chartBaseOpts().plugins,tooltip:{...chartBaseOpts().plugins.tooltip,callbacks:{label:c=>` ${fy(c.parsed.y)}`}}}}});
+  const opts=chartBaseOpts();
+  opts.plugins.tooltip.callbacks={label:c=>` ${fy(c.parsed.y)}`};
+  _stCharts['sc-monthly']=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:yms.map((_,i)=>i===yms.length-1?'rgba(91,141,238,0.85)':'rgba(91,141,238,0.35)'),borderRadius:5,borderSkipped:false}]},options:opts});
 }
-
 function drawBalanceLine(yms){
   destroyChart('sc-balance');
   const ctx=document.getElementById('sc-balance'); if(!ctx) return;
   const labels=yms.map(y=>{const[,m]=y.split('-');return parseInt(m)+'月';});
   const data=yms.map(y=>calcNet(y));
-  const opts=chartBaseOpts();
-  opts.scales.y.beginAtZero=false;
+  const opts=chartBaseOpts(); opts.scales.y.beginAtZero=false;
   opts.plugins.tooltip.callbacks={label:c=>` ${fy(c.parsed.y)}`};
   _stCharts['sc-balance']=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'#27c485',backgroundColor:'rgba(39,196,133,0.07)',fill:true,tension:0.4,pointBackgroundColor:data.map(v=>v<0?'#e8506a':'#27c485'),pointRadius:4,borderWidth:2}]},options:opts});
 }
-
 function drawStacked(yms){
   destroyChart('sc-stacked');
   const ctx=document.getElementById('sc-stacked'); if(!ctx) return;
@@ -1073,9 +1025,8 @@ function drawStacked(yms){
     if(data.every(v=>v===0)) return null;
     return{label:c.name,data,backgroundColor:CARD_COLORS[i%CARD_COLORS.length]+'cc',borderRadius:3,borderSkipped:false};
   }).filter(Boolean);
-  const opts=chartBaseOpts();
-  opts.scales.x.stacked=true; opts.scales.y.stacked=true;
-  opts.plugins.legend={display:true,position:'bottom',labels:{color:'#6b748f',font:{size:9,family:"'Noto Sans JP'"},boxWidth:9,boxHeight:9,padding:7}};
+  const opts=chartBaseOpts(); opts.scales.x.stacked=true; opts.scales.y.stacked=true;
+  opts.plugins.legend={display:true,position:'bottom',labels:{color:'#7a849f',font:{size:10,family:"'Noto Sans JP'"},boxWidth:9,boxHeight:9,padding:7}};
   opts.plugins.tooltip.callbacks={label:c=>` ${c.dataset.label}: ${fy(c.parsed.y)}`};
   _stCharts['sc-stacked']=new Chart(ctx,{type:'bar',data:{labels,datasets},options:opts});
 }
@@ -1095,25 +1046,24 @@ function renderMission(){
       const pct=Math.min(100,Math.round(current/ms.goalAmount*100));
       const barCls=pct>=100?'ok':pct>=60?'warn':'ng';
       const remaining=ms.goalAmount-current;
-      const endD=new Date(ms.endDate);
-      const daysLeft=Math.ceil((endD-new Date())/864e5);
+      const daysLeft=Math.ceil((new Date(ms.endDate)-new Date())/864e5);
       html+=`<div class="mission-card">
         <div class="mission-head">
           <div class="mission-name">${ms.label||card?.name||'—'}</div>
           <div class="mission-meta">${card?.name||'不明'} ／ ${ms.startDate}〜${ms.endDate}
-            ${daysLeft>0?`<span style="color:var(--warn);margin-left:6px">残り${daysLeft}日</span>`:'<span style="color:var(--ng);margin-left:6px">期間終了</span>'}
+            ${daysLeft>0?`<span style="color:var(--warn);margin-left:6px">残り${daysLeft}日</span>`:`<span style="color:var(--ng);margin-left:6px">期間終了</span>`}
           </div>
         </div>
         <div class="mission-progress-wrap">
           <div class="mission-bar-bg"><div class="mission-bar-fill ${barCls}" style="width:${pct}%"></div></div>
           <div class="mission-nums">
             <span class="mission-cur" style="color:var(--${barCls})">${fy(current)}</span>
-            <span class="mission-pct">${pct}%</span>
+            <span style="font-size:11px;color:var(--t2)">${pct}%</span>
             <span class="mission-goal">目標 ${fy(ms.goalAmount)}</span>
           </div>
-          ${remaining>0?`<div style="font-size:11px;color:var(--t2);margin-top:4px">あと ${fy(remaining)} 達成まで</div>`:`<div style="font-size:11px;color:var(--ok);margin-top:4px">🎉 目標達成！</div>`}
+          ${remaining>0?`<div style="font-size:12px;color:var(--t2);margin-top:5px">あと ${fy(remaining)} で達成</div>`:`<div style="font-size:12px;color:var(--ok);margin-top:5px">🎉 目標達成！</div>`}
         </div>
-        <div style="display:flex;justify-content:flex-end;gap:6px;padding:0 13px 10px">
+        <div style="display:flex;justify-content:flex-end;gap:6px;padding:0 13px 11px">
           <button class="btn btn-g btn-sm" onclick="openModal('editMission',${ms.id})">編集</button>
           <button class="btn-d" onclick="delMission(${ms.id})">削除</button>
         </div>
@@ -1124,13 +1074,12 @@ function renderMission(){
 }
 
 function calcMissionProgress(ms){
-  // ダッシュボードの月次データからcardIdの合計を期間内で集計
   const start=new Date(ms.startDate), end=new Date(ms.endDate);
   let total=0;
   Object.values(S.months).forEach(md=>{
     const [y,m]=md.ym.split('-').map(Number);
     const mDate=new Date(y,m-1,1);
-    if(mDate>=new Date(start.getFullYear(),start.getMonth(),1) && mDate<=new Date(end.getFullYear(),end.getMonth(),1)){
+    if(mDate>=new Date(start.getFullYear(),start.getMonth(),1)&&mDate<=new Date(end.getFullYear(),end.getMonth(),1)){
       total+=(md.cardAmounts[ms.cardId]||0);
     }
   });
@@ -1139,24 +1088,61 @@ function calcMissionProgress(ms){
 function delMission(id){ if(!confirm('削除しますか？'))return; S.missions=S.missions.filter(m=>m.id!==id); save(); renderMission(); }
 
 // ═══════════════════════════════════════════
-// SETTINGS PAGE
+// CARDS TAB
 // ═══════════════════════════════════════════
-function openSettings(){ goTab('settings',null); }
-function renderSettingsPage(){
+function renderCards(){
+  const body=document.getElementById('cards-body');
+  let html=`<button class="card-add-btn" onclick="openModal('addCard')">＋ カードを追加</button>`;
+  if(!S.cards.length){
+    html+=`<div class="empty">カードが登録されていません</div>`;
+  } else {
+    S.cards.forEach(c=>{
+      const [y,m]=[new Date().getFullYear(),new Date().getMonth()+1];
+      const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
+      html+=`<div class="card-item">
+        <div class="card-item-info">
+          <div class="card-item-name">${c.name}</div>
+          <div class="card-item-meta">締め日 ${c.closeDay===99?'末日':c.closeDay+'日'} ／ 引落 ${raw}日</div>
+          ${c.annualFee?`<div class="card-item-ann">年会費 ${fy(c.annualFee)}（${c.annualMonth}月請求）</div>`:`<div class="card-item-meta">年会費無料</div>`}
+          ${c.note?`<div class="card-item-note">${c.note}</div>`:''}
+        </div>
+        <div class="card-item-actions">
+          <div class="vis-toggle ${c.visible?'on':'off'}" onclick="toggleCardVis(${c.id})">
+            <div class="vis-dot"></div>${c.visible?'表示中':'非表示'}
+          </div>
+          <div style="display:flex;gap:5px">
+            <button class="btn btn-g btn-sm" onclick="openModal('addCard',${c.id})">編集</button>
+            <button class="btn-d" onclick="delCard(${c.id})">削除</button>
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+  body.innerHTML=html;
+}
+
+function toggleCardVis(id){ const c=S.cards.find(x=>x.id===id); if(c){c.visible=!c.visible;save();renderCards();} }
+function delCard(id){ if(!confirm('削除しますか？'))return; S.cards=S.cards.filter(c=>c.id!==id); save(); renderCards(); }
+
+// ═══════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════
+function renderSettings(){
   const lastBk=S.lastBackup;
-  let backupSub='最終バックアップ：未取得';
-  let showReminder=!lastBk;
+  let backupSub='最終バックアップ：未取得', showReminder=!lastBk;
   if(lastBk){
     const days=Math.floor((Date.now()-lastBk)/864e5);
     backupSub=`最終バックアップ：${days===0?'今日':days+'日前'}${S.backupCreatedAt?' ('+S.backupCreatedAt+')':''}`;
     if(days>=7) showReminder=true;
   }
-  const order=(S.tabOrder||TAB_DEFS.map(t=>t.id));
+  const order=S.tabOrder||TAB_DEFS.map(t=>t.id);
+  if(!order.includes('cards')) order.push('cards');
   const defs=order.map(id=>TAB_DEFS.find(t=>t.id===id)).filter(Boolean);
   TAB_DEFS.forEach(t=>{ if(!defs.find(d=>d.id===t.id)) defs.push(t); });
+  const settingsDefs=defs.filter(t=>t.id!=='settings');
 
   document.getElementById('settings-body').innerHTML=`
-    ${showReminder?`<div class="backup-banner">⚠ ${!lastBk?'バックアップが未取得です':'前回バックアップから'+Math.floor((Date.now()-lastBk)/864e5)+'日経過'}<button onclick="openModal('backup')" style="background:rgba(240,156,42,0.2);border:1px solid rgba(240,156,42,0.4);border-radius:6px;color:var(--warn);cursor:pointer;font-size:11px;font-weight:700;padding:3px 8px;margin-left:8px">今すぐ</button></div>`:''}
+    ${showReminder?`<div class="backup-banner">⚠ ${!lastBk?'バックアップが未取得です':'前回バックアップから'+Math.floor((Date.now()-lastBk)/864e5)+'日経過'}<button onclick="doExport()" style="background:rgba(240,156,42,0.2);border:1px solid rgba(240,156,42,0.4);border-radius:6px;color:var(--warn);cursor:pointer;font-size:12px;font-weight:700;padding:4px 9px;margin-left:8px">今すぐ</button></div>`:''}
 
     <div class="st-sec"><div class="st-sec-title">データ管理</div>
       <div class="st-row" onclick="doExport()">
@@ -1177,24 +1163,16 @@ function renderSettingsPage(){
       </div>
     </div>
 
-    <div class="st-sec"><div class="st-sec-title">保有カード</div>
-      <div class="st-row" onclick="openModal('cardManager')">
-        <span class="st-icon">▤</span>
-        <div class="st-body"><div class="st-lbl">カードを管理</div><div class="st-sub">${S.cards.length}枚登録中</div></div>
-        <span class="st-arr">›</span>
-      </div>
-    </div>
-
-    <div class="st-sec"><div class="st-sec-title">タブの並び順</div>
-      <div class="st-hint">長押し→ドラッグで並び替え（ダッシュボードは固定）</div>
+    <div class="st-sec"><div class="st-sec-title">タブの並び順・表示</div>
+      <div class="st-hint">ドラッグで並び替え（ダッシュボードは固定）</div>
       <div id="st-tab-list">
-        ${defs.map((t,i)=>`
-        <div class="tab-order-item${t.fixed?' ':''}" draggable="${!t.fixed}" data-tab-id="${t.id}"
+        ${settingsDefs.map(t=>`
+        <div class="tab-order-item" draggable="${!t.fixed}" data-tab-id="${t.id}"
           ondragstart="tabDragStart(event,'${t.id}')" ondragover="tabDragOver(event)" ondrop="tabDrop(event,'${t.id}')">
           <span class="tab-order-handle">${t.fixed?'📌':'⠿'}</span>
           <span class="tab-order-icon">${t.icon}</span>
           <span class="tab-order-name">${t.label}</span>
-          ${t.fixed?'<span style="font-size:10px;color:var(--t3)">固定</span>':''}
+          ${t.fixed?'<span style="font-size:11px;color:var(--t3)">固定</span>':''}
         </div>`).join('')}
       </div>
     </div>
@@ -1204,11 +1182,10 @@ function renderSettingsPage(){
         <div class="author-banner-name">CardBoard</div>
         <div class="author-banner-x">𝕏 @_4cls</div>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-// Tab drag
+// Tab drag (settings)
 let _dragTabId=null;
 function tabDragStart(e,id){ _dragTabId=id; e.dataTransfer.effectAllowed='move'; e.currentTarget.classList.add('dragging'); }
 function tabDragOver(e){ e.preventDefault(); document.querySelectorAll('.tab-order-item').forEach(el=>el.classList.remove('drag-over')); e.currentTarget.classList.add('drag-over'); }
@@ -1216,53 +1193,33 @@ function tabDrop(e,targetId){
   e.preventDefault();
   document.querySelectorAll('.tab-order-item').forEach(el=>el.classList.remove('dragging','drag-over'));
   if(!_dragTabId||_dragTabId===targetId) return;
-  const order=S.tabOrder||TAB_DEFS.map(t=>t.id);
   const srcDef=TAB_DEFS.find(t=>t.id===_dragTabId);
   const tgtDef=TAB_DEFS.find(t=>t.id===targetId);
   if(srcDef?.fixed||tgtDef?.fixed) return;
+  const order=S.tabOrder||TAB_DEFS.map(t=>t.id);
   const si=order.indexOf(_dragTabId), ti=order.indexOf(targetId);
   if(si<0||ti<0) return;
   order.splice(si,1); order.splice(ti,0,_dragTabId);
-  S.tabOrder=order; save(); buildTabs(); renderSettingsPage();
+  S.tabOrder=order; save(); buildTabs(); renderSettings();
 }
 
 // Backup
-function confirmReset(){
-  mOpen('全データを削除',
-    `<div style="font-size:13px;line-height:1.8;color:var(--t2)">
-      すべてのデータが削除されます。<br>この操作は取り消せません。<br><br>
-      <span style="color:var(--warn)">先にバックアップを取ることをおすすめします。</span>
-    </div>`,
-    `<button class="btn btn-g" onclick="mClose()">キャンセル</button>
-     <button class="btn btn-g" style="color:var(--warn);border-color:rgba(240,156,42,0.3)" onclick="doExport();mClose();setTimeout(doReset,800)">バックアップして削除</button>
-     <button class="btn" style="background:var(--ng);color:#fff" onclick="doReset()">そのまま削除</button>`
-  );
-}
-function doReset(){
-  S.months={};
-  S.missions=[];
-  S.cards=[];
-  S.nxtItem=1;
-  S.nxtMission=1;
-  S.nxtCard=1;
-  S.firstLaunch=true;
-  save();
-  mClose();
-  renderDash();
-  renderSettingsPage();
+function checkBackupReminder(){
+  const el=document.getElementById('dash-backup-reminder'); if(!el) return;
+  if(!S.lastBackup||Math.floor((Date.now()-S.lastBackup)/864e5)<7){ el.innerHTML=''; return; }
+  const days=Math.floor((Date.now()-S.lastBackup)/864e5);
+  el.innerHTML=`<div class="backup-banner">⚠ 前回バックアップから <strong>${days}日</strong> 経過<button onclick="doExport()" style="background:rgba(240,156,42,0.2);border:1px solid rgba(240,156,42,0.4);border-radius:6px;color:var(--warn);cursor:pointer;font-size:12px;font-weight:700;padding:4px 9px;margin-left:8px">今すぐ</button></div>`;
 }
 function doExport(){
   const now=new Date();
-  const dateStr=`${now.getFullYear()}${z2(now.getMonth()+1)}${z2(now.getDate())}_${z2(now.getHours())}${z2(now.getMinutes())}`;
+  const ds=`${now.getFullYear()}${z2(now.getMonth()+1)}${z2(now.getDate())}_${z2(now.getHours())}${z2(now.getMinutes())}`;
   S.backupCreatedAt=`${now.getFullYear()}/${z2(now.getMonth()+1)}/${z2(now.getDate())} ${z2(now.getHours())}:${z2(now.getMinutes())}`;
-  S.lastBackup=Date.now();
-  save();
+  S.lastBackup=Date.now(); save();
   const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url; a.download=`cardboard_backup_${dateStr}.json`; a.click();
+  const a=document.createElement('a'); a.href=url; a.download=`cardboard_backup_${ds}.json`; a.click();
   URL.revokeObjectURL(url);
-  renderSettingsPage();
+  renderSettings();
   alert('バックアップを保存しました。');
 }
 function doImport(event){
@@ -1273,23 +1230,22 @@ function doImport(event){
       const data=JSON.parse(e.target.result);
       if(!data.cards) throw new Error('invalid');
       if(!confirm('現在のデータをすべて上書きして復元しますか？')) return;
-      S=data; save(); buildTabs(); renderDash(); renderSettingsPage();
+      S=data; save(); buildTabs(); renderDash(); renderSettings();
       alert('復元しました。');
     }catch(err){ alert('ファイルが正しくありません。'); }
   };
-  reader.readAsText(file);
-  event.target.value='';
+  reader.readAsText(file); event.target.value='';
 }
-
-// Backup reminder on dash
-function checkBackupReminder(){
-  const el=document.getElementById('dash-backup-reminder');
-  if(!el) return;
-  if(!S.lastBackup){ el.innerHTML=''; return; }
-  const days=Math.floor((Date.now()-S.lastBackup)/864e5);
-  if(days>=7){
-    el.innerHTML=`<div class="backup-banner">⚠ 前回バックアップから <strong>${days}日</strong> 経過<button onclick="doExport()" style="background:rgba(240,156,42,0.2);border:1px solid rgba(240,156,42,0.4);border-radius:6px;color:var(--warn);cursor:pointer;font-size:11px;font-weight:700;padding:3px 8px;margin-left:8px">今すぐ</button></div>`;
-  } else { el.innerHTML=''; }
+function confirmReset(){
+  mOpen('全データを削除',
+    `<div style="font-size:14px;line-height:1.9;color:var(--t2)">すべてのデータが削除されます。<br>この操作は取り消せません。<br><br><span style="color:var(--warn)">先にバックアップを取ることをおすすめします。</span></div>`,
+    `<button class="btn btn-g" onclick="mClose()">キャンセル</button>
+     <button class="btn btn-g" style="color:var(--warn);border-color:rgba(240,156,42,0.3)" onclick="doExport();mClose();setTimeout(doReset,800)">バックアップして削除</button>
+     <button class="btn" style="background:var(--ng);color:#fff" onclick="doReset()">そのまま削除</button>`);
+}
+function doReset(){
+  Object.assign(S,{months:{},missions:[],cards:[],nxtItem:1,nxtMission:1,nxtCard:1,firstLaunch:true});
+  save(); mClose(); renderDash(); renderSettings();
 }
 
 // ═══════════════════════════════════════════
@@ -1305,79 +1261,81 @@ function mOpen(t,b,a){
 function mClose(){ document.getElementById('ov').classList.remove('on'); }
 function ovClose(e){ if(e.target===document.getElementById('ov')) mClose(); }
 
+function openModal(type,arg){
+  _mYm=typeof arg==='string'?arg:'';
+  if(type==='addFixed')    bAddItem(true);
+  else if(type==='addOther')   bAddItem(false);
+  else if(type==='addMission') bMission(null);
+  else if(type==='editMission') bMission(S.missions?.find(m=>m.id===arg));
+  else if(type==='addCard'){
+    const card=typeof arg==='number'?S.cards.find(c=>c.id===arg):null;
+    bCardForm(card);
+  }
+  document.getElementById('ov').classList.add('on');
+}
+
 function bAddItem(isFixed){
   mOpen(isFixed?'固定項目を追加':'当月項目を追加',
-    `<div class="frow"><label class="flbl">項目名</label><input class="finput" id="mi_l" placeholder="${isFixed?'例: 積立NISA':'例: 旅行費用'}"></div>
-     <div class="frow"><label class="flbl">金額（支出はマイナス）</label><input class="finput" id="mi_a" type="number" placeholder="${isFixed?'-100000':''}"></div>`,
-    `<button class="btn btn-g" onclick="mClose()">キャンセル</button><button class="btn btn-p" onclick="_saveItem(${isFixed})">追加</button>`);
+    `<div class="frow"><label class="flbl">項目名</label>
+     <input class="finput" id="mi_l" placeholder="${isFixed?'例: 積立NISA':'例: 旅行費用'}"></div>
+     <div class="frow"><label class="flbl">金額（支出はマイナス）</label>
+     <input class="finput" id="mi_a" type="text" inputmode="numeric" placeholder="-100000"
+       oninput="this.value=fmtAmtInput(this.value)"
+       onkeydown="if(event.key==='Enter') _saveItem(${isFixed})"></div>
+     <div class="frow"><label class="flbl">カレンダー表示日（空白=非表示）</label>
+     <input class="finput" id="mi_d" type="number" min="1" max="31" placeholder="例: 25（前営業日計算）"></div>`,
+    `<button class="btn btn-g" onclick="mClose()">キャンセル</button>
+     <button class="btn btn-p" onclick="_saveItem(${isFixed})">追加</button>`);
+  setTimeout(()=>document.getElementById('mi_l')?.focus(),100);
 }
 function _saveItem(isFixed){
-  const l=document.getElementById('mi_l').value.trim(), a=parseFloat(document.getElementById('mi_a').value);
-  if(!l||isNaN(a)){alert('全項目を入力してください');return;}
+  const l=document.getElementById('mi_l').value.trim();
+  const a=parseAmt(document.getElementById('mi_a').value);
+  const dv=document.getElementById('mi_d').value.trim();
+  const day=dv===''?null:parseInt(dv);
+  if(!l||isNaN(a)){ alert('項目名と金額を入力してください'); return; }
   const md=getMD(_mYm); if(!md.items) md.items=[];
-  const maxOrder=md.items.reduce((m,it)=>Math.max(m,it.order||0),0);
-  md.items.push({id:S.nxtItem++,label:l,amount:a,checked:false,isFixed,order:maxOrder+1});
+  const maxOrder=md.items.reduce((m,it)=>Math.max(m,it.order||0),-1);
+  md.items.push({id:S.nxtItem++,label:l,amount:a,checked:false,isFixed,order:maxOrder+1,day});
   save(); mClose(); renderDash();
 }
 
 function bMission(ms){
-  const isEdit=!!ms;
-  const cardOpts=S.cards.map(c=>`<option value="${c.id}"${ms&&ms.cardId===c.id?' selected':''}>${c.name}</option>`).join('');
+  const cardOpts=S.cards.map(c=>`<option value="${c.id}"${ms?.cardId===c.id?' selected':''}>${c.name}</option>`).join('');
   const today=todayStr();
-  const oneYearLater=(() => { const d=new Date(); d.setFullYear(d.getFullYear()+1); return fmtD(d); })();
-  mOpen(isEdit?'修行を編集':'修行を追加',
-    `<div class="frow"><label class="flbl">ラベル（任意）</label><input class="finput" id="ms_l" value="${ms?.label||''}" placeholder="例: ヒルトン上級達成"></div>
-     <div class="frow"><label class="flbl">対象カード</label><select class="finput" id="ms_c">${cardOpts}</select></div>
-     <div class="frow"><label class="flbl">目標金額</label><input class="finput" id="ms_g" type="number" value="${ms?.goalAmount||''}" placeholder="例: 4000000"></div>
+  const oneYearLater=(()=>{ const d=new Date(); d.setFullYear(d.getFullYear()+1); return fmtD(d); })();
+  mOpen(ms?'修行を編集':'修行を追加',
+    `<div class="frow"><label class="flbl">ラベル（任意）</label>
+     <input class="finput" id="ms_l" value="${ms?.label||''}" placeholder="例: ヒルトン上級達成"></div>
+     <div class="frow"><label class="flbl">対象カード</label>
+     <select class="finput" id="ms_c">${cardOpts}</select></div>
+     <div class="frow"><label class="flbl">目標金額</label>
+     <input class="finput" id="ms_g" type="text" inputmode="numeric"
+       value="${ms?.goalAmount?fmtAmt(ms.goalAmount):''}" placeholder="例: 4,000,000"
+       oninput="this.value=fmtAmtInput(this.value)"></div>
      <div class="fgrid">
        <div class="frow"><label class="flbl">開始日</label><input class="finput" id="ms_s" type="date" value="${ms?.startDate||today}"></div>
        <div class="frow"><label class="flbl">終了日</label><input class="finput" id="ms_e" type="date" value="${ms?.endDate||oneYearLater}"></div>
      </div>`,
-    `<button class="btn btn-g" onclick="mClose()">キャンセル</button><button class="btn btn-p" onclick="_saveMission(${ms?ms.id:'null'})">保存</button>`);
+    `<button class="btn btn-g" onclick="mClose()">キャンセル</button>
+     <button class="btn btn-p" onclick="_saveMission(${ms?ms.id:'null'})">保存</button>`);
 }
 function _saveMission(id){
   const l=document.getElementById('ms_l').value.trim();
   const cid=parseInt(document.getElementById('ms_c').value);
-  const goal=parseFloat(document.getElementById('ms_g').value);
-  const start=document.getElementById('ms_s').value;
-  const end=document.getElementById('ms_e').value;
-  if(isNaN(goal)||!start||!end){alert('必須項目を入力してください');return;}
-  if(id){const m=S.missions.find(m=>m.id===id);if(m)Object.assign(m,{label:l,cardId:cid,goalAmount:goal,startDate:start,endDate:end});}
-  else {if(!S.missions)S.missions=[];S.missions.push({id:S.nxtMission++,label:l,cardId:cid,goalAmount:goal,startDate:start,endDate:end});}
+  const goal=parseAmt(document.getElementById('ms_g').value);
+  const start=document.getElementById('ms_s').value, end=document.getElementById('ms_e').value;
+  if(!goal||!start||!end){ alert('必須項目を入力してください'); return; }
+  if(id){ const m=S.missions.find(m=>m.id===id); if(m) Object.assign(m,{label:l,cardId:cid,goalAmount:goal,startDate:start,endDate:end}); }
+  else { if(!S.missions) S.missions=[]; S.missions.push({id:S.nxtMission++,label:l,cardId:cid,goalAmount:goal,startDate:start,endDate:end}); }
   save(); mClose(); renderMission();
 }
-
-function bCardManager(){
-  const cardList=S.cards.map(c=>`
-    <div style="display:flex;align-items:flex-start;gap:8px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:600">${c.name}</div>
-        <div style="font-size:10px;color:var(--t2);font-family:var(--mono)">締め日 ${c.closeDay===99?'末日':c.closeDay+'日'} ／ 引落 ${c.billDay}日</div>
-        <div style="font-size:11px;color:${c.annualFee?'var(--warn)':'var(--t2)'}">${c.annualFee?fy(c.annualFee)+'（'+c.annualMonth+'月請求）':'年会費無料'}</div>
-        ${c.note?`<div style="font-size:11px;color:var(--t2)">${c.note}</div>`:''}
-      </div>
-      <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0">
-        <div class="${c.visible?'vis-pill on':'vis-pill'}" style="display:flex;align-items:center;gap:4px;background:${c.visible?'rgba(91,141,238,0.15)':'rgba(255,255,255,0.05)'};border:1px solid ${c.visible?'rgba(91,141,238,0.3)':'rgba(255,255,255,0.1)'};border-radius:20px;padding:3px 8px 3px 5px;cursor:pointer;font-size:10px;font-weight:700;color:${c.visible?'var(--accent)':'var(--t2)'}" onclick="toggleVisInModal(${c.id})">
-          <div style="width:8px;height:8px;border-radius:50%;background:currentColor"></div>${c.visible?'表示中':'非表示'}
-        </div>
-        <div style="display:flex;gap:5px">
-          <button class="btn btn-g btn-sm" onclick="openEditCardModal(${c.id})">編集</button>
-          <button class="btn-d" onclick="delCardInModal(${c.id})">削除</button>
-        </div>
-      </div>
-    </div>`).join('');
-  mOpen('保有カード',
-    `<button class="mission-add-btn" onclick="mClose();openModal('addCard')" style="margin-bottom:10px">＋ カードを追加</button>${cardList||'<div class="empty">カードなし</div>'}`,
-    `<button class="btn btn-g" onclick="mClose()">閉じる</button>`);
-}
-function toggleVisInModal(id){ const c=S.cards.find(x=>x.id===id); if(c){c.visible=!c.visible;save();bCardManager();} }
-function delCardInModal(id){ if(!confirm('削除しますか？'))return; S.cards=S.cards.filter(c=>c.id!==id); save(); bCardManager(); }
-function openEditCardModal(id){ mClose(); setTimeout(()=>openModal('addCard',S.cards.find(c=>c.id===id)),200); }
 
 function bCardForm(card){
   const c=card||{name:'',closeDay:'',billDay:'',annualFee:0,annualMonth:0,annualDay:0,note:''};
   mOpen(card?'カードを編集':'カードを追加',
-    `<div class="frow"><label class="flbl">カード名</label><input class="finput" id="fc_n" value="${c.name}" placeholder="例: VISA GOLD"></div>
+    `<div class="frow"><label class="flbl">カード名</label>
+     <input class="finput" id="fc_n" value="${c.name}" placeholder="例: VISA GOLD"></div>
      <div class="fgrid">
        <div class="frow"><label class="flbl">締め日（末日=99）</label><input class="finput" id="fc_cl" type="number" value="${c.closeDay||''}"></div>
        <div class="frow"><label class="flbl">引き落とし日</label><input class="finput" id="fc_bl" type="number" value="${c.billDay||''}"></div>
@@ -1388,17 +1346,9 @@ function bCardForm(card){
      </div>
      <div class="frow"><label class="flbl">年会費請求日</label><input class="finput" id="fc_ad" type="number" value="${c.annualDay||0}"></div>
      <div class="frow"><label class="flbl">備考</label><input class="finput" id="fc_nt" value="${c.note||''}"></div>`,
-    `<button class="btn btn-g" onclick="mClose()">キャンセル</button><button class="btn btn-p" onclick="_saveCard(${card?card.id:'null'})">保存</button>`);
-}
-function openModal(type,arg){
-  _mYm=typeof arg==='string'?arg:'';
-  if(type==='addFixed')    bAddItem(true);
-  else if(type==='addOther')    bAddItem(false);
-  else if(type==='addMission')  bMission(null);
-  else if(type==='editMission') bMission(S.missions?.find(m=>m.id===arg));
-  else if(type==='cardManager') bCardManager();
-  else if(type==='addCard')     bCardForm(typeof arg==='object'?arg:null);
-  document.getElementById('ov').classList.add('on');
+    `<button class="btn btn-g" onclick="mClose()">キャンセル</button>
+     <button class="btn btn-p" onclick="_saveCard(${card?card.id:'null'})">保存</button>`);
+  setTimeout(()=>document.getElementById('fc_n')?.focus(),100);
 }
 function _saveCard(id){
   const n=document.getElementById('fc_n').value.trim();
@@ -1408,81 +1358,19 @@ function _saveCard(id){
   const am=parseInt(document.getElementById('fc_am').value)||0;
   const ad=parseInt(document.getElementById('fc_ad').value)||0;
   const nt=document.getElementById('fc_nt').value.trim();
-  if(!n||isNaN(cl)||isNaN(bl)){alert('カード名・締め日・引き落とし日は必須です');return;}
-  if(id){const c=S.cards.find(c=>c.id===id);if(c)Object.assign(c,{name:n,closeDay:cl,billDay:bl,annualFee:af,annualMonth:am,annualDay:ad,note:nt});}
+  if(!n||isNaN(cl)||isNaN(bl)){ alert('カード名・締め日・引き落とし日は必須です'); return; }
+  if(id){ const c=S.cards.find(c=>c.id===id); if(c) Object.assign(c,{name:n,closeDay:cl,billDay:bl,annualFee:af,annualMonth:am,annualDay:ad,note:nt}); }
   else S.cards.push({id:S.nxtCard++,name:n,closeDay:cl,billDay:bl,annualFee:af,annualMonth:am,annualDay:ad,note:nt,visible:true});
-  save(); mClose();
+  save(); mClose(); renderCards();
 }
 
 // ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
-
-// ═══════════════════════════════════════════
-// PC/SP 統合タブ管理
-// ═══════════════════════════════════════════
-const isPC = () => window.innerWidth >= 768;
-
-// buildTabsをオーバーライド
-function buildTabs() {
-  const order = (S.tabOrder||TAB_DEFS.map(t=>t.id));
-  const defs = order.map(id=>TAB_DEFS.find(t=>t.id===id)).filter(Boolean);
-  TAB_DEFS.forEach(t=>{ if(!defs.find(d=>d.id===t.id)) defs.push(t); });
-
-  // SP: ボトムタブ
-  document.getElementById('btabs').innerHTML = defs.map(t =>
-    `<button class="btab${t.id===activeTab?' on':''}" data-tab="${t.id}" onclick="goTab('${t.id}',this)">
-      <span class="btab-icon">${t.icon}</span><span>${t.label}</span>
-    </button>`
-  ).join('');
-
-  // PC: サイドバー
-  const nav = document.getElementById('sidebar-nav');
-  if(nav) nav.innerHTML = defs.map(t =>
-    `<button class="sidebar-btn${t.id===activeTab?' on':''}" data-tab="${t.id}" onclick="goTab('${t.id}',null)">
-      <span class="sidebar-btn-icon">${t.icon}</span>${t.label}
-    </button>`
-  ).join('');
-}
-
-// goTabをオーバーライド（SP/PC共通）
-function goTab(id, el) {
-  activeTab = id;
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-  const pg = document.getElementById('pg-'+id);
-  if(pg) pg.classList.add('on');
-
-  // SP ボトムタブ
-  document.querySelectorAll('.btab').forEach(b=>b.classList.remove('on'));
-  const btab = document.querySelector(`.btab[data-tab="${id}"]`);
-  if(btab) btab.classList.add('on');
-
-  // PC サイドバー
-  document.querySelectorAll('.sidebar-btn[data-tab]').forEach(b=>b.classList.remove('on'));
-  const sbtn = document.querySelector(`.sidebar-btn[data-tab="${id}"]`);
-  if(sbtn) sbtn.classList.add('on');
-
-  // 設定ボタン（サイドバー固定）
-  const stBtn = document.querySelector('.sidebar-settings .sidebar-btn');
-  if(stBtn) stBtn.classList.toggle('on', id==='settings');
-
-  if(id==='dash')     renderDash();
-  if(id==='cal')      renderCal();
-  if(id==='stats')    renderStats();
-  if(id==='mission')  renderMission();
-  if(id==='settings') renderSettingsPage();
-}
-
-// ウィンドウリサイズ時にタブを再描画
-window.addEventListener('resize', () => buildTabs());
-
-// init
 buildTabs();
 checkBackupReminder();
 renderDash();
-</script>
-</body>
-</html>
 
+</script>
 </body>
 </html>

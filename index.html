@@ -819,7 +819,7 @@ function renderDash(){
     const amt1=md1.cardAmounts[c.id]||0;
     return`<div class="cacc-head" onclick="toggleAcc(${c.id})">
       <span class="cacc-name">${c.name}</span>
-      <span class="${dc}">${diff<0&&amt>0?'💸':diff>=0&&diff<=5&&amt>0?'🔪':''} ${m}月${act.getDate()}日${shifted?'*':''}</span>
+      <span class="${dc}">${diff<0&&amt>0?'🪦':''} ${m}月${act.getDate()}日${shifted?'*':''}</span>
       <span class="cacc-amt${amt===0?' zero':''}">${amt===0?'—':fy(amt)}</span>
       <span class="cacc-chev" id="chev-${c.id}">▾</span>
     </div>

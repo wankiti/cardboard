@@ -154,6 +154,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 
 /* ── Banners ── */
 .tutorial-banner{background:linear-gradient(135deg,rgba(91,141,238,0.15),rgba(124,92,252,0.15));border:1px solid rgba(91,141,238,0.3);border-radius:12px;padding:13px 14px;margin-bottom:13px;}
+#tutorial-float{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);left:50%;transform:translateX(-50%);width:min(480px,calc(100vw - 28px));z-index:200;pointer-events:none;}
+#tutorial-float .tutorial-banner{pointer-events:all;margin-bottom:0;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+@media(min-width:768px){#tutorial-float{left:calc(220px + (100vw - 220px)/2);bottom:24px;}}
 .tutorial-banner-title{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:4px;}
 .tutorial-banner-body{font-size:12px;color:var(--t2);line-height:1.8;}
 .backup-banner{background:rgba(240,156,42,0.12);border:1px solid rgba(240,156,42,0.3);border-radius:10px;padding:9px 13px;margin-bottom:11px;font-size:12px;color:var(--warn);display:flex;align-items:center;justify-content:space-between;gap:8px;}
@@ -371,7 +374,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 <div class="pages">
   <!-- HOME -->
   <div id="pg-home" class="page on">
-    <div id="home-tutorial"></div>
     <div id="home-body"></div>
   </div>
   <!-- DASH (Input) -->
@@ -937,7 +939,9 @@ function renderDash(){
 function dismissTutorial(clearData){
   S.firstLaunch=false;S.tutStep=0;
   if(clearData){S.months={};S.nxtItem=1;getDisplayYms().forEach(y=>getMD(y));}
-  save();renderDash();renderHome();
+  save();
+  document.getElementById('tutorial-float').innerHTML='';
+  renderDash();renderHome();
 }
 function completeTutorial(){
   mOpen('チュートリアル完了',
@@ -950,9 +954,7 @@ function completeTutorial(){
 }
 function advanceTutorial(step){
   S.tutStep=step;save();
-  if(step===1){goTab('dash');return;}
-  if(step===2){goTab('cards');return;}
-  renderDash();renderHome();
+  renderHome();renderDash();
 }
 function toggleAcc(cid){
   const body=document.getElementById('acc-'+cid),chev=document.getElementById('chev-'+cid);
@@ -1200,7 +1202,7 @@ function renderHome(){
   const progress=nextThresh?Math.min(100,totalAF/nextThresh*100):100;
 
   // チュートリアル
-  const tutEl=document.getElementById('home-tutorial');
+  const tutEl=document.getElementById('tutorial-float');
   const tutStep=S.tutStep||0;
   tutEl.innerHTML=S.firstLaunch?`<div class="tutorial-banner">
     ${tutStep===0?`
@@ -1215,7 +1217,7 @@ function renderHome(){
         <div style="background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">1</div>
         <div class="tutorial-banner-title" style="margin:0">口座残高を入力しましょう</div>
       </div>
-      <div class="tutorial-banner-body">口座残高欄に直接入力できます。</div>
+      <div class="tutorial-banner-body">「明細」タブの口座残高欄に直接入力できます。</div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
         <button class="btn btn-sm btn-g" onclick="advanceTutorial(0)">戻る</button>
         <button class="btn btn-sm btn-p" onclick="advanceTutorial(2)">次へ →</button>
@@ -1225,7 +1227,7 @@ function renderHome(){
         <div style="background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">2</div>
         <div class="tutorial-banner-title" style="margin:0">カードを追加しましょう</div>
       </div>
-      <div class="tutorial-banner-body">クレジットカードを登録できます。<br>締め日・引き落とし日を入力するとカレンダーに表示されます。</div>
+      <div class="tutorial-banner-body">「カード」タブからクレジットカードを登録できます。<br>締め日・引き落とし日を入力するとカレンダーに表示されます。</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
         <button class="btn btn-sm btn-g" onclick="advanceTutorial(1)">戻る</button>
         <button class="btn btn-sm btn-p" onclick="completeTutorial()">完了</button>
@@ -1953,5 +1955,6 @@ checkBackupReminder();
 goTab(activeTab);
 
 </script>
+<div id="tutorial-float"></div>
 </body>
 </html>

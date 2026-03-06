@@ -1641,11 +1641,11 @@ function renderSettings(){
 
     <div class="st-sec"><div class="st-sec-title">シェア</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="st-row" style="flex:1;min-width:140px;cursor:not-allowed;justify-content:center;opacity:.35" disabled>
+        <button class="st-row" style="flex:1;min-width:140px;cursor:pointer;justify-content:center" onclick="shareToX()">
           <span class="st-icon" style="font-size:18px">𝕏</span>
           <div class="st-body"><div class="st-lbl">Xに投稿</div></div>
         </button>
-        <button class="st-row" style="flex:1;min-width:140px;cursor:not-allowed;justify-content:center;opacity:.35" disabled>
+        <button class="st-row" style="flex:1;min-width:140px;cursor:pointer;justify-content:center" onclick="copyShareUrl()">
           <span class="st-icon">🔗</span>
           <div class="st-body"><div class="st-lbl" id="copy-url-lbl">URLをコピー</div></div>
         </button>
@@ -1654,12 +1654,12 @@ function renderSettings(){
 }
 
 function shareToX(){
-  const url='https://wankiti.github.io/cardboard/cardboard.html';
+  const url='https://acyort.com/';
   const text='クレジットカードの引き落とし管理アプリ「CardBoard」を使っています！';
   window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,'_blank');
 }
 function copyShareUrl(){
-  const url='https://wankiti.github.io/cardboard/cardboard.html';
+  const url='https://acyort.com/';
   navigator.clipboard?.writeText(url).then(()=>{
     const lbl=document.getElementById('copy-url-lbl');
     if(lbl){lbl.textContent='コピーしました！';setTimeout(()=>lbl.textContent='URLをコピー',2000);}

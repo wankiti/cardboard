@@ -556,8 +556,7 @@ function mkMonth(ymStr){return{ym:ymStr,balance:0,items:[],cardAmounts:{}};}
 function getDisplayYms(){const d=new Date(),y=d.getFullYear(),m=d.getMonth()+1;return[ym(y,m),ym(m===12?y+1:y,m===12?1:m+1)];}
 function ym(y,m){return`${y}-${z2(m)}`;}
 
-function loadState(){
-  try{const r=localStorage.getItem(SK);if(r)return JSON.parse(r);}catch(e){}
+function initDemoData(){
   const[y0,y1]=getDisplayYms();
   const m0=mkMonth(y0);
   m0.balance=1234567890;
@@ -576,12 +575,17 @@ function loadState(){
   ];
   m1.cardAmounts={1:654321,2:654321,3:654321,5:654321,6:654321,8:654321};
   return{
-    cards:DEMO_CARDS,months:{[y0]:m0,[y1]:m1},
+    cards:[...DEMO_CARDS],months:{[y0]:m0,[y1]:m1},
     nxtCard:12,nxtItem:10,
     tabOrder:TAB_DEFS.filter(t=>t.id!=='home').map(t=>t.id),tabHidden:[],
     firstLaunch:true,lastBackup:null,backupCreatedAt:null,
     tutStep:0,
   };
+}
+
+function loadState(){
+  try{const r=localStorage.getItem(SK);if(r)return JSON.parse(r);}catch(e){}
+  return initDemoData();
 }
 function save(){localStorage.setItem(SK,JSON.stringify(S));}
 let S=loadState();
@@ -1743,8 +1747,8 @@ function confirmReset(){
      <button class="btn" style="background:var(--ng);color:#fff" onclick="doReset()">そのまま削除</button>`);
 }
 function doReset(){
-  Object.assign(S,{months:{},cards:[],nxtItem:1,nxtCard:1,firstLaunch:true});
-  save();mClose();goTab('home');renderDash();renderSettings();
+  S=initDemoData();
+  save();mClose();goTab('home');buildTabs();renderDash();renderHome();renderSettings();
 }
 
 // ═══════════════════════════════════════════

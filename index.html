@@ -566,7 +566,7 @@ function loadState(){
     cards:DEMO_CARDS,months:{[y0]:m0,[y1]:m1},
     nxtCard:12,nxtItem:10,
     tabOrder:TAB_DEFS.filter(t=>t.id!=='home').map(t=>t.id),tabHidden:[],
-    firstLaunch:false,lastBackup:null,backupCreatedAt:null,
+    firstLaunch:true,lastBackup:null,backupCreatedAt:null,
     tutStep:0,
   };
 }
@@ -873,9 +873,8 @@ function renderDash(){
       style="max-width:160px;font-size:15px;display:none"
       value="${md.balance?fmtAmt(md.balance):''}" placeholder="0"
       oninput="this.value=fmtAmtInput(this.value)"
-      onchange="saveBalInline('${ymStr}')"
-      onkeydown="if(event.key==='Enter'){saveBalInline('${ymStr}');}"
-      onblur="deactivateBalInput('${ymStr}')">
+      onkeydown="if(event.key==='Enter'){this.blur();}"
+      onblur="saveBalInline('${ymStr}')">
   </div>`;
 
   document.getElementById('dash-body').innerHTML=`
@@ -965,10 +964,14 @@ function deactivateBalInput(ymStr){
 }
 function saveBalInline(ymStr){
   const el=document.getElementById('bal-input-'+ymStr);
-  if(el)getMD(ymStr).balance=parseAmt(el.value);
+  const val=el?parseAmt(el.value):0;
+  getMD(ymStr).balance=val;
   save();syncNextMonthBalance();
-  renderDash();
-  if(activeTab==='home')renderHome();
+  // blurイベント完了後にDOMを再生成（SP競合回避）
+  setTimeout(()=>{
+    renderDash();
+    if(activeTab==='home')renderHome();
+  },0);
 }
 // 後方互換
 function saveAmt2(cid){saveAmtInline(cid);}

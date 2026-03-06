@@ -1003,20 +1003,6 @@ function saveBalInline(ymStr){
   },0);
 }
 // 後方互換
-function saveAmt2(cid){saveAmtInline(cid);}
-function editBal(ymStr){
-  const cur=getMD(ymStr).balance||0;
-  mOpen('口座残高を入力',
-    `<div class="frow"><label class="flbl">金額（円）<span class="req">*必須</span></label>
-     <input class="finput" id="mi_b" type="text" inputmode="numeric"
-       value="${cur?fmtAmt(cur):''}" placeholder="0"
-       oninput="this.value=fmtAmtInput(this.value)"
-       onkeydown="if(event.key==='Enter')_saveBal('${ymStr}')"></div>`,
-    `<button class="btn btn-g" onclick="mClose()">キャンセル</button>
-     <button class="btn btn-p" onclick="_saveBal('${ymStr}')">保存</button>`);
-  setTimeout(()=>document.getElementById('mi_b')?.focus(),100);
-}
-function _saveBal(y){getMD(y).balance=parseAmt(document.getElementById('mi_b').value);save();mClose();renderDash();renderHome();}
 function toggleItem(ymStr,id){
   const it=(getMD(ymStr).items||[]).find(x=>x.id===id);
   if(it){it.checked=!it.checked;save();renderDash();renderHome();}
@@ -1089,6 +1075,7 @@ function itemDrop(e,ymStr){
 // CALENDAR
 // ═══════════════════════════════════════════
 let calIdx=0;
+let _calCharts={};
 
 function switchCalMonth(idx){
   calIdx=idx;
@@ -1179,31 +1166,6 @@ function renderCal(){
   document.getElementById('cal-grid-sp').innerHTML=spHtml;
 }
 
-function ccell(){} // 旧関数（互換性のため残す）
-
-function renderCalPie(ymStr){
-  const[,m]=ymStr.split('-').map(Number),md=getMD(ymStr);
-  document.getElementById('cal-pie-title').textContent=`${ymLbl(ymStr)} カード別利用額`;
-  const vis=S.cards.filter(c=>c.visible);
-  const entries=vis.map((c,i)=>({
-    name:c.name,
-    amt:(md.cardAmounts[c.id]||0)+(c.annualFee>0&&c.annualMonth===m?c.annualFee:0),
-    color:CARD_COLORS[i%CARD_COLORS.length]
-  })).filter(e=>e.amt>0);
-  const total=entries.reduce((s,e)=>s+e.amt,0);
-  document.getElementById('cal-pie-total').textContent=fy(total);
-  const ctx=document.getElementById('cal-pie-canvas').getContext('2d');
-  if(_calCharts.pie){_calCharts.pie.destroy();}
-  if(!entries.length){document.getElementById('cal-pie-legend').innerHTML='<div class="empty">データなし</div>';return;}
-  _calCharts.pie=new Chart(ctx,{
-    type:'doughnut',
-    data:{labels:entries.map(e=>e.name),datasets:[{data:entries.map(e=>e.amt),backgroundColor:entries.map(e=>e.color),borderWidth:2,borderColor:'#161927',hoverOffset:5}]},
-    options:{cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fy(c.parsed)} (${Math.round(c.parsed/total*100)}%)`}}},animation:{duration:400}}
-  });
-  document.getElementById('cal-pie-legend').innerHTML=entries.slice(0,8).map(e=>
-    `<div class="pie-leg-row"><div class="pie-leg-dot" style="background:${e.color}"></div><span class="pie-leg-name">${e.name}</span><span class="pie-leg-val">${fy(e.amt)}</span></div>`
-  ).join('');
-}
 
 // ═══════════════════════════════════════════
 // ANNUAL FEE RANK
@@ -1214,9 +1176,8 @@ const AF_RANKS=[
   {thresh:300000,  name:'チタン',      color:'#94a3b8',bg:'linear-gradient(135deg,#1a1f2e,#2d3a50)',icon:'⚔️',desc:'鋼の意志'},
   {thresh:100000,  name:'プラチナ',    color:'#e2e8f0',bg:'linear-gradient(135deg,#2a2f3e,#4a5068)',icon:'🏆',desc:'白金の誇り'},
   {thresh:50000,   name:'ゴールド',    color:'#c9a84c',bg:'linear-gradient(135deg,#2a1e0a,#5a3e10)',icon:'🥇',desc:'黄金の輝き'},
-  {thresh:30000,   name:'プラチナ',          color:'#cbd5e1',bg:'linear-gradient(135deg,#1e2030,#3a4060)',icon:'✨',desc:'銀翼の栄光'},
-  {thresh:10000,   name:'ゴールド',           color:'#d4a742',bg:'linear-gradient(135deg,#1e1508,#3a2c10)',icon:'⭐',desc:'金の登竜門'},
-  {thresh:0,       name:'スタンダード',       color:'var(--t2)',bg:'linear-gradient(135deg,#0d0f18,#161927)',icon:'🃏',desc:'旅の始まり'},
+  {thresh:10000,   name:'シルバー',    color:'#cbd5e1',bg:'linear-gradient(135deg,#1e2030,#3a4060)',icon:'✨',desc:'銀翼の栄光'},
+  {thresh:0,       name:'ブロンズ',    color:'#d4a742',bg:'linear-gradient(135deg,#1e1508,#3a2c10)',icon:'🃏',desc:'旅の始まり'},
 ];
 function getAfRank(total){return AF_RANKS.find(r=>total>=r.thresh)||AF_RANKS[AF_RANKS.length-1];}
 function calcTotalAnnualFee(){return S.cards.filter(c=>c.visible&&c.annualFee>0).reduce((s,c)=>s+c.annualFee,0);}
@@ -1508,46 +1469,6 @@ function showCard(id){
     if(activeTab==='home')renderHome();
   }
 }
-function toggleCardVis(id){const c=S.cards.find(x=>x.id===id);if(c){c.visible=!c.visible;save();renderCards();}}
-
-function layoutWalletStack(){
-  const isPC=window.innerWidth>=768;
-  if(isPC)return;
-  const wrap=document.querySelector('.wallet-wrap');
-  if(!wrap)return;
-  const cards=[...wrap.querySelectorAll('.wallet-card')];
-  if(!cards.length)return;
-
-  const PEEK=50;
-  const cardW=wrap.offsetWidth;
-  const cardH=Math.round(cardW*54/85.6);
-
-  let top=0;
-  cards.forEach((el,i)=>{
-    const isExp=el.classList.contains('expanded');
-    el.style.position='absolute';
-    el.style.left='0';
-    el.style.right='0';
-    el.style.width='';
-    el.style.top=top+'px';
-    if(isExp){
-      el.style.height='auto';
-      el.style.zIndex='100';
-      // レイアウト確定後に高さ取得
-      const h=el.getBoundingClientRect().height||cardH*1.8;
-      top+=h+12;
-    } else {
-      el.style.height=cardH+'px';
-      el.style.zIndex=String(cards.length-i+1);
-      top+=PEEK;
-    }
-  });
-  const lastEl=cards[cards.length-1];
-  const lastIsExp=lastEl.classList.contains('expanded');
-  const lastH=lastIsExp?(lastEl.getBoundingClientRect().height||cardH*1.8):cardH;
-  wrap.style.height=(parseFloat(lastEl.style.top)+lastH)+'px';
-}
-
 function openCardDetail(id){
   const c=S.cards.find(x=>x.id===id);
   if(!c)return;
@@ -1717,10 +1638,9 @@ function copyShareUrl(){
     if(lbl){lbl.textContent='コピーしました！';setTimeout(()=>lbl.textContent='URLをコピー',2000);}
   });
 }
+let _touchDragTabId=null,_touchDragEl=null,_dragTabId=null;
 function tabDragStart(e,id){_dragTabId=id;e.dataTransfer.effectAllowed='move';e.currentTarget.classList.add('dragging');}
 function tabDragOver(e){e.preventDefault();document.querySelectorAll('.tab-order-item').forEach(el=>el.classList.remove('drag-over'));e.currentTarget.classList.add('drag-over');}
-
-let _touchDragTabId=null,_touchDragEl=null,_dragTabId=null;
 function tabTouchStart(e,id){
   const def=TAB_DEFS.find(t=>t.id===id);
   if(def?.fixed)return;

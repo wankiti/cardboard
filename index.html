@@ -157,6 +157,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .cacc-month-lbl{font-size:11px;color:var(--t2);width:48px;flex-shrink:0;}
 .cacc-input{flex:1;background:var(--bg);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:15px;padding:8px 10px;outline:none;transition:.15s;-webkit-appearance:none;text-align:right;}
 .cacc-input:focus{border-color:var(--accent);}
+.inline-amt-input{background:var(--s2);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:14px;padding:5px 10px;outline:none;transition:.15s;-webkit-appearance:none;text-align:right;min-width:70px;max-width:150px;width:auto;}
+.inline-amt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,141,238,0.12);}
+.inline-amt-input::placeholder{color:var(--t3);}
+.inline-amt-input.pos{color:var(--ok);}
+.inline-amt-input.neg{color:var(--ng);}
 .cacc-save{background:var(--accent);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:700;padding:8px 13px;transition:.15s;white-space:nowrap;}
 .cacc-save:hover{opacity:.85;}
 .ann-badge{font-size:10px;background:rgba(240,156,42,0.15);color:var(--warn);border:1px solid rgba(240,156,42,0.25);border-radius:4px;padding:1px 5px;flex-shrink:0;}
@@ -855,7 +860,7 @@ function renderDash(){
       <div class="cacc-months">
         <div class="cacc-month-row">
           <span class="cacc-month-lbl">${ymLbl(ym0)}</span>
-          <input class="cacc-input" id="ci0-${c.id}" type="text" inputmode="numeric"
+          <input class="inline-amt-input" id="ci0-${c.id}" type="text" inputmode="numeric"
             value="${amt0?fmtAmt(amt0):''}" placeholder="0"
             oninput="this.value=fmtAmtInput(this.value)"
             onchange="saveAmtInline(${c.id})"
@@ -863,7 +868,7 @@ function renderDash(){
         </div>
         <div class="cacc-month-row">
           <span class="cacc-month-lbl">${ymLbl(ym1)}</span>
-          <input class="cacc-input" id="ci1-${c.id}" type="text" inputmode="numeric"
+          <input class="inline-amt-input" id="ci1-${c.id}" type="text" inputmode="numeric"
             value="${amt1?fmtAmt(amt1):''}" placeholder="0"
             oninput="this.value=fmtAmtInput(this.value)"
             onchange="saveAmtInline(${c.id})"
@@ -890,19 +895,22 @@ function renderDash(){
         ?`<span style="font-size:11px;color:var(--t3);font-family:var(--mono);white-space:nowrap;min-width:52px;text-align:center">${it.day}日<br><span style="font-size:9px;opacity:.7">${DM_LABEL[it.dayMode||'prev']}</span></span>`
         :`<span style="min-width:52px"></span>`
       }
-      <span class="row-val${it.amount<0?' neg':' pos'}"
-        onclick="editItem('${ymStr}',${it.id})"
-        style="cursor:pointer;min-width:70px;text-align:right">${fy(it.amount)}</span>
+      ${dashEditMode
+        ?`<span class="row-val${it.amount<0?' neg':' pos'}" onclick="editItem('${ymStr}',${it.id})" style="cursor:pointer;min-width:70px;text-align:right">${fy(it.amount)}</span>`
+        :`<input class="inline-amt-input${it.amount<0?' neg':it.amount>0?' pos':''}" id="iamt-${ymStr}-${it.id}" type="text" inputmode="numeric"
+          value="${it.amount?fmtAmt(Math.abs(it.amount)):''}" placeholder="0"
+          oninput="this.value=fmtAmtInput(this.value)"
+          onkeydown="if(event.key==='Enter'){this.blur();}"
+          onblur="saveItemAmtInline('${ymStr}',${it.id},${it.amount<0})">`
+      }
       ${dashEditMode?`<button class="rdel" onclick="delItem('${ymStr}',${it.id})">×</button>`:''}
     </div>`;
 
-  // 口座残高（タップで入力）
-  const balRow=`<div class="row" id="bal-row-${ymStr}" onclick="activateBalInput('${ymStr}')" style="cursor:pointer">
+  // 口座残高（常時input）
+  const balRow=`<div class="row">
     <span class="row-lbl">口座残高</span>
     <span style="min-width:52px"></span>
-    <span class="row-val pos" id="bal-display-${ymStr}" style="font-family:var(--mono);min-width:70px;text-align:right">${md.balance?fy(md.balance):'—'}</span>
-    <input class="cacc-input" id="bal-input-${ymStr}" type="text" inputmode="numeric"
-      style="max-width:160px;font-size:15px;display:none"
+    <input class="inline-amt-input" id="bal-input-${ymStr}" type="text" inputmode="numeric"
       value="${md.balance?fmtAmt(md.balance):''}" placeholder="0"
       oninput="this.value=fmtAmtInput(this.value)"
       onkeydown="if(event.key==='Enter'){this.blur();}"
@@ -985,33 +993,19 @@ function saveAmtInline(cid){
   // ホームも更新
   if(activeTab==='home')renderHome();
 }
-function activateBalInput(ymStr){
-  const disp=document.getElementById('bal-display-'+ymStr);
-  const inp=document.getElementById('bal-input-'+ymStr);
-  const row=document.getElementById('bal-row-'+ymStr);
-  if(!disp||!inp)return;
-  disp.style.display='none';
-  inp.style.display='';
-  row.style.cursor='default';
-  inp.focus();inp.select();
-}
-function deactivateBalInput(ymStr){
-  const md=getMD(ymStr);
-  const disp=document.getElementById('bal-display-'+ymStr);
-  const inp=document.getElementById('bal-input-'+ymStr);
-  const row=document.getElementById('bal-row-'+ymStr);
-  if(!disp||!inp)return;
-  disp.textContent=md.balance?fy(md.balance):'—';
-  disp.style.display='';
-  inp.style.display='none';
-  if(row)row.style.cursor='pointer';
+function saveItemAmtInline(ymStr,id,isNeg){
+  const el=document.getElementById(`iamt-${ymStr}-${id}`);
+  if(!el)return;
+  const abs=parseAmt(el.value);
+  const val=isNeg?-abs:abs;
+  const it=(getMD(ymStr).items||[]).find(x=>x.id===id);
+  if(it){it.amount=val;save();renderDash();if(activeTab==='home')renderHome();}
 }
 function saveBalInline(ymStr){
   const el=document.getElementById('bal-input-'+ymStr);
   const val=el?parseAmt(el.value):0;
   getMD(ymStr).balance=val;
   save();syncNextMonthBalance();
-  // blurイベント完了後にDOMを再生成（SP競合回避）
   setTimeout(()=>{
     renderDash();
     if(activeTab==='home')renderHome();

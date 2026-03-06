@@ -810,11 +810,15 @@ function renderDash(){
     const amt=md.cardAmounts[c.id]||0;
     const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
     const act=nextBiz(y,m,raw);
-    return{c,amt,act};
-  }).sort((a,b)=>a.act-b.act||b.amt-a.amt);
-
-  const cardRows=visWithMeta.map(({c,amt,act})=>{
     const diff=(act-new Date(ts))/864e5;
+    return{c,amt,act,diff};
+  }).sort((a,b)=>{
+    const ap=a.diff<0,bp=b.diff<0;
+    if(ap!==bp)return ap?1:-1;
+    return ap?b.act-a.act:a.act-b.act||b.amt-a.amt;
+  });
+
+  const cardRows=visWithMeta.map(({c,amt,act,diff})=>{
     let dc='cacc-date';
     if(diff<0)dc+=' past';
     else if(diff>=0&&diff<1)dc+=' tod';else if(diff>=0&&diff<=5)dc+=' soon';
@@ -826,7 +830,7 @@ function renderDash(){
     const amt1=md1.cardAmounts[c.id]||0;
     return`<div class="cacc-head" onclick="toggleAcc(${c.id})">
       <span class="cacc-name${diff<0?' past':''}">${c.name}</span>
-      <span style="width:18px;text-align:center;flex-shrink:0;font-size:13px">${diff<0&&amt>0?'🪦':diff>=0&&diff<=5&&amt>0?'🔪':''}</span>
+      <span style="width:18px;text-align:center;flex-shrink:0;font-size:13px">${diff<0&&amt>0?'🪦':''}</span>
       <span class="${dc}">${m}月${act.getDate()}日${shifted?'*':''}</span>
       <span class="cacc-amt${amt===0?' zero':diff<0?' past':''}">${amt===0?'—':fy(amt)}</span>
       <span class="cacc-chev" id="chev-${c.id}">▾</span>
@@ -1269,22 +1273,26 @@ function renderHome(){
   </div>`:'';
 
 
-  // 今月引き落としリスト（日付昇順→金額降順）
+  // 今月引き落としリスト（未来：日付昇順→金額降順、済み：下部）
   const homeCards=vis.map(c=>{
     const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
     const act=nextBiz(y,m,raw);
     const amt=md.cardAmounts[c.id]||0;
-    return{name:c.name,act,amt};
-  }).sort((a,b)=>a.act-b.act||b.amt-a.amt);
+    const diff=(act-new Date(ts))/864e5;
+    return{name:c.name,act,amt,diff};
+  }).sort((a,b)=>{
+    const ap=a.diff<0,bp=b.diff<0;
+    if(ap!==bp)return ap?1:-1;
+    return ap?b.act-a.act:a.act-b.act||b.amt-a.amt;
+  });
   const ts=todayStr();
 
   const billList=homeCards.length?homeCards.map(c=>{
     const dateStr=`${m}/${c.act.getDate()}`;
-    const diff=(c.act-new Date(ts))/864e5;
-    const isPast=diff<0;
-    const isSoon=diff>=0&&diff<=5;
-    const isToday=diff>=0&&diff<1;
-    const emoji=isPast&&c.amt>0?'🪦':isSoon&&c.amt>0?'🔪':'';
+    const isPast=c.diff<0;
+    const isSoon=c.diff>=0&&c.diff<=5;
+    const isToday=c.diff>=0&&c.diff<1;
+    const emoji=isPast&&c.amt>0?'🪦':'';
     const dateColor=isToday?'color:var(--ng);font-weight:700':isSoon?'color:var(--warn)':'color:var(--t3)';
     const nameColor=isPast?'color:var(--t3)':'color:var(--text)';
     const amtColor=isPast?'color:var(--t3)':'color:var(--ng)';

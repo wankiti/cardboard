@@ -130,7 +130,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 /* ── Card accordion ── */
 .cacc-head{display:flex;align-items:center;gap:8px;padding:11px 13px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);transition:background .1s;}
 .cacc-name{flex:1;font-size:14px;font-weight:500;}
-.cacc-date{font-size:11px;color:var(--t2);font-family:var(--mono);white-space:nowrap;}
+.cacc-date{font-size:11px;color:var(--t2);font-family:var(--mono);white-space:nowrap;min-width:52px;text-align:center;}
+.cacc-date.past{color:var(--t3);}
 .cacc-date.soon{color:var(--warn);}
 .cacc-date.tod{color:var(--ng);font-weight:700;}
 .cacc-amt{font-family:var(--mono);font-size:14px;min-width:70px;text-align:right;}
@@ -390,10 +391,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   </div>
   <!-- CALENDAR -->
   <div id="pg-cal" class="page">
-    <div class="cal-nav">
-      <button class="cal-nav-btn" onclick="calMove(-1)">‹</button>
-      <h2 id="cal-lbl"></h2>
-      <button class="cal-nav-btn" onclick="calMove(1)">›</button>
+    <div class="month-sw">
+      <button class="msw-btn on" id="cmsw0" onclick="switchCalMonth(0)"></button>
+      <button class="msw-btn"   id="cmsw1" onclick="switchCalMonth(1)"></button>
     </div>
     <div class="cal-wrap">
       <!-- PC: 7列グリッド -->
@@ -810,7 +810,8 @@ function renderDash(){
     const act=nextBiz(y,m,raw);
     const diff=(act-new Date(ts))/864e5;
     let dc='cacc-date';
-    if(diff>=0&&diff<1)dc+=' tod';else if(diff>=0&&diff<=5)dc+=' soon';
+    if(diff<0)dc+=' past';
+    else if(diff>=0&&diff<1)dc+=' tod';else if(diff>=0&&diff<=5)dc+=' soon';
     const shifted=fmtD(act)!==`${y}-${z2(m)}-${z2(raw)}`;
     const raw1=c.billDay===99?new Date(y1p,m1p,0).getDate():c.billDay;
     const act1=nextBiz(y1p,m1p,raw1);
@@ -818,12 +819,12 @@ function renderDash(){
     const amt1=md1.cardAmounts[c.id]||0;
     return`<div class="cacc-head" onclick="toggleAcc(${c.id})">
       <span class="cacc-name">${c.name}</span>
-      <span class="${dc}">${m}月${act.getDate()}日${shifted?'*':''}</span>
+      <span class="${dc}">${diff<0&&amt>0?'💸':''} ${m}月${act.getDate()}日${shifted?'*':''}</span>
       <span class="cacc-amt${amt===0?' zero':''}">${amt===0?'—':fy(amt)}</span>
       <span class="cacc-chev" id="chev-${c.id}">▾</span>
     </div>
     <div class="cacc-body" id="acc-${c.id}">
-      <div class="cacc-meta">締め日 ${c.closeDay===99?'末日':c.closeDay+'日'} / 引落 ${m}月${act.getDate()}日${shifted?' (振替)':''} / ${m1p}月${act1.getDate()}日</div>
+      <div class="cacc-meta">締め日 ${c.closeDay===99?'末日':c.closeDay+'日'} / 引き落とし ${m}月${act.getDate()}日${shifted?' (振替)':''} / ${m1p}月${act1.getDate()}日</div>
       <div class="cacc-months">
         <div class="cacc-month-row">
           <span class="cacc-month-lbl">${ymLbl(ym0)}</span>
@@ -858,17 +859,21 @@ function renderDash(){
       <span class="row-lbl${it.checked&&!dashEditMode?' done':''}"
         onclick="${dashEditMode?`editItem('${ymStr}',${it.id})`:''}"
         style="${dashEditMode?'cursor:pointer':''}">${it.label}</span>
+      ${!dashEditMode&&it.day!=null
+        ?`<span style="font-size:11px;color:var(--t3);font-family:var(--mono);white-space:nowrap;min-width:52px;text-align:center">${it.day}日<br><span style="font-size:9px;opacity:.7">${DM_LABEL[it.dayMode||'prev']}</span></span>`
+        :`<span style="min-width:52px"></span>`
+      }
       <span class="row-val${it.amount<0?' neg':' pos'}"
         onclick="editItem('${ymStr}',${it.id})"
-        style="cursor:pointer">${fy(it.amount)}</span>
-      ${!dashEditMode&&it.day!=null?`<span style="font-size:11px;color:var(--t2);font-family:var(--mono);flex-shrink:0">${it.day}日<span style="opacity:.55;font-size:10px">(${DM_LABEL[it.dayMode||'prev']})</span></span>`:''}
+        style="cursor:pointer;min-width:70px;text-align:right">${fy(it.amount)}</span>
       ${dashEditMode?`<button class="rdel" onclick="delItem('${ymStr}',${it.id})">×</button>`:''}
     </div>`;
 
   // 口座残高（タップで入力）
   const balRow=`<div class="row" id="bal-row-${ymStr}" onclick="activateBalInput('${ymStr}')" style="cursor:pointer">
     <span class="row-lbl">口座残高</span>
-    <span class="row-val pos" id="bal-display-${ymStr}" style="font-family:var(--mono)">${md.balance?fy(md.balance):'—'}</span>
+    <span style="min-width:52px"></span>
+    <span class="row-val pos" id="bal-display-${ymStr}" style="font-family:var(--mono);min-width:70px;text-align:right">${md.balance?fy(md.balance):'—'}</span>
     <input class="cacc-input" id="bal-input-${ymStr}" type="text" inputmode="numeric"
       style="max-width:160px;font-size:15px;display:none"
       value="${md.balance?fmtAmt(md.balance):''}" placeholder="0"
@@ -922,8 +927,20 @@ function dismissTutorial(clearData){
   if(clearData){S.months={};S.nxtItem=1;getDisplayYms().forEach(y=>getMD(y));}
   save();renderDash();renderHome();
 }
+function completeTutorial(){
+  mOpen('チュートリアル完了',
+    `<div style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:16px">デモデータを削除してはじめますか？</div>
+     <div style="display:flex;gap:8px">
+       <button class="btn btn-g" style="flex:1" onclick="dismissTutorial(false);mClose()">デモのまま使う</button>
+       <button class="btn btn-p" style="flex:1" onclick="dismissTutorial(true);mClose()">削除してはじめる</button>
+     </div>`
+  );
+}
 function advanceTutorial(step){
-  S.tutStep=step;save();renderDash();renderHome();
+  S.tutStep=step;save();
+  if(step===1){goTab('dash');return;}
+  if(step===2){goTab('cards');return;}
+  renderDash();renderHome();
 }
 function toggleAcc(cid){
   const body=document.getElementById('acc-'+cid),chev=document.getElementById('chev-'+cid);
@@ -1059,14 +1076,23 @@ function itemDrop(e,ymStr){
 // ═══════════════════════════════════════════
 // CALENDAR
 // ═══════════════════════════════════════════
-let calYm=(()=>{const d=new Date();return ym(d.getFullYear(),d.getMonth()+1);})();
-const _calCharts={};
+let calIdx=0;
 
-function calMove(d){let[y,m]=calYm.split('-').map(Number);m+=d;if(m>12){m=1;y++;}if(m<1){m=12;y--;}calYm=ym(y,m);renderCal();}
+function switchCalMonth(idx){
+  calIdx=idx;
+  renderCal();
+}
 
 function renderCal(){
-  document.getElementById('cal-lbl').textContent=ymLbl(calYm);
-  const[y,m]=calYm.split('-').map(Number),md=getMD(calYm);
+  const yms=getYms();
+  const ymStr=yms[calIdx];
+  const cur=document.getElementById('cmsw0');
+  const nxt=document.getElementById('cmsw1');
+  if(cur)cur.textContent=ymLbl(yms[0]);
+  if(nxt)nxt.textContent=ymLbl(yms[1]);
+  if(cur)cur.classList.toggle('on',calIdx===0);
+  if(nxt)nxt.classList.toggle('on',calIdx===1);
+  const[y,m]=ymStr.split('-').map(Number),md=getMD(ymStr);
   const ev={};
   function add(ds,e){if(!ev[ds])ev[ds]=[];ev[ds].push(e);}
 
@@ -1216,7 +1242,7 @@ function renderHome(){
         <div style="background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">1</div>
         <div class="tutorial-banner-title" style="margin:0">口座残高を入力しましょう</div>
       </div>
-      <div class="tutorial-banner-body">「明細」タブの口座残高欄に直接入力できます。</div>
+      <div class="tutorial-banner-body">口座残高欄に直接入力できます。</div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
         <button class="btn btn-sm btn-g" onclick="advanceTutorial(0)">戻る</button>
         <button class="btn btn-sm btn-p" onclick="advanceTutorial(2)">次へ →</button>
@@ -1226,19 +1252,16 @@ function renderHome(){
         <div style="background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">2</div>
         <div class="tutorial-banner-title" style="margin:0">カードを追加しましょう</div>
       </div>
-      <div class="tutorial-banner-body">「カード」タブからクレジットカードを登録できます。<br>締め日・引き落とし日を入力するとカレンダーに表示されます。</div>
+      <div class="tutorial-banner-body">クレジットカードを登録できます。<br>締め日・引き落とし日を入力するとカレンダーに表示されます。</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
         <button class="btn btn-sm btn-g" onclick="advanceTutorial(1)">戻る</button>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-sm btn-g" onclick="goTab('cards')" style="color:var(--accent);border-color:rgba(91,141,238,0.4)">カードタブへ</button>
-          <button class="btn btn-sm btn-p" onclick="dismissTutorial(false)">完了</button>
-        </div>
+        <button class="btn btn-sm btn-p" onclick="completeTutorial()">完了</button>
       </div>
     `:''}
   </div>`:'';
 
 
-  // 今月引落リスト（日付ごと）
+  // 今月引き落としリスト（日付ごと）
   const billByDate={};
   vis.forEach(c=>{
     const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
@@ -1255,17 +1278,17 @@ function renderHome(){
   const billList=billDates.length?billDates.map(b=>{
     const dateStr=`${m}/${b.date.getDate()}`;
     const diff=(b.date-new Date(ts))/864e5;
-    let urgency='';
-    if(diff>=0&&diff<1)urgency='color:var(--ng);font-weight:700';
-    else if(diff>=0&&diff<=5)urgency='color:var(--warn)';
-    return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
-      <span style="font-family:var(--mono);font-size:12px;color:var(--t2);min-width:36px;${urgency}">${dateStr}</span>
-      <div style="flex:1">
-        ${b.cards.filter(c=>c.amt>0).map(c=>`<div style="font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div>`).join('')}
-        ${b.total===0?`<div style="font-size:12px;color:var(--t3)">未入力</div>`:''}
-      </div>
-      <span style="font-family:var(--mono);font-size:13px;${b.total>0?'color:var(--ng)':'color:var(--t3)'}">${b.total>0?fy(b.total):'—'}</span>
-    </div>`;
+    let dateColor='color:var(--t3)';
+    if(diff>=0&&diff<1)dateColor='color:var(--ng);font-weight:700';
+    else if(diff>=0&&diff<=5)dateColor='color:var(--warn)';
+    return b.cards.filter(c=>c.amt>0).map((c,ci)=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <div style="flex:1;min-width:0;margin-right:12px">
+          <div style="font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div>
+          ${ci===0?`<div style="font-size:10px;${dateColor};margin-top:1px">${dateStr}${diff<0?'':''}</div>`:''}
+        </div>
+        <span style="font-family:var(--mono);font-size:13px;color:var(--ng);white-space:nowrap;flex-shrink:0">${fy(c.amt)}</span>
+      </div>`).join('');
   }).join(''):`<div class="empty">引き落とし予定なし</div>`;
 
   document.getElementById('home-body').innerHTML=`
@@ -1311,13 +1334,13 @@ function renderHome(){
       </div>
     </div>
 
-    <!-- 今月引落リスト -->
+    <!-- 今月引き落としリスト -->
     <div style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:16px;margin-bottom:13px">
       <div style="font-size:11px;font-weight:700;color:var(--t2);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px">${ymLbl(ymStr)} 引き落とし予定</div>
       ${billList}
-      ${liab>0?`<div style="display:flex;justify-content:space-between;padding-top:9px;margin-top:4px">
+      ${liab>0?`<div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;margin-top:2px">
         <span style="font-size:12px;color:var(--t2);font-weight:700">合計</span>
-        <span style="font-family:var(--mono);font-size:14px;color:var(--ng)">${fy(liab)}</span>
+        <span style="font-family:var(--mono);font-size:14px;color:var(--ng);flex-shrink:0">${fy(liab)}</span>
       </div>`:''}
     </div>
   `;
@@ -1431,7 +1454,7 @@ function renderCards(){
   }).join('');
 
   const sortOpts=[
-    {v:'custom',l:'追加順'},{v:'billDay',l:'引落日順'},
+    {v:'custom',l:'追加順'},{v:'billDay',l:'引き落とし日順'},
     {v:'closeDay',l:'締め日順'},{v:'brand',l:'ブランド順'},{v:'annualFee',l:'年会費順'},
   ];
   const sortSel=`<select onchange="cardSortMode=this.value;renderCards()" style="background:var(--s2);border:1px solid var(--b1);border-radius:7px;color:var(--text);font-size:12px;padding:5px 8px;outline:none;cursor:pointer">
@@ -1523,7 +1546,7 @@ function openCardDetail(id){
     </div>
     <div class="card-detail-body">
       <div class="card-detail-row">
-        <span class="card-detail-lbl">締め日 / 引落日</span>
+        <span class="card-detail-lbl">締め日 / 引き落とし日</span>
         <span class="card-detail-val">${c.closeDay===99?'末日':c.closeDay+'日'} / ${c.billDay}日</span>
       </div>
       ${c.annualFee?`<div class="card-detail-row">
@@ -1610,9 +1633,10 @@ function renderSettings(){
           const isHidden=hidden.includes(t.id)&&!t.fixed;
           return`<div class="tab-order-item${isHidden?' hidden-tab':''}" draggable="${!t.fixed}" data-tab-id="${t.id}"
             ondragstart="tabDragStart(event,'${t.id}')" ondragover="tabDragOver(event)" ondrop="tabDrop(event,'${t.id}')"
-            ontouchstart="tabTouchStart(event,'${t.id}')" ontouchmove="tabTouchMove(event)" ontouchend="tabTouchEnd(event)"
-            style="user-select:none;-webkit-user-select:none;touch-action:none">
-            <span class="tab-order-handle">${t.fixed?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            style="user-select:none;-webkit-user-select:none">
+            <span class="tab-order-handle" style="touch-action:none;cursor:grab;padding:4px 6px;margin:-4px -2px"
+              ontouchstart="tabTouchStart(event,'${t.id}')" ontouchmove="tabTouchMove(event)" ontouchend="tabTouchEnd(event)"
+            >${t.fixed?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
   <path d="M12 2a4 4 0 014 4c0 1.5-.5 2.8-1.4 3.8L16 21l-4-2-4 2 1.4-11.2A5.96 5.96 0 018 6a4 4 0 014-4z" fill="currentColor" opacity=".85"/>
 </svg>`:'⠿'}</span>
             <span class="tab-order-icon">${tabSvg(t.id,false)}</span>
@@ -1635,17 +1659,17 @@ function renderSettings(){
     </div>
     <div class="st-sec"><div class="st-sec-title">クレジット</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <div class="author-banner" style="flex:1;min-width:140px" onclick="window.open('https://x.com/_4cls','_blank')">
+        <div class="author-banner" style="flex:1;min-width:0" onclick="window.open('https://x.com/_4cls','_blank')">
           <div class="author-banner-name">あきれす</div>
           <div class="author-banner-x">𝕏 @_4cls</div>
           <div style="font-size:11px;color:var(--t3);margin-top:3px">Author</div>
         </div>
-        <div class="author-banner" style="flex:1;min-width:140px" onclick="window.open('https://x.com/m8395i','_blank')">
+        <div class="author-banner" style="flex:1;min-width:0" onclick="window.open('https://x.com/m8395i','_blank')">
           <div class="author-banner-name">Masa</div>
           <div class="author-banner-x">𝕏 @m8395i</div>
           <div style="font-size:11px;color:var(--t3);margin-top:3px">Special Thanks</div>
         </div>
-        <div class="author-banner" style="flex:1;min-width:140px" onclick="window.open('https://x.com/peko','_blank')">
+        <div class="author-banner" style="flex:1;min-width:0" onclick="window.open('https://x.com/peko','_blank')">
           <div class="author-banner-name">ぺこ</div>
           <div class="author-banner-x">𝕏 @peko</div>
           <div style="font-size:11px;color:var(--t3);margin-top:3px">Special Thanks</div>

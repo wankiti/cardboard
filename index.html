@@ -1623,11 +1623,16 @@ function renderSettings(){
         <div class="author-banner" style="flex:1;min-width:140px" onclick="window.open('https://x.com/_4cls','_blank')">
           <div class="author-banner-name">あきれす</div>
           <div class="author-banner-x">𝕏 @_4cls</div>
-          <div style="font-size:11px;color:var(--t3);margin-top:3px">作者</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px">Author</div>
         </div>
         <div class="author-banner" style="flex:1;min-width:140px" onclick="window.open('https://x.com/m8395i','_blank')">
           <div class="author-banner-name">Masa</div>
           <div class="author-banner-x">𝕏 @m8395i</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px">Special Thanks</div>
+        </div>
+        <div class="author-banner" style="flex:1;min-width:140px" onclick="window.open('https://x.com/peko','_blank')">
+          <div class="author-banner-name">ぺこ</div>
+          <div class="author-banner-x">𝕏 @peko</div>
           <div style="font-size:11px;color:var(--t3);margin-top:3px">Special Thanks</div>
         </div>
       </div>
@@ -1635,11 +1640,11 @@ function renderSettings(){
 
     <div class="st-sec"><div class="st-sec-title">シェア</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="st-row" style="flex:1;min-width:140px;cursor:pointer;justify-content:center" onclick="shareToX()">
+        <button class="st-row" style="flex:1;min-width:140px;cursor:not-allowed;justify-content:center;opacity:.35" disabled>
           <span class="st-icon" style="font-size:18px">𝕏</span>
           <div class="st-body"><div class="st-lbl">Xに投稿</div></div>
         </button>
-        <button class="st-row" style="flex:1;min-width:140px;cursor:pointer;justify-content:center" onclick="copyShareUrl()">
+        <button class="st-row" style="flex:1;min-width:140px;cursor:not-allowed;justify-content:center;opacity:.35" disabled>
           <span class="st-icon">🔗</span>
           <div class="st-body"><div class="st-lbl" id="copy-url-lbl">URLをコピー</div></div>
         </button>

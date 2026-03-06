@@ -857,7 +857,7 @@ function renderDash(){
       <span class="cacc-chev" id="chev-${c.id}">▾</span>
     </div>
     <div class="cacc-body" id="acc-${c.id}">
-      <div class="cacc-meta">締め日 ${m}月${c.closeDay===99?'末日':c.closeDay+'日'} / 引き落とし日 ${m}月${act.getDate()}日${shifted?' (振替)':''}</div>
+      <div class="cacc-meta">締め日 ${m}月${c.closeDay===99?'末日':c.closeDay+'日'} / 引落日 ${m}月${act.getDate()}日${shifted?' (振替)':''}</div>
       <div class="cacc-months">
         <div class="cacc-month-row">
           <span class="cacc-month-lbl">${ymLbl(ym0)}</span>
@@ -891,7 +891,7 @@ function renderDash(){
       }
       <span class="row-lbl${it.checked&&!dashEditMode?' done':''}">${it.label}</span>
       ${it.day!=null
-        ?`<span style="font-size:11px;color:var(--t3);font-family:var(--mono);white-space:nowrap;min-width:52px;text-align:center">${it.day}日<br><span style="font-size:9px;opacity:.7">${DM_LABEL[it.dayMode||'prev']}</span></span>`
+        ?`<span style="font-size:11px;color:var(--t2);font-family:var(--mono);white-space:nowrap;min-width:52px;text-align:center">${(()=>{const[iy,im]=ymStr.split('-').map(Number);const act=nextBiz(iy,im,it.day===99?new Date(iy,im,0).getDate():it.day);return im+'月'+act.getDate()+'日';})()}</span>`
         :`<span style="min-width:52px"></span>`
       }
       <input class="inline-amt-input${it.amount<0?' neg':it.amount>0?' pos':''}" id="iamt-${ymStr}-${it.id}" type="text" inputmode="numeric"
@@ -1230,7 +1230,7 @@ function renderHome(){
         <div style="background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">2</div>
         <div class="tutorial-banner-title" style="margin:0">カードを追加しましょう</div>
       </div>
-      <div class="tutorial-banner-body">「カード」タブからクレジットカードを登録できます。<br>締め日・引き落とし日を入力するとカレンダーに表示されます。</div>
+      <div class="tutorial-banner-body">「カード」タブからクレジットカードを登録できます。<br>締め日・引落日を入力するとカレンダーに表示されます。</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
         <button class="btn btn-sm btn-g" onclick="advanceTutorial(1)">戻る</button>
         <button class="btn btn-sm btn-p" onclick="completeTutorial()">完了</button>
@@ -1254,14 +1254,14 @@ function renderHome(){
   });
 
   const billList=homeCards.length?homeCards.map(c=>{
-    const dateStr=`${m}/${c.act.getDate()}`;
+    const dateStr=`${m}月${c.act.getDate()}日`;
     const isPast=c.diff<0;
     const isSoon=c.diff>=0&&c.diff<=5;
     const isToday=c.diff>=0&&c.diff<1;
     const emoji=isPast&&c.amt>0?'🪦':'';
-    const dateColor=isToday?'color:var(--ng);font-weight:700':isSoon?'color:var(--warn)':'color:var(--t3)';
+    const dateColor=isToday?'color:var(--ng);font-weight:700':isSoon?'color:var(--warn)':isPast?'color:var(--t3)':'color:var(--t2)';
     const nameColor=isPast?'color:var(--t3)':'color:var(--text)';
-    const amtColor=isPast?'color:var(--t3)':'color:var(--ng)';
+    const amtColor=isPast||c.amt===0?'color:var(--t3)':'color:var(--ng)';
     return`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
       <div style="flex:1;min-width:0">
         <div style="font-size:13px;${nameColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div>
@@ -1434,7 +1434,7 @@ function renderCards(){
   }).join('');
 
   const sortOpts=[
-    {v:'custom',l:'追加順'},{v:'billDay',l:'引き落とし日順'},
+    {v:'custom',l:'追加順'},{v:'billDay',l:'引落日順'},
     {v:'closeDay',l:'締め日順'},{v:'brand',l:'ブランド順'},{v:'annualFee',l:'年会費順'},
   ];
   const sortSel=`<select onchange="cardSortMode=this.value;renderCards()" style="background:var(--s2);border:1px solid var(--b1);border-radius:7px;color:var(--text);font-size:12px;padding:5px 8px;outline:none;cursor:pointer">
@@ -1486,7 +1486,7 @@ function openCardDetail(id){
     </div>
     <div class="card-detail-body">
       <div class="card-detail-row">
-        <span class="card-detail-lbl">締め日 / 引き落とし日</span>
+        <span class="card-detail-lbl">締め日 / 引落日</span>
         <span class="card-detail-val">${c.closeDay===99?'末日':c.closeDay+'日'} / ${c.billDay}日</span>
       </div>
       ${c.annualFee?`<div class="card-detail-row">
@@ -1851,7 +1851,7 @@ function bCardForm(card){
      <div class="fgrid">
        <div class="frow"><label class="flbl">締め日（末日=99）<span class="req">*必須</span></label>
        <div class="input-wrap"><input class="finput" id="fc_cl" type="text" inputmode="numeric" value="${c.closeDay||''}" oninput="this.value=toHalf(this.value).replace(/\D/g,'')"><span class="input-unit">日</span></div></div>
-       <div class="frow"><label class="flbl">引き落とし日<span class="req">*必須</span></label>
+       <div class="frow"><label class="flbl">引落日<span class="req">*必須</span></label>
        <div class="input-wrap"><input class="finput" id="fc_bl" type="text" inputmode="numeric" value="${c.billDay||''}" oninput="this.value=toHalf(this.value).replace(/\D/g,'')"><span class="input-unit">日</span></div></div>
      </div>
      <div class="fgrid">

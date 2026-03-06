@@ -308,15 +308,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .card-detail-close{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.4);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;color:rgba(255,255,255,0.7);font-size:16px;display:flex;align-items:center;justify-content:center;line-height:1;}
 
 /* ── PC フリップアニメーション ── */
+@media(max-width:767px){
+  #flip-ov{display:none!important;}
+}
 @media(min-width:768px){
   .card-detail-overlay{display:none!important;}/* PC では使わない */
   #flip-ov{position:fixed;inset:0;z-index:450;pointer-events:none;}
   #flip-ov.active{pointer-events:all;}
-  #flip-bd{position:absolute;inset:0;
+  #flip-bd{position:absolute;inset:0;pointer-events:none;
     background:rgba(0,0,0,0);backdrop-filter:blur(0px);-webkit-backdrop-filter:blur(0px);
     transition:background .4s ease,backdrop-filter .4s ease,-webkit-backdrop-filter .4s ease;}
-  #flip-ov.active #flip-bd{background:rgba(0,0,0,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
-  #flip-fc{position:absolute;overflow:hidden;perspective:1200px;}
+  #flip-ov.active #flip-bd{background:rgba(0,0,0,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);pointer-events:all;}
+  #flip-fc{position:absolute;overflow:hidden;perspective:1200px;left:-9999px;top:-9999px;width:1px;height:1px;}
   #flip-fc.open{box-shadow:0 32px 80px rgba(0,0,0,0.8);}
   #flip-inner{position:absolute;inset:0;transform-style:preserve-3d;border-radius:inherit;}
   .flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:inherit;overflow:hidden;}
@@ -1547,7 +1550,7 @@ function _buildCardDetailHTML(c){
         <span class="card-detail-val" style="font-family:var(--sans)">${c.note}</span>
       </div>`:''}`,
     actions:`
-      <button class="btn btn-g btn-sm" onclick="pcCardClose();openModal('addCard',${c.id})">編集</button>
+      <button class="btn btn-g btn-sm" onclick="openModal('addCard',${c.id})">編集</button>
       <button class="btn btn-g btn-sm" onclick="pcCardClose();hideCard(${c.id})">非表示</button>
       <button class="btn-d" onclick="if(confirm('削除しますか？')){pcCardClose();delCard(${c.id});}">削除</button>`
   };
@@ -2079,7 +2082,7 @@ function _saveCard(id){
   }else{
     S.cards.push({id:S.nxtCard++,...obj});
   }
-  save();mClose();renderCards();
+  save();mClose();if(_flipCard)pcCardClose();renderCards();
   if(activeTab==='home')renderHome();
 }
 

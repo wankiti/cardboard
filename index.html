@@ -290,16 +290,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   position:absolute;width:100%;
   aspect-ratio:85.6/54;
   border-radius:18px;overflow:hidden;cursor:pointer;
-  transition:transform 0.45s cubic-bezier(0.34,1.4,0.64,1),
+  transition:top 0.45s cubic-bezier(0.34,1.4,0.64,1),
+             transform 0.45s cubic-bezier(0.34,1.4,0.64,1),
              opacity 0.38s ease,
              border-radius 0.45s ease,
              box-shadow 0.38s ease;
   box-shadow:0 6px 24px rgba(0,0,0,0.5);
-  will-change:transform,opacity;
+  will-change:transform,top,opacity;
 }
 .sp-wcard .card-peek{position:absolute;top:0;left:0;right:0;height:52px;
   display:flex;align-items:center;justify-content:space-between;padding:0 18px;
   transition:opacity 0.15s ease;}
+@keyframes spCardPop{
+  0%  {transform:translateY(0) scale(1);}
+  30% {transform:translateY(-18px) scale(1.06);}
+  65% {transform:translateY(-6px) scale(1.02);}
+  100%{transform:translateY(0) scale(1);}
+}
+.sp-wcard.pop-forward{animation:spCardPop 0.52s cubic-bezier(0.34,1.4,0.64,1) forwards;}
 .sp-wcard.selected .card-peek{opacity:0;pointer-events:none;}
 .sp-wcard .card-peek-name{font-size:14px;font-weight:700;color:rgba(255,255,255,0.9);}
 .sp-wcard .card-peek-brand{display:flex;align-items:center;}
@@ -316,22 +324,37 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   border-left:1px solid var(--b1);
   border-right:1px solid var(--b1);
   border-bottom:1px solid var(--b1);
-  padding:2px 16px 16px;
-  opacity:0;pointer-events:none;
-  transition:opacity 0.22s ease 0.2s;
+  padding:8px 16px 0;
+  pointer-events:none;
+  opacity:0;
+  transform:translateY(-12px);
+  transition:none;
 }
-.sp-det-panel .card-detail-row:first-of-type{border-top:none;}
-.sp-det-panel.visible{opacity:1;pointer-events:auto;}
+.sp-det-panel.visible{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+  transition:opacity 0.26s ease, transform 0.32s cubic-bezier(0.34,1.2,0.64,1);
+}
+.sp-det-panel .card-detail-actions{padding:8px 0;border-top:none;background:transparent;}
 .sp-stack-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
 /* 全面詳細オーバーレイ */
 .card-detail-overlay{
-  display:none;position:fixed;inset:0;z-index:600;
-  background:rgba(0,0,0,0.75);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:flex;position:fixed;inset:0;z-index:600;
+  background:rgba(0,0,0,0.82);
   align-items:center;justify-content:center;
   padding:20px;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.2s ease;
 }
-.card-detail-overlay.on{display:flex;}
+.card-detail-overlay.on{opacity:1;pointer-events:auto;}
+.card-detail-overlay.on .card-detail-panel{
+  animation:panelSlideUp 0.28s cubic-bezier(0.34,1.2,0.64,1) forwards;
+}
+@keyframes panelSlideUp{
+  from{opacity:0;transform:translateY(24px) scale(0.97);}
+  to  {opacity:1;transform:translateY(0)    scale(1);}
+}
 .card-detail-panel{
   width:100%;max-width:420px;
   border-radius:20px;
@@ -352,7 +375,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .card-detail-row:last-child{border-bottom:none;}
 .card-detail-lbl{color:var(--t2);}
 .card-detail-val{font-family:var(--mono);color:var(--text);display:flex;align-items:center;gap:6px;}
-.card-detail-actions{display:flex;gap:8px;padding:12px 16px;background:var(--s2);border-top:1px solid var(--b1);}
+.card-detail-actions{display:flex;gap:8px;padding:8px 16px;background:var(--s2);border-top:1px solid var(--b1);}
 .card-detail-close{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.4);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;color:rgba(255,255,255,0.7);font-size:16px;display:flex;align-items:center;justify-content:center;line-height:1;}
 
 /* ── PC フリップアニメーション ── */
@@ -1564,6 +1587,18 @@ function renderCards(){
         <div style="font-size:17px;font-weight:700;color:rgba(255,255,255,0.95)">${c.name}</div>
         <div style="display:flex;justify-content:flex-end;align-items:flex-end">${brandIcon(c.brand)}</div>
       </div>
+    </div>
+    <div class="sp-det-panel" id="spdet-${c.id}">
+      <div class="card-detail-row"><span class="card-detail-lbl">締め日</span><span class="card-detail-val">${c.closeDay===99?'末日':c.closeDay+'日'}</span></div>
+      <div class="card-detail-row"><span class="card-detail-lbl">引落日</span><span class="card-detail-val">${c.billDay}日</span></div>
+      ${c.annualFee?`<div class="card-detail-row"><span class="card-detail-lbl">年会費</span><span class="card-detail-val"><span style="font-size:10px;opacity:.6;font-family:var(--sans);margin-right:4px">（${c.annualMonth}月請求）</span>${fy(c.annualFee)}</span></div>`:''}
+      ${(c.phones||[]).map(p=>`<div class="card-detail-row"><span class="card-detail-lbl">${p.label}</span><span class="card-detail-val">${p.number}<button class="copy-btn" onclick="copyText(event,'${p.number}')">コピー</button></span></div>`).join('')}
+      ${c.note?`<div class="card-detail-row"><span class="card-detail-lbl">備考</span><span class="card-detail-val" style="font-family:var(--sans)">${c.note}</span></div>`:''}
+      <div class="card-detail-actions" onclick="event.stopPropagation()">
+        <button class="btn btn-g btn-sm" onclick="document.getElementById('card-ov').classList.remove('on');openModal('addCard',${c.id})">編集</button>
+        <button class="btn btn-g btn-sm" onclick="spCardTap(null);hideCard(${c.id})">非表示</button>
+        <button class="btn-d" onclick="if(confirm('削除しますか？')){spCardTap(null);delCard(${c.id});}">削除</button>
+      </div>
     </div>`;
   }).join('');
 
@@ -1612,7 +1647,11 @@ function spCardTap(id){
   const spCards=cardSortMode==='annualFee'?[...displayCards].reverse():displayCards;
   spSelectedId=id;
   spApplyLayout(true,spCards);
-  _openCardOverlay(c);
+  // カードアニメ完了後にパネルをスライドアップ
+  setTimeout(()=>{
+    const det=document.getElementById(`spdet-${id}`);
+    if(det) det.classList.add('visible');
+  }, 380);
 }
 
 function spApplyLayout(animate,displayCards){
@@ -1655,13 +1694,26 @@ function spApplyLayout(animate,displayCards){
       const det=document.getElementById(`spdet-${c.id}`);
       if(!card)return;
       if(c.id===spSelectedId){
-        card.style.top=selTop+'px';
-        card.style.transform='translateY(0) scale(1)';
-        card.style.opacity='1';
         card.style.zIndex='100';
+        card.style.opacity='1';
         card.style.pointerEvents='auto';
         card.classList.add('selected');
-        if(det){det.classList.add('visible');det.style.top=(selTop+cardH-1)+'px';}
+        if(animate){
+          // まず現在位置（スタック内）からスタート
+          const fromTop=parseInt(card.style.top)||0;
+          card.style.transition='none';
+          card.style.top=fromTop+'px';
+          card.style.transform='scale(0.92)';
+          void card.offsetWidth;
+          // transitionを戻してfinal位置へ
+          card.style.transition='';
+          card.style.top=selTop+'px';
+          card.style.transform='scale(1)';
+        } else {
+          card.style.top=selTop+'px';
+          card.style.transform='scale(1)';
+        }
+        if(det){det.style.top=(selTop+cardH-1)+'px';}
       } else {
         const dir=i<selIdx?-1:1;
         card.style.transform=`translateY(${dir*120}px) scale(0.88)`;
@@ -1749,7 +1801,12 @@ function _openCardOverlay(c){
     </div>
     <div class="card-detail-body">${body}</div>
     <div class="card-detail-actions">${actions}</div>`;
-  document.getElementById('card-ov').classList.add('on');
+  // コンテンツをセット後、1フレーム待ってからフェードイン
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      document.getElementById('card-ov').classList.add('on');
+    });
+  });
 }
 
 function _openCardFlip(c){
@@ -2083,10 +2140,6 @@ function mOpen(t,b,a=''){
 function mClose(){
   document.getElementById('ov').classList.remove('on');
   if(_flipCard)pcCardClose();
-  // SP: モーダルを閉じた後にcard-ovを復元
-  if(window.innerWidth<768&&spSelectedId!==null){
-    document.getElementById('card-ov').classList.add('on');
-  }
 }
 function ovClose(e){if(e.target===document.getElementById('ov'))mClose();}
 
@@ -2288,16 +2341,20 @@ function _saveCard(id){
   save();mClose();
   if(!isSP)renderCards();
   if(activeTab==='home')renderHome();
-  // 保存後に詳細を再表示
   if(activeTab==='cards'){
     const saved=S.cards.find(c=>c.id===savedId);
     if(saved){
       if(window.innerWidth>=768&&_flipCard){
         renderCards();
         setTimeout(()=>_openCardFlip(saved),50);
-      } else if(isSP){
-        // SP: スタックは再構築せずオーバーレイだけ開き直す
-        setTimeout(()=>_openCardOverlay(saved),50);
+      } else if(isSP&&spSelectedId!==null){
+        // SP: パネルをリフレッシュして再表示
+        renderCards();
+        spSelectedId=savedId;
+        setTimeout(()=>{
+          const det=document.getElementById(`spdet-${savedId}`);
+          if(det) det.classList.add('visible');
+        }, 50);
       }
     }
   }

@@ -368,11 +368,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 <div class="pages">
   <!-- HOME -->
   <div id="pg-home" class="page on">
+    <div id="home-tutorial"></div>
     <div id="home-body"></div>
   </div>
   <!-- DASH (Input) -->
   <div id="pg-dash" class="page">
-    <div id="dash-tutorial"></div>
     <div id="dash-backup-reminder"></div>
     <div class="month-sw">
       <button class="msw-btn on" id="msw0" onclick="switchMonth(0)"></button>
@@ -792,42 +792,7 @@ function renderDash(){
   const netCls=net>=0?'ok':net>=-50000?'warn':'ng';
   const ts=todayStr();
 
-  // tutorial
-  const tutEl=document.getElementById('dash-tutorial');
-  const tutStep=S.tutStep||0;
-  tutEl.innerHTML=S.firstLaunch?`<div class="tutorial-banner">
-    ${tutStep===0?`
-      <div class="tutorial-banner-title">CardBoardへようこそ</div>
-      <div class="tutorial-banner-body" style="margin-top:6px">まずデータの扱いを選んでください。</div>
-      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-        <button class="btn btn-sm btn-g" style="flex:1" onclick="dismissTutorial(true)">まっさらにはじめる</button>
-        <button class="btn btn-sm btn-p" style="flex:1" onclick="advanceTutorial(1)">デモデータで確認する</button>
-      </div>
-    `:tutStep===1?`
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <div style="background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">1</div>
-        <div class="tutorial-banner-title" style="margin:0">口座残高を入力しましょう</div>
-      </div>
-      <div class="tutorial-banner-body">「入力」タブの口座残高欄に直接入力できます。</div>
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
-        <button class="btn btn-sm btn-g" onclick="advanceTutorial(0)">戻る</button>
-        <button class="btn btn-sm btn-p" onclick="advanceTutorial(2)">次へ →</button>
-      </div>
-    `:tutStep===2?`
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <div style="background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">2</div>
-        <div class="tutorial-banner-title" style="margin:0">カードを追加しましょう</div>
-      </div>
-      <div class="tutorial-banner-body">「カード」タブからクレジットカードを登録できます。<br>締め日・引き落とし日を入力するとカレンダーに表示されます。</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
-        <button class="btn btn-sm btn-g" onclick="advanceTutorial(1)">戻る</button>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-sm btn-g" onclick="goTab('cards')" style="color:var(--accent);border-color:rgba(91,141,238,0.4)">カードタブへ</button>
-          <button class="btn btn-sm btn-p" onclick="dismissTutorial(false)">完了</button>
-        </div>
-      </div>
-    `:''}
-  </div>`:'';
+  // tutorial → renderHome側で描画
   checkBackupReminder();
 
   const sorted=[...(md.items||[])].sort((a,b)=>(a.order||0)-(b.order||0));
@@ -903,7 +868,7 @@ function renderDash(){
   // 口座残高（タップで入力）
   const balRow=`<div class="row" id="bal-row-${ymStr}" onclick="activateBalInput('${ymStr}')" style="cursor:pointer">
     <span class="row-lbl">口座残高</span>
-    <span class="row-val pos" id="bal-display-${ymStr}" style="font-family:var(--mono)">${md.balance?fmtAmt(md.balance):'—'}</span>
+    <span class="row-val pos" id="bal-display-${ymStr}" style="font-family:var(--mono)">${md.balance?fy(md.balance):'—'}</span>
     <input class="cacc-input" id="bal-input-${ymStr}" type="text" inputmode="numeric"
       style="max-width:160px;font-size:15px;display:none"
       value="${md.balance?fmtAmt(md.balance):''}" placeholder="0"
@@ -956,10 +921,10 @@ function renderDash(){
 function dismissTutorial(clearData){
   S.firstLaunch=false;S.tutStep=0;
   if(clearData){S.months={};S.nxtItem=1;getDisplayYms().forEach(y=>getMD(y));}
-  save();renderDash();
+  save();renderDash();renderHome();
 }
 function advanceTutorial(step){
-  S.tutStep=step;save();renderDash();
+  S.tutStep=step;save();renderDash();renderHome();
 }
 function toggleAcc(cid){
   const body=document.getElementById('acc-'+cid),chev=document.getElementById('chev-'+cid);
@@ -993,7 +958,7 @@ function deactivateBalInput(ymStr){
   const inp=document.getElementById('bal-input-'+ymStr);
   const row=document.getElementById('bal-row-'+ymStr);
   if(!disp||!inp)return;
-  disp.textContent=md.balance?fmtAmt(md.balance):'—';
+  disp.textContent=md.balance?fy(md.balance):'—';
   disp.style.display='';
   inp.style.display='none';
   if(row)row.style.cursor='pointer';
@@ -1002,6 +967,7 @@ function saveBalInline(ymStr){
   const el=document.getElementById('bal-input-'+ymStr);
   if(el)getMD(ymStr).balance=parseAmt(el.value);
   save();syncNextMonthBalance();
+  renderDash();
   if(activeTab==='home')renderHome();
 }
 // 後方互換
@@ -1018,14 +984,14 @@ function editBal(ymStr){
      <button class="btn btn-p" onclick="_saveBal('${ymStr}')">保存</button>`);
   setTimeout(()=>document.getElementById('mi_b')?.focus(),100);
 }
-function _saveBal(y){getMD(y).balance=parseAmt(document.getElementById('mi_b').value);save();mClose();renderDash();}
+function _saveBal(y){getMD(y).balance=parseAmt(document.getElementById('mi_b').value);save();mClose();renderDash();renderHome();}
 function toggleItem(ymStr,id){
   const it=(getMD(ymStr).items||[]).find(x=>x.id===id);
-  if(it){it.checked=!it.checked;save();renderDash();}
+  if(it){it.checked=!it.checked;save();renderDash();renderHome();}
 }
 function delItem(ymStr,id){
   if(!confirm('削除しますか？'))return;
-  const md=getMD(ymStr);md.items=(md.items||[]).filter(x=>x.id!==id);save();renderDash();
+  const md=getMD(ymStr);md.items=(md.items||[]).filter(x=>x.id!==id);save();renderDash();renderHome();
 }
 function editItem(ymStr,id){
   const it=(getMD(ymStr).items||[]).find(x=>x.id===id);if(!it)return;
@@ -1066,7 +1032,7 @@ function _saveEditItem(id,isFixed){
     const it=(getMD(y).items||[]).find(x=>x.id===id);
     if(it){it.label=l;it.amount=a;it.day=day;it.dayMode=dayMode;}
   });
-  save();mClose();renderDash();
+  save();mClose();renderDash();renderHome();
 }
 let _dragItemId=null;
 function itemDragStart(e){_dragItemId=parseInt(e.currentTarget.dataset.itemId);e.dataTransfer.effectAllowed='move';}
@@ -1084,7 +1050,7 @@ function itemDrop(e,ymStr){
     const s1=md1.items.find(i=>i.id===src.id),t1=md1.items.find(i=>i.id===tgt.id);
     if(s1&&t1){s1.order=to;t1.order=so;}
   }
-  save();renderDash();
+  save();renderDash();renderHome();
 }
 
 // ═══════════════════════════════════════════
@@ -1230,6 +1196,44 @@ function renderHome(){
   const nextRank=AF_RANKS[Math.max(0,AF_RANKS.indexOf(rank)-1)];
   const nextThresh=rank===AF_RANKS[0]?null:nextRank.thresh;
   const progress=nextThresh?Math.min(100,totalAF/nextThresh*100):100;
+
+  // チュートリアル
+  const tutEl=document.getElementById('home-tutorial');
+  const tutStep=S.tutStep||0;
+  tutEl.innerHTML=S.firstLaunch?`<div class="tutorial-banner">
+    ${tutStep===0?`
+      <div class="tutorial-banner-title">CardBoardへようこそ</div>
+      <div class="tutorial-banner-body" style="margin-top:6px">まずデータの扱いを選んでください。</div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-g" style="flex:1" onclick="dismissTutorial(true)">まっさらにはじめる</button>
+        <button class="btn btn-sm btn-p" style="flex:1" onclick="advanceTutorial(1)">デモデータで確認する</button>
+      </div>
+    `:tutStep===1?`
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">1</div>
+        <div class="tutorial-banner-title" style="margin:0">口座残高を入力しましょう</div>
+      </div>
+      <div class="tutorial-banner-body">「明細」タブの口座残高欄に直接入力できます。</div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+        <button class="btn btn-sm btn-g" onclick="advanceTutorial(0)">戻る</button>
+        <button class="btn btn-sm btn-p" onclick="advanceTutorial(2)">次へ →</button>
+      </div>
+    `:tutStep===2?`
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">2</div>
+        <div class="tutorial-banner-title" style="margin:0">カードを追加しましょう</div>
+      </div>
+      <div class="tutorial-banner-body">「カード」タブからクレジットカードを登録できます。<br>締め日・引き落とし日を入力するとカレンダーに表示されます。</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+        <button class="btn btn-sm btn-g" onclick="advanceTutorial(1)">戻る</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-g" onclick="goTab('cards')" style="color:var(--accent);border-color:rgba(91,141,238,0.4)">カードタブへ</button>
+          <button class="btn btn-sm btn-p" onclick="dismissTutorial(false)">完了</button>
+        </div>
+      </div>
+    `:''}
+  </div>`:'';
+
 
   // 今月引落リスト（日付ごと）
   const billByDate={};
@@ -1619,6 +1623,13 @@ function renderSettings(){
       </div>
     </div>
 
+    <div class="st-sec"><div class="st-sec-title">ご利用にあたって</div>
+      <div style="background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--t2);line-height:1.9;">
+        <div style="margin-bottom:6px">⚠️ <span style="color:var(--warn);font-weight:700">データの保存について</span></div>
+        <div style="margin-bottom:10px">本アプリのデータはブラウザのローカルストレージに保存されます。ブラウザのキャッシュ・データ削除を行うと、登録した情報が失われます。「データ管理」からJSONエクスポートによる定期バックアップを推奨します。</div>
+        <div style="border-top:1px solid var(--b1);padding-top:10px;font-size:11px;color:var(--t3)">本アプリはβ版です。利用によって生じたいかなる損失・損害についても、作者は一切の責任を負いかねます。</div>
+      </div>
+    </div>
     <div class="st-sec"><div class="st-sec-title">クレジット</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <div class="author-banner" style="flex:1;min-width:140px" onclick="window.open('https://x.com/_4cls','_blank')">
@@ -1745,7 +1756,7 @@ function doImport(event){
       const data=JSON.parse(e.target.result);
       if(!data.cards)throw new Error('invalid');
       if(!confirm('現在のデータをすべて上書きして復元しますか？'))return;
-      S=data;save();buildTabs();renderDash();renderSettings();alert('復元しました。');
+      S=data;save();buildTabs();renderDash();renderHome();renderSettings();alert('復元しました。');
     }catch(err){alert('ファイルが正しくありません。');}
   };
   reader.readAsText(file);event.target.value='';
@@ -1759,7 +1770,7 @@ function confirmReset(){
 }
 function doReset(){
   Object.assign(S,{months:{},cards:[],nxtItem:1,nxtCard:1,firstLaunch:true});
-  save();mClose();renderDash();renderSettings();
+  save();mClose();renderDash();renderHome();renderSettings();
 }
 
 // ═══════════════════════════════════════════
@@ -1818,7 +1829,7 @@ function _saveItem(isFixed){
   const md=getMD(_mYm);if(!md.items)md.items=[];
   const maxOrder=md.items.reduce((m,it)=>Math.max(m,it.order||0),-1);
   md.items.push({id:S.nxtItem++,label:l,amount:a,checked:false,isFixed,order:maxOrder+1,day,dayMode});
-  save();mClose();renderDash();
+  save();mClose();renderDash();renderHome();
 }
 
 // ── カードフォーム ──

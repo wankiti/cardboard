@@ -45,7 +45,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .btab{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--t2);font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.2px;padding:4px 2px;transition:color .18s;position:relative;}
 .btab.on{color:var(--accent);}
 .btab-icon{width:26px;height:24px;display:flex;align-items:center;justify-content:center;}
-.btab.on::after{content:'';position:absolute;top:5px;width:42px;height:38px;border-radius:12px;background:rgba(91,141,238,0.11);border:1px solid rgba(91,141,238,0.18);z-index:-1;}
+.btab.on::after{content:'';position:absolute;top:4px;width:48px;height:40px;border-radius:13px;background:rgba(91,141,238,0.13);border:1px solid rgba(91,141,238,0.2);z-index:-1;}
 
 /* ── PC Sidebar ── */
 .sidebar{display:none;}
@@ -65,10 +65,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   .sidebar-btn.on{background:rgba(91,141,238,0.15);color:var(--accent);border:1px solid rgba(91,141,238,0.2);}
   .sidebar-btn-icon{font-size:17px;width:24px;text-align:center;display:flex;align-items:center;justify-content:center;}
   .sidebar-settings{margin-top:auto;}
-  #dash-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch;}
-  #dash-body .hero{grid-column:1/-1;}
-  #dash-body .sec{display:flex;flex-direction:column;}
-  #dash-body .sec .gb{flex:1;display:flex;flex-direction:column;}
+  #dash-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  #dash-body .sec{display:flex;flex-direction:column;margin-bottom:0;}
+  #dash-body .sec .sec-head{margin-bottom:7px;}
+  #dash-body .sec .gb{display:flex;flex-direction:column;}
+  #dash-body .sec .sec-footer{background:var(--s2);border:1px solid var(--b1);border-top:none;border-radius:0 0 14px 14px;padding:10px 13px;display:flex;align-items:center;justify-content:space-between;}
+  .topbar-settings-btn{display:none!important;}
 }
 
 /* ── Month switcher ── */
@@ -93,9 +95,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 
 /* ── Section ── */
 .sec{margin-bottom:13px;}
-.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;min-height:30px;}
 .sec-title{font-size:11px;font-weight:700;color:var(--t2);letter-spacing:.6px;text-transform:uppercase;}
-.gb{background:var(--s1);border:1px solid var(--b1);border-radius:14px;overflow:hidden;}
+.gb{background:var(--s1);border:1px solid var(--b1);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;}
 .sec-divider{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;padding:6px 13px 4px;background:var(--s2);border-bottom:1px solid rgba(255,255,255,0.04);}
 
 /* ── Row ── */
@@ -166,12 +168,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .ccell{border-right:1px solid rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.04);min-height:72px;padding:4px 3px;overflow:hidden;}
 .ccell:nth-child(7n){border-right:none;}
 .ccell.dim{opacity:.22;}
-.ccell.today{background:rgba(91,141,238,0.06);}
+.ccell.today{background:rgba(91,141,238,0.08);box-shadow:inset 0 0 0 1.5px rgba(91,141,238,0.35);}
 .cday{font-size:12px;font-weight:700;font-family:var(--mono);margin-bottom:2px;line-height:1.4;}
+.cday-today{background:var(--accent);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;}
 .ccell.csun .cday,.ccell.chol .cday{color:#ff7088;}
 .ccell.csat .cday{color:var(--accent);}
+.ccell.today .cday-today{background:var(--accent);}
 .holnm{font-size:8px;color:#ff7088;line-height:1;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cchip{font-size:9px;border-radius:3px;padding:1px 3px;margin-bottom:2px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-width:767px){
+  .cchip{font-size:8px;padding:1px 2px;max-width:calc(200% + 3px);position:relative;z-index:1;}
+}
 .cchip.bill{background:rgba(232,80,106,0.18);color:#ff8098;border-left:2px solid var(--ng);}
 .cchip.inc{background:rgba(39,196,133,0.15);color:#52e0a4;border-left:2px solid var(--ok);}
 .cchip.io{background:rgba(124,92,252,0.15);color:#b8a4ff;border-left:2px solid var(--a2);}
@@ -193,52 +200,77 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 
 
 /* ── Wallet ── */
-.wallet-wrap{position:relative;display:flex;flex-direction:column;}
+.wallet-wrap{position:relative;}
+/* SP: スタック表示 */
+@media(max-width:767px){
+  .wallet-wrap{display:flex;flex-direction:column;}
+  .wallet-card-stack{position:relative;min-height:80px;}
+}
 /* PC: グリッド並列表示 */
 @media(min-width:768px){
-  .wallet-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
-  .wallet-card{margin-bottom:0!important;min-height:130px;}
-  .wallet-card:last-child{margin-bottom:0!important;}
+  .wallet-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+  .wallet-card{margin-bottom:0!important;}
   .wallet-card:not(.expanded):hover{transform:translateY(-4px);}
   .wallet-card.expanded{z-index:10;}
 }
+/* クレジットカード縦横比: 85.6mm x 54mm = 1.585:1 */
 .wallet-card{
   position:relative;
-  border-radius:18px;
-  padding:18px 18px 14px;
-  min-height:110px;
+  border-radius:14px;
+  padding:16px 16px 14px;
+  aspect-ratio:85.6/54;
   cursor:pointer;
   user-select:none;
   overflow:hidden;
   border:1.5px solid rgba(255,255,255,0.18);
   box-shadow:0 4px 24px rgba(0,0,0,0.35);
-  /* margin-bottomはJS側でinlineスタイルとして設定（トランジション崩れを防ぐ） */
+  transition:transform .2s,box-shadow .2s;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+@media(max-width:767px){
+  .wallet-wrap{display:flex;flex-direction:column;}
+  .wallet-card{
+    aspect-ratio:85.6/54;
+    width:100%;
+    position:relative;
+  }
+  /* 前のカードを後ろのカードが覆う: 名前行(48px)だけ見せてあとは隠す */
+  .wallet-card:not(:last-child):not(.expanded){
+    margin-bottom:calc(-1 * (100vw - 28px) * 54/85.6 + 48px);
+  }
+  .wallet-card.expanded:not(:last-child){
+    aspect-ratio:unset;
+    margin-bottom:12px;
+  }
 }
 .wallet-card:last-child{margin-bottom:0!important;}
 .wallet-card.expanded{
+  aspect-ratio:unset;
   box-shadow:0 16px 48px rgba(0,0,0,0.55);
   border-color:rgba(255,255,255,0.35);
   z-index:50;
 }
-.wallet-card:not(.expanded):hover{transform:translateY(-4px);}
-.wallet-card-brand{position:absolute;top:14px;right:14px;}
-.wallet-card-name{font-size:15px;font-weight:700;color:rgba(255,255,255,0.95);margin-bottom:auto;}
-.wallet-card-meta{display:flex;gap:16px;margin-top:8px;}
+.wallet-card:not(.expanded):hover{transform:translateY(-2px);}
+.wallet-card-brand{position:absolute;top:12px;right:12px;}
+.wallet-card-name{font-size:14px;font-weight:700;color:rgba(255,255,255,0.95);line-height:1.3;max-width:calc(100% - 60px);}
+.wallet-card-bottom{display:flex;gap:14px;margin-top:auto;}
 .wallet-card-meta-item{display:flex;flex-direction:column;}
-.wallet-card-meta-lbl{font-size:9px;color:rgba(255,255,255,0.5);letter-spacing:.8px;text-transform:uppercase;}
-.wallet-card-meta-val{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,0.85);}
-.wallet-card-detail{background:rgba(0,0,0,0.25);border-radius:12px;padding:12px;margin-top:12px;display:none;}
+.wallet-card-meta-lbl{font-size:8px;color:rgba(255,255,255,0.5);letter-spacing:.8px;text-transform:uppercase;}
+.wallet-card-meta-val{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.85);}
+.wallet-card-detail{background:rgba(0,0,0,0.3);border-radius:10px;padding:10px;margin-top:10px;display:none;}
 .wallet-card.expanded .wallet-card-detail{display:block;}
-.wallet-card-detail-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:12px;}
+.wallet-card-detail-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:11px;}
 .wallet-card-detail-row:last-child{border-bottom:none;}
 .wallet-card-detail-lbl{color:rgba(255,255,255,0.5);}
 .wallet-card-detail-val{font-family:var(--mono);color:rgba(255,255,255,0.9);display:flex;align-items:center;gap:6px;}
 .copy-btn{background:rgba(255,255,255,0.1);border:none;border-radius:5px;color:rgba(255,255,255,0.7);cursor:pointer;font-size:10px;padding:2px 7px;transition:.15s;}
 .copy-btn:hover{background:rgba(255,255,255,0.2);}
-.wallet-actions{display:flex;gap:6px;margin-top:10px;}
-.wallet-add-btn{width:100%;background:rgba(91,141,238,0.1);border:2px dashed rgba(91,141,238,0.3);border-radius:16px;color:var(--accent);cursor:pointer;font-family:var(--sans);font-size:14px;font-weight:600;padding:16px;margin-bottom:80px;transition:.15s;}
+.wallet-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.wallet-add-btn{width:100%;background:rgba(91,141,238,0.1);border:2px dashed rgba(91,141,238,0.3);border-radius:14px;color:var(--accent);cursor:pointer;font-family:var(--sans);font-size:14px;font-weight:600;padding:14px;margin-bottom:80px;transition:.15s;}
 .wallet-add-btn:hover{background:rgba(91,141,238,0.18);}
-.wallet-vis-off{opacity:.6;}
+.wallet-vis-off{opacity:.55;}
 
 /* Brand SVGs */
 .brand-icon svg{display:block;}
@@ -303,20 +335,29 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 <body>
 <!-- SIDEBAR (PC only) -->
 <nav class="sidebar" id="sidebar">
-  <div class="sidebar-logo">Card<em>Board</em></div>
+  <div class="sidebar-logo">Card<em>Board</em> <span style="font-size:11px;color:var(--t2);background:rgba(255,255,255,0.07);border:1px solid var(--b1);border-radius:4px;padding:1px 6px;vertical-align:middle">β</span></div>
   <div id="sidebar-nav"></div>
   <div class="sidebar-settings">
-    <button class="sidebar-btn" onclick="goTab('settings')"><span class="sidebar-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 2a1.5 1.5 0 011.5 1.5v.77a7.5 7.5 0 012.18.9l.55-.55a1.5 1.5 0 012.12 2.12l-.55.55c.38.68.67 1.41.9 2.18h.77a1.5 1.5 0 010 3h-.77a7.5 7.5 0 01-.9 2.18l.55.55a1.5 1.5 0 01-2.12 2.12l-.55-.55a7.5 7.5 0 01-2.18.9v.77a1.5 1.5 0 01-3 0v-.77a7.5 7.5 0 01-2.18-.9l-.55.55a1.5 1.5 0 01-2.12-2.12l.55-.55A7.5 7.5 0 014.27 13.5H3.5a1.5 1.5 0 010-3h.77a7.5 7.5 0 01.9-2.18l-.55-.55A1.5 1.5 0 016.74 5.65l.55.55a7.5 7.5 0 012.18-.9V4.5A1.5 1.5 0 0112 3z" fill="currentColor" opacity=".7" fill-rule="evenodd" clip-rule="evenodd"/></svg></span>設定</button>
+    <button class="sidebar-btn" id="sidebar-settings-btn" onclick="goTab('settings')">
+      <span class="sidebar-btn-icon" id="sidebar-settings-icon"></span>設定
+    </button>
   </div>
 </nav>
 <!-- TOP BAR -->
 <header class="topbar">
-  <div class="topbar-logo">Card<em>Board</em></div>
-  <div><button class="icon-btn" onclick="goTab('settings')" title="設定" style="display:flex;align-items:center;gap:4px;font-size:13px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 2a1.5 1.5 0 011.5 1.5v.77a7.5 7.5 0 012.18.9l.55-.55a1.5 1.5 0 012.12 2.12l-.55.55c.38.68.67 1.41.9 2.18h.77a1.5 1.5 0 010 3h-.77a7.5 7.5 0 01-.9 2.18l.55.55a1.5 1.5 0 01-2.12 2.12l-.55-.55a7.5 7.5 0 01-2.18.9v.77a1.5 1.5 0 01-3 0v-.77a7.5 7.5 0 01-2.18-.9l-.55.55a1.5 1.5 0 01-2.12-2.12l.55-.55A7.5 7.5 0 014.27 13.5H3.5a1.5 1.5 0 010-3h.77a7.5 7.5 0 01.9-2.18l-.55-.55A1.5 1.5 0 016.74 5.65l.55.55a7.5 7.5 0 012.18-.9V4.5A1.5 1.5 0 0112 3z" fill="currentColor" opacity=".7" fill-rule="evenodd" clip-rule="evenodd"/></svg>設定</button></div>
+  <div class="topbar-logo">Card<em>Board</em> <span style="font-size:11px;color:var(--t2);background:rgba(255,255,255,0.07);border:1px solid var(--b1);border-radius:4px;padding:1px 5px;vertical-align:middle">β</span></div>
+  <div class="topbar-right" id="topbar-right">
+    <button class="icon-btn topbar-settings-btn" onclick="goTab('settings')" title="設定" style="display:flex;align-items:center;gap:4px;font-size:13px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 2a1.5 1.5 0 011.5 1.5v.77a7.5 7.5 0 012.18.9l.55-.55a1.5 1.5 0 012.12 2.12l-.55.55c.38.68.67 1.41.9 2.18h.77a1.5 1.5 0 010 3h-.77a7.5 7.5 0 01-.9 2.18l.55.55a1.5 1.5 0 01-2.12 2.12l-.55-.55a7.5 7.5 0 01-2.18.9v.77a1.5 1.5 0 01-3 0v-.77a7.5 7.5 0 01-2.18-.9l-.55.55a1.5 1.5 0 01-2.12-2.12l.55-.55A7.5 7.5 0 014.27 13.5H3.5a1.5 1.5 0 010-3h.77a7.5 7.5 0 01.9-2.18l-.55-.55A1.5 1.5 0 016.74 5.65l.55.55a7.5 7.5 0 012.18-.9V4.5A1.5 1.5 0 0112 3z" fill="currentColor" opacity=".7" fill-rule="evenodd" clip-rule="evenodd"/></svg>設定</button>
+  </div>
 </header>
 <!-- PAGES -->
 <div class="pages">
-  <div id="pg-dash" class="page on">
+  <!-- HOME -->
+  <div id="pg-home" class="page on">
+    <div id="home-body"></div>
+  </div>
+  <!-- DASH (Input) -->
+  <div id="pg-dash" class="page">
     <div id="dash-tutorial"></div>
     <div id="dash-backup-reminder"></div>
     <div class="month-sw">
@@ -325,6 +366,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
     </div>
     <div id="dash-body"></div>
   </div>
+  <!-- STATS -->
+  <div id="pg-stats" class="page">
+    <div class="month-sw">
+      <button class="msw-btn on" id="smsw0" onclick="switchStatsMonth(0)"></button>
+      <button class="msw-btn"   id="smsw1" onclick="switchStatsMonth(1)"></button>
+    </div>
+    <div id="stats-body"></div>
+  </div>
+  <!-- CALENDAR -->
   <div id="pg-cal" class="page">
     <div class="cal-nav">
       <button class="cal-nav-btn" onclick="calMove(-1)">‹</button>
@@ -341,26 +391,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
         <div class="leg"><div class="leg-dot" style="background:var(--ng)"></div>引き落とし</div>
         <div class="leg"><div class="leg-dot" style="background:var(--ok)"></div>収入</div>
         <div class="leg"><div class="leg-dot" style="background:var(--a2)"></div>支出</div>
-        <div class="leg"><div class="leg-dot" style="background:var(--warn)"></div>年会費</div>
-      </div>
-    </div>
-    <div class="cal-pie-wrap">
-      <div class="cal-pie-title" id="cal-pie-title">カード別利用額</div>
-      <div class="cal-pie-inner">
-        <div class="cal-pie-canvas-wrap">
-          <canvas id="cal-pie-canvas" width="130" height="130"></canvas>
-          <div class="cal-pie-center">
-            <div class="cal-pie-center-lbl">合計</div>
-            <div class="cal-pie-center-val" id="cal-pie-total"></div>
-          </div>
-        </div>
-        <div id="cal-pie-legend" style="flex:1;overflow:hidden;"></div>
       </div>
     </div>
   </div>
+  <!-- CARDS -->
   <div id="pg-cards" class="page">
     <div id="cards-body"></div>
   </div>
+  <!-- SETTINGS -->
   <div id="pg-settings" class="page">
     <div class="st-wrap" id="settings-body"></div>
   </div>
@@ -388,9 +426,20 @@ const CARD_COLORS=['#5b8dee','#7c5cfc','#27c485','#e8506a','#f09c2a','#e060d0','
 function tabSvg(id,active){
   const c=active?'var(--accent)':'var(--t2)';
   const icons={
-    dash:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    home:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z" fill="${c}" opacity="${active?1:.7}"/>
       <rect x="9" y="14" width="6" height="7" rx="1" fill="${active?'rgba(0,0,0,0.25)':'rgba(255,255,255,0.15)'}"/>
+    </svg>`,
+    dash:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="3" width="8" height="8" rx="2" fill="${c}" opacity="${active?1:.7}"/>
+      <rect x="13" y="3" width="8" height="8" rx="2" fill="${c}" opacity="${active?.6:.4}"/>
+      <rect x="3" y="13" width="8" height="8" rx="2" fill="${c}" opacity="${active?.6:.4}"/>
+      <rect x="13" y="13" width="8" height="8" rx="2" fill="${c}" opacity="${active?1:.7}"/>
+    </svg>`,
+    stats:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="12" width="4" height="9" rx="1.5" fill="${c}" opacity="${active?.6:.4}"/>
+      <rect x="10" y="6" width="4" height="15" rx="1.5" fill="${c}" opacity="${active?1:.7}"/>
+      <rect x="17" y="9" width="4" height="12" rx="1.5" fill="${c}" opacity="${active?.75:.5}"/>
     </svg>`,
     cal:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <rect x="3" y="5" width="18" height="16" rx="2.5" fill="${c}" opacity="${active?1:.7}"/>
@@ -416,9 +465,11 @@ function tabSvg(id,active){
 }
 
 const TAB_DEFS=[
-  {id:'dash',    label:'ホーム',     fixed:true},
-  {id:'cal',     label:'カレンダー'},
-  {id:'cards',   label:'カード'},
+  {id:'home',   label:'ダッシュボード', fixed:true},
+  {id:'dash',   label:'明細'},
+  {id:'stats',  label:'統計'},
+  {id:'cal',    label:'カレンダー'},
+  {id:'cards',  label:'カード'},
 ];
 
 // ブランド定義
@@ -435,19 +486,21 @@ const BRANDS=[
 
 
 
-// カードグラデーション
+// カードグラデーション（クレカ券面向け）
+// 0:ブラック 1:チタン 2:プラチナ 3:ゴールド 4:ローズゴールド 5:ネイビー
+// 6:ディープブルー 7:エメラルド 8:バーガンディ 9:スレート 10:ミッドナイト
 const CARD_GRADIENTS=[
-  'linear-gradient(135deg,#1a1f71 0%,#2255cc 100%)',
-  'linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)',
-  'linear-gradient(135deg,#2d1b69 0%,#11998e 100%)',
-  'linear-gradient(135deg,#3a1c71 0%,#d76d77 50%,#ffaf7b 100%)',
-  'linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%)',
-  'linear-gradient(135deg,#373b44 0%,#4286f4 100%)',
-  'linear-gradient(135deg,#232526 0%,#414345 100%)',
-  'linear-gradient(135deg,#1d2b64 0%,#f8cdda 100%)',
-  'linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 100%)',
-  'linear-gradient(135deg,#4e54c8 0%,#8f94fb 100%)',
-  'linear-gradient(135deg,#11998e 0%,#38ef7d 100%)',
+  'linear-gradient(135deg,#0a0a0a 0%,#1a1a1a 50%,#0d0d0d 100%)',           // 0 ブラック
+  'linear-gradient(135deg,#2a2d35 0%,#4a5060 50%,#363a45 100%)',           // 1 チタン
+  'linear-gradient(135deg,#8a8fa8 0%,#c8cdd8 50%,#9ea3b5 100%)',           // 2 プラチナ
+  'linear-gradient(135deg,#7a5c1e 0%,#c9a84c 50%,#8a6820 100%)',           // 3 ゴールド
+  'linear-gradient(135deg,#7a4040 0%,#c47070 50%,#8a4a4a 100%)',           // 4 ローズゴールド
+  'linear-gradient(135deg,#0d1b3e 0%,#1a3068 50%,#0f2050 100%)',           // 5 ネイビー
+  'linear-gradient(135deg,#0a2545 0%,#1455a0 50%,#0c2e58 100%)',           // 6 ディープブルー
+  'linear-gradient(135deg,#0a2a1e 0%,#0e6b47 50%,#0c3525 100%)',           // 7 エメラルド
+  'linear-gradient(135deg,#3a0a12 0%,#7a1a28 50%,#4a0e18 100%)',           // 8 バーガンディ
+  'linear-gradient(135deg,#1a1e28 0%,#2d3348 50%,#20253a 100%)',           // 9 スレート
+  'linear-gradient(135deg,#0d0a1a 0%,#1e1640 50%,#100d22 100%)',           // 10 ミッドナイト
 ];
 
 // ── schema ──
@@ -456,17 +509,17 @@ const CARD_GRADIENTS=[
 // item.dayMode: 'prev'|'next'|'exact'
 
 const DEMO_CARDS=[
-  {id:1, name:'AMEX PLTAINUM',        brand:'amex',       closeDay:19,billDay:10,annualFee:165000,annualMonth:2, annualDay:10,note:'メイン',            visible:true,phones:[],gradientIdx:0},
-  {id:2, name:'LUXURY CARD BLACK',    brand:'mastercard', closeDay:5, billDay:27,annualFee:55000, annualMonth:9, annualDay:27,note:'サブサブ',          visible:true,phones:[],gradientIdx:1},
-  {id:3, name:'JCB THE CLASS',        brand:'jcb',        closeDay:15,billDay:10,annualFee:55000, annualMonth:2, annualDay:10,note:'サブ（オンライン）',visible:true,phones:[],gradientIdx:2},
-  {id:4, name:'JCB THE CLASS (Metal)',brand:'jcb',        closeDay:15,billDay:10,annualFee:33000, annualMonth:2, annualDay:10,note:'メタルカード',      visible:false,phones:[],gradientIdx:3},
-  {id:5, name:'ANA Diners SFC',       brand:'diners',     closeDay:15,billDay:10,annualFee:30800, annualMonth:11,annualDay:10,note:'ANA用',            visible:true,phones:[],gradientIdx:4},
-  {id:6, name:'JAL CARD Suica',       brand:'visa',       closeDay:5, billDay:4, annualFee:7700,  annualMonth:5, annualDay:4, note:'JAL・JR用',        visible:true,phones:[],gradientIdx:5},
-  {id:7, name:'YumeNavi CARD',        brand:'visa',       closeDay:15,billDay:10,annualFee:0,     annualMonth:4, annualDay:15,note:'ポイント移行用',    visible:true,phones:[],gradientIdx:6},
-  {id:8, name:'SMCC GOLD NL',         brand:'mastercard', closeDay:15,billDay:10,annualFee:0,     annualMonth:0, annualDay:0, note:'コンビニ・積立NISA',visible:true,phones:[],gradientIdx:7},
-  {id:9, name:'EPOS GOLD',            brand:'visa',       closeDay:5, billDay:4, annualFee:0,     annualMonth:0, annualDay:0, note:'保険料払い',        visible:true,phones:[],gradientIdx:8},
-  {id:10,name:'SAISON GOLD Premium',  brand:'visa',       closeDay:10,billDay:4, annualFee:0,     annualMonth:0, annualDay:0, note:'',                 visible:true,phones:[],gradientIdx:9},
-  {id:11,name:'PayPay CARD',          brand:'visa',       closeDay:99,billDay:27,annualFee:0,     annualMonth:0, annualDay:0, note:'PayPay用',          visible:true,phones:[],gradientIdx:10},
+  {id:1, name:'AMEX PLATINUM',       brand:'amex',       closeDay:19,billDay:10,annualFee:165000,annualMonth:2, note:'メイン',            visible:true,phones:[],gradientIdx:0},
+  {id:2, name:'LUXURY CARD BLACK',   brand:'mastercard', closeDay:5, billDay:27,annualFee:55000, annualMonth:9, note:'サブサブ',          visible:true,phones:[],gradientIdx:1},
+  {id:3, name:'JCB THE CLASS',       brand:'jcb',        closeDay:15,billDay:10,annualFee:55000, annualMonth:2, note:'サブ（オンライン）',visible:true,phones:[],gradientIdx:9},
+  {id:4, name:'JCB THE CLASS Metal', brand:'jcb',        closeDay:15,billDay:10,annualFee:33000, annualMonth:2, note:'メタルカード',      visible:false,phones:[],gradientIdx:1},
+  {id:5, name:'ANA Diners SFC',      brand:'diners',     closeDay:15,billDay:10,annualFee:30800, annualMonth:11,note:'ANA用',            visible:true,phones:[],gradientIdx:5},
+  {id:6, name:'JAL CARD Suica',      brand:'visa',       closeDay:5, billDay:4, annualFee:7700,  annualMonth:5, note:'JAL・JR用',        visible:true,phones:[],gradientIdx:5},
+  {id:7, name:'YumeNavi CARD',       brand:'visa',       closeDay:15,billDay:10,annualFee:0,     annualMonth:0, note:'ポイント移行用',    visible:true,phones:[],gradientIdx:6},
+  {id:8, name:'SMCC GOLD NL',        brand:'mastercard', closeDay:15,billDay:10,annualFee:0,     annualMonth:0, note:'コンビニ・積立NISA',visible:true,phones:[],gradientIdx:3},
+  {id:9, name:'EPOS GOLD',           brand:'visa',       closeDay:5, billDay:4, annualFee:0,     annualMonth:0, note:'保険料払い',        visible:true,phones:[],gradientIdx:3},
+  {id:10,name:'SAISON GOLD Premium', brand:'visa',       closeDay:10,billDay:4, annualFee:0,     annualMonth:0, note:'',                 visible:true,phones:[],gradientIdx:3},
+  {id:11,name:'PayPay CARD',         brand:'visa',       closeDay:99,billDay:27,annualFee:0,     annualMonth:0, note:'PayPay用',          visible:true,phones:[],gradientIdx:9},
 ];
 
 function mkMonth(ymStr){return{ym:ymStr,balance:0,items:[],cardAmounts:{}};}
@@ -642,17 +695,16 @@ function brandIcon(brand){return BRAND_SVG[brand]||BRAND_SVG.other;}
 // TABS
 // ═══════════════════════════════════════════
 let activeTab=(()=>{
-  const saved=localStorage.getItem('cb6_tab')||'dash';
+  const saved=localStorage.getItem('cb6_tab')||'home';
   const hidden=JSON.parse(localStorage.getItem(SK)||'{}').tabHidden||[];
-  const valid=['dash','cal','cards','settings'];
-  return valid.includes(saved)&&!hidden.includes(saved)?saved:'dash';
+  const valid=['home','dash','stats','cal','cards','settings'];
+  return valid.includes(saved)&&!hidden.includes(saved)?saved:'home';
 })();
 
 function buildTabs(){
   const order=S.tabOrder||TAB_DEFS.map(t=>t.id);
-  if(!order.includes('cards'))order.push('cards');
-  const defs=order.filter(id=>id!=='stats').map(id=>TAB_DEFS.find(t=>t.id===id)).filter(Boolean);
-  TAB_DEFS.forEach(t=>{if(!defs.find(d=>d.id===t.id))defs.push(t);});
+  TAB_DEFS.forEach(t=>{if(!order.includes(t.id))order.push(t.id);});
+  const defs=order.map(id=>TAB_DEFS.find(t=>t.id===id)).filter(Boolean);
   const hidden=S.tabHidden||[];
   const tabDefs=defs.filter(t=>t.id!=='settings'&&!(hidden.includes(t.id)&&!t.fixed));
 
@@ -668,22 +720,25 @@ function buildTabs(){
       <span class="sidebar-btn-icon">${tabSvg(t.id,t.id===activeTab)}</span>${t.label}
     </button>`
   ).join('');
+  // 設定ボタンアイコンをJS側でセット
+  const stIcon=document.getElementById('sidebar-settings-icon');
+  if(stIcon)stIcon.innerHTML=tabSvg('settings',activeTab==='settings');
+  const stBtn=document.getElementById('sidebar-settings-btn');
+  if(stBtn)stBtn.classList.toggle('on',activeTab==='settings');
 }
 
 function goTab(id){
   activeTab=id;
   localStorage.setItem('cb6_tab',id);
-  // buildTabs内でbtab/sidebar-btnのon状態を再生成
   buildTabs();
-  // ページ切り替え
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   const pg=document.getElementById('pg-'+id);
   if(pg)pg.classList.add('on');
-  // settingsボタン（sidebar固定枠）のon状態
   const stBtn=document.querySelector('.sidebar-settings .sidebar-btn');
   if(stBtn)stBtn.classList.toggle('on',id==='settings');
-  // 各タブのレンダリング
+  if(id==='home')    renderHome();
   if(id==='dash')    renderDash();
+  if(id==='stats')   renderStats();
   if(id==='cal')     renderCal();
   if(id==='cards')   renderCards();
   if(id==='settings')renderSettings();
@@ -715,7 +770,6 @@ function renderDash(){
   const assets=calcAssets(ymStr),liab=calcLiab(ymStr),net=assets-liab;
   const netCls=net>=0?'ok':net>=-50000?'warn':'ng';
   const ts=todayStr();
-  const annuals=vis.filter(c=>c.annualFee>0&&c.annualMonth===m);
 
   // tutorial
   const tutEl=document.getElementById('dash-tutorial');
@@ -733,7 +787,7 @@ function renderDash(){
         <div style="background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">1</div>
         <div class="tutorial-banner-title" style="margin:0">口座残高を入力しましょう</div>
       </div>
-      <div class="tutorial-banner-body">下の「残高・収支」セクションにある<br>「編集」ボタンから実際の口座残高を入力してください。<br>引き落とし後の予測残高が計算されます。</div>
+      <div class="tutorial-banner-body">「入力」タブの口座残高欄に直接入力できます。</div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
         <button class="btn btn-sm btn-g" onclick="advanceTutorial(0)">戻る</button>
         <button class="btn btn-sm btn-p" onclick="advanceTutorial(2)">次へ →</button>
@@ -743,7 +797,7 @@ function renderDash(){
         <div style="background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">2</div>
         <div class="tutorial-banner-title" style="margin:0">カードを追加しましょう</div>
       </div>
-      <div class="tutorial-banner-body">「カード」タブからクレジットカードを登録できます。<br>締め日・引き落とし日を入力すると<br>カレンダーに引き落とし日が自動表示されます。</div>
+      <div class="tutorial-banner-body">「カード」タブからクレジットカードを登録できます。<br>締め日・引き落とし日を入力するとカレンダーに表示されます。</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
         <button class="btn btn-sm btn-g" onclick="advanceTutorial(1)">戻る</button>
         <div style="display:flex;gap:8px">
@@ -763,7 +817,7 @@ function renderDash(){
   const md0=getMD(ym0),md1=getMD(ym1);
   const[y1p,m1p]=ym1.split('-').map(Number);
 
-  // カードアコーディオン
+  // カードアコーディオン（インライン入力）
   const cardRows=vis.map(c=>{
     const amt=md.cardAmounts[c.id]||0;
     const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
@@ -772,14 +826,12 @@ function renderDash(){
     let dc='cacc-date';
     if(diff>=0&&diff<1)dc+=' tod';else if(diff>=0&&diff<=5)dc+=' soon';
     const shifted=fmtD(act)!==`${y}-${z2(m)}-${z2(raw)}`;
-    const ann=annuals.find(a=>a.id===c.id);
-    const amt0=md0.cardAmounts[c.id]||0;
-    const amt1=md1.cardAmounts[c.id]||0;
     const raw1=c.billDay===99?new Date(y1p,m1p,0).getDate():c.billDay;
     const act1=nextBiz(y1p,m1p,raw1);
+    const amt0=md0.cardAmounts[c.id]||0;
+    const amt1=md1.cardAmounts[c.id]||0;
     return`<div class="cacc-head" onclick="toggleAcc(${c.id})">
       <span class="cacc-name">${c.name}</span>
-      ${ann?`<span class="ann-badge">年会費 ${fy(ann.annualFee)}</span>`:''}
       <span class="${dc}">${m}月${act.getDate()}日${shifted?'*':''}</span>
       <span class="cacc-amt${amt===0?' zero':''}">${amt===0?'—':fy(amt)}</span>
       <span class="cacc-chev" id="chev-${c.id}">▾</span>
@@ -792,16 +844,16 @@ function renderDash(){
           <input class="cacc-input" id="ci0-${c.id}" type="text" inputmode="numeric"
             value="${amt0?fmtAmt(amt0):''}" placeholder="0"
             oninput="this.value=fmtAmtInput(this.value)"
-            onkeydown="if(event.key==='Enter'){saveAmt2(${c.id});this.blur();}">
-          <button class="cacc-save" onclick="saveAmt2(${c.id})">保存</button>
+            onchange="saveAmtInline(${c.id})"
+            onkeydown="if(event.key==='Enter'){saveAmtInline(${c.id});this.blur();}">
         </div>
         <div class="cacc-month-row">
           <span class="cacc-month-lbl">${ymLbl(ym1)}</span>
           <input class="cacc-input" id="ci1-${c.id}" type="text" inputmode="numeric"
             value="${amt1?fmtAmt(amt1):''}" placeholder="0"
             oninput="this.value=fmtAmtInput(this.value)"
-            onkeydown="if(event.key==='Enter'){saveAmt2(${c.id});this.blur();}">
-          <button class="cacc-save" onclick="saveAmt2(${c.id})">保存</button>
+            onchange="saveAmtInline(${c.id})"
+            onkeydown="if(event.key==='Enter'){saveAmtInline(${c.id});this.blur();}">
         </div>
       </div>
     </div>`;
@@ -812,45 +864,43 @@ function renderDash(){
   const itemRow=(it,drag)=>`
     <div class="row"${drag&&dashEditMode?` draggable="true" data-item-id="${it.id}" data-ym="${ymStr}"
       ondragstart="itemDragStart(event)" ondragover="itemDragOver(event)" ondrop="itemDrop(event,'${ymStr}')"`:''}>
-      ${drag&&dashEditMode?`<span class="row-drag">⠿</span>`:''}
-      <div class="chk${it.checked?' on':''}" onclick="toggleItem('${ymStr}',${it.id})">${it.checked?'✓':''}</div>
-      <span class="row-lbl${it.checked?' done':''}" onclick="${dashEditMode?`editItem('${ymStr}',${it.id})`:''}" style="${dashEditMode?'cursor:pointer':''}">${it.label}</span>
+      ${dashEditMode?`<span class="row-drag">⠿</span>`:`<div class="chk${it.checked?' on':''}" onclick="toggleItem('${ymStr}',${it.id})">${it.checked?'✓':''}</div>`}
+      <span class="row-lbl${it.checked&&!dashEditMode?' done':''}" onclick="${dashEditMode?`editItem('${ymStr}',${it.id})`:''}" style="${dashEditMode?'cursor:pointer':''}">${it.label}</span>
       <span class="row-val${it.amount<0?' neg':' pos'}" onclick="${dashEditMode?`editItem('${ymStr}',${it.id})`:''}" style="${dashEditMode?'cursor:pointer':''}">${fy(it.amount)}</span>
-      ${it.day!=null?`<span style="font-size:11px;color:var(--t2);font-family:var(--mono);flex-shrink:0">${it.day}日<span style="opacity:.55;font-size:10px">(${DM_LABEL[it.dayMode||'prev']})</span></span>`:`<span style="font-size:11px;color:var(--t3);flex-shrink:0">日付未設定</span>`}
+      ${!dashEditMode&&it.day!=null?`<span style="font-size:11px;color:var(--t2);font-family:var(--mono);flex-shrink:0">${it.day}日<span style="opacity:.55;font-size:10px">(${DM_LABEL[it.dayMode||'prev']})</span></span>`:''}
       ${dashEditMode?`<button class="rdel" onclick="delItem('${ymStr}',${it.id})">×</button>`:''}
     </div>`;
 
-  document.getElementById('dash-body').innerHTML=`
-    <div class="hero">
-      <div class="hero-lbl">引き落とし後の予測残高</div>
-      <div class="hero-val ${netCls}">${fy(net)}</div>
-      <div class="hero-sub">${net>=0?'問題なし':'⚠ 残高不足の可能性あり'}</div>
-      <div class="hero-pills">
-        <div class="hero-pill"><div class="hero-pill-lbl">残高合計</div><div class="hero-pill-val pos">${fy(assets)}</div></div>
-        <div class="hero-pill"><div class="hero-pill-lbl">引き落とし合計</div><div class="hero-pill-val neg">${fy(liab)}</div></div>
-      </div>
-    </div>
+  // 残高インライン入力
+  const balRow=`<div class="row">
+    <span class="row-lbl">口座残高</span>
+    <input class="cacc-input" id="bal-input-${ymStr}" type="text" inputmode="numeric"
+      style="max-width:160px;font-size:15px"
+      value="${md.balance?fmtAmt(md.balance):''}" placeholder="0"
+      oninput="this.value=fmtAmtInput(this.value)"
+      onchange="saveBalInline('${ymStr}')"
+      onkeydown="if(event.key==='Enter'){saveBalInline('${ymStr}');this.blur();}">
+  </div>`;
 
+  document.getElementById('dash-body').innerHTML=`
     <div class="sec">
       <div class="sec-head">
         <span class="sec-title">残高・収支</span>
         <button class="edit-mode-btn${dashEditMode?' on':''}" onclick="toggleDashEdit()">${dashEditMode?'完了':'編集'}</button>
       </div>
       <div class="gb">
-        <div class="row">
-          <span class="row-lbl">口座残高</span>
-          <span class="row-val${md.balance?'':' zero'}">${md.balance?fy(md.balance):'未入力'}</span>
-          <button class="row-edit-btn" onclick="editBal('${ymStr}')">編集</button>
-        </div>
-        ${fixedItems.length?`<div class="sec-divider">固定項目（毎月）</div>`:''}
-        ${fixedItems.map(it=>itemRow(it,true)).join('')}
-        ${otherItems.length?`<div class="sec-divider">当月のみ</div>`:''}
-        ${otherItems.map(it=>itemRow(it,false)).join('')}
-        ${dashEditMode?`<div class="add-strip">
+        <div class="gb-scroll">
+          ${balRow}
+          ${fixedItems.length?`<div class="sec-divider">固定項目（毎月）</div>`:''}
+          ${fixedItems.map(it=>itemRow(it,true)).join('')}
+          ${otherItems.length?`<div class="sec-divider">当月のみ</div>`:''}
+          ${otherItems.map(it=>itemRow(it,false)).join('')}
+          <div class="add-strip">
           <button class="add-pill" onclick="openModal('addFixed','${ymStr}')">＋ 固定項目</button>
           <button class="add-pill" onclick="openModal('addOther','${ymStr}')">＋ 当月のみ</button>
-        </div>`:''}
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:var(--s2);border-top:1px solid rgba(255,255,255,0.07)">
+        </div>
+        </div>
+        <div class="sec-footer">
           <span style="font-size:12px;color:var(--t2);font-weight:700;letter-spacing:.4px">収支合計</span>
           <span style="font-family:var(--mono);font-size:15px;font-weight:500;color:${assets>=0?'var(--ok)':'var(--ng)'}">${fy(assets)}</span>
         </div>
@@ -860,9 +910,11 @@ function renderDash(){
     <div class="sec">
       <div class="sec-head"><span class="sec-title">引き落とし予定</span></div>
       <div class="gb">
-        ${cardRows}
-        ${vis.length===0?`<div class="empty">表示中のカードなし<br><small style="color:var(--t3)">カードタブで設定してください</small></div>`:''}
-        ${vis.length>0?`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:var(--s2);border-top:1px solid rgba(255,255,255,0.07)">
+        <div class="gb-scroll">
+          ${cardRows}
+          ${vis.length===0?`<div class="empty">表示中のカードなし<br><small style="color:var(--t3)">カードタブで設定してください</small></div>`:''}
+        </div>
+        ${vis.length>0?`<div class="sec-footer">
           <span style="font-size:12px;color:var(--t2);font-weight:700;letter-spacing:.4px">引き落とし合計</span>
           <span style="font-family:var(--mono);font-size:15px;font-weight:500;color:var(--ng)">${fy(liab)}</span>
         </div>`:''}
@@ -884,14 +936,24 @@ function toggleAcc(cid){
   const open=body.classList.toggle('open');
   chev.classList.toggle('open',open);
 }
-function saveAmt2(cid){
+function saveAmtInline(cid){
   const yms=getDisplayYms();
   const v0=parseAmt(document.getElementById('ci0-'+cid)?.value||'');
   const v1=parseAmt(document.getElementById('ci1-'+cid)?.value||'');
   getMD(yms[0]).cardAmounts[cid]=v0;
   getMD(yms[1]).cardAmounts[cid]=v1;
-  save();renderDash();
+  save();
+  // ホームも更新
+  if(activeTab==='home')renderHome();
 }
+function saveBalInline(ymStr){
+  const el=document.getElementById('bal-input-'+ymStr);
+  if(el)getMD(ymStr).balance=parseAmt(el.value);
+  save();syncNextMonthBalance();
+  if(activeTab==='home')renderHome();
+}
+// 後方互換
+function saveAmt2(cid){saveAmtInline(cid);}
 function editBal(ymStr){
   const cur=getMD(ymStr).balance||0;
   mOpen('口座残高を入力',
@@ -987,6 +1049,7 @@ function renderCal(){
   const ev={};
   function add(ds,e){if(!ev[ds])ev[ds]=[];ev[ds].push(e);}
 
+  // 引き落とし（日付ごとに合算）
   const billByDate={};
   S.cards.filter(c=>c.visible).forEach(c=>{
     const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
@@ -994,9 +1057,8 @@ function renderCal(){
     billByDate[ds]=(billByDate[ds]||0)+(md.cardAmounts[c.id]||0);
   });
   Object.entries(billByDate).forEach(([ds,t])=>{if(t>0)add(ds,{cls:'bill',lbl:`引落 ${fy(t)}`});});
-  S.cards.filter(c=>c.visible&&c.annualFee>0&&c.annualMonth===m).forEach(c=>{
-    add(fmtD(nextBiz(y,m,c.annualDay)),{cls:'ann',lbl:`年会費 ${fy(c.annualFee)}`});
-  });
+
+  // 収支項目
   (md.items||[]).forEach(it=>{
     if(it.day==null)return;
     const d=applyDayMode(y,m,it.day,it.dayMode||'prev');
@@ -1010,18 +1072,21 @@ function renderCal(){
   const rem=(7-((fd+dim)%7))%7;
   for(let i=1;i<=rem;i++)html+=ccell(new Date(y,m,i),true,ev);
   document.getElementById('cal-grid').innerHTML=html;
-  renderCalPie(calYm);
 }
 
 function ccell(d,dim,ev){
   const ds=fmtD(d),dw=d.getDay(),hol=isHL(d),today=ds===todayStr();
   let cls='ccell';
-  if(dim)cls+=' dim';if(today)cls+=' today';
+  if(dim)cls+=' dim';
+  if(today)cls+=' today';
   if(dw===0||hol)cls+=' csun';else if(dw===6)cls+=' csat';
   if(hol)cls+=' chol';
-  const chips=(ev[ds]||[]).map(e=>`<div class="cchip ${e.cls}">${e.lbl}</div>`).join('');
-  const holN=hol?`<div class="holnm">${hol}</div>`:'';
-  return`<div class="${cls}"><div class="cday">${d.getDate()}</div>${holN}${chips}</div>`;
+
+  const dayHtml=`<div class="cday${today?' cday-today':''}">${d.getDate()}</div>`;
+
+  // チップ：SP対応でoverflowしないようにクラスのみ付与、CSSで対応
+  const chips=(ev[ds]||[]).map(e=>`<div class="cchip ${e.cls}" title="${e.lbl}">${e.lbl}</div>`).join('');
+  return`<div class="${cls}">${dayHtml}${chips}</div>`;
 }
 
 function renderCalPie(ymStr){
@@ -1049,17 +1114,207 @@ function renderCalPie(ymStr){
 }
 
 // ═══════════════════════════════════════════
-// STATS（直近2ヶ月カード別積み上げのみ）
+// ANNUAL FEE RANK
 // ═══════════════════════════════════════════
+const AF_RANKS=[
+  {thresh:1000000, name:'コバルトエリート',  color:'#5b8dee',bg:'linear-gradient(135deg,#0d1a3a,#1a3a7a)',icon:'💎',desc:'究極の一手'},
+  {thresh:500000,  name:'アンバサダーエリート',color:'#c084fc',bg:'linear-gradient(135deg,#1a0a3a,#3a1a7a)',icon:'👑',desc:'伝説の域'},
+  {thresh:300000,  name:'チタンエリート',    color:'#94a3b8',bg:'linear-gradient(135deg,#1a1f2e,#2d3a50)',icon:'⚔️',desc:'鋼の意志'},
+  {thresh:100000,  name:'プラチナエリート',  color:'#e2e8f0',bg:'linear-gradient(135deg,#2a2f3e,#4a5068)',icon:'🏆',desc:'白金の誇り'},
+  {thresh:50000,   name:'ゴールドエリート',  color:'#c9a84c',bg:'linear-gradient(135deg,#2a1e0a,#5a3e10)',icon:'🥇',desc:'黄金の輝き'},
+  {thresh:30000,   name:'プラチナ',          color:'#cbd5e1',bg:'linear-gradient(135deg,#1e2030,#3a4060)',icon:'✨',desc:'銀翼の栄光'},
+  {thresh:10000,   name:'ゴールド',           color:'#d4a742',bg:'linear-gradient(135deg,#1e1508,#3a2c10)',icon:'⭐',desc:'金の登竜門'},
+  {thresh:0,       name:'スタンダード',       color:'var(--t2)',bg:'linear-gradient(135deg,#0d0f18,#161927)',icon:'🃏',desc:'旅の始まり'},
+];
+function getAfRank(total){return AF_RANKS.find(r=>total>=r.thresh)||AF_RANKS[AF_RANKS.length-1];}
+function calcTotalAnnualFee(){return S.cards.filter(c=>c.visible&&c.annualFee>0).reduce((s,c)=>s+c.annualFee,0);}
 
+// ═══════════════════════════════════════════
+// HOME TAB
+// ═══════════════════════════════════════════
+function renderHome(){
+  const yms=getDisplayYms();
+  const ymStr=yms[0];
+  const[y,m]=ymStr.split('-').map(Number);
+  const md=getMD(ymStr);
+  const vis=S.cards.filter(c=>c.visible);
+  const assets=calcAssets(ymStr),liab=calcLiab(ymStr),net=assets-liab;
+  const netCls=net>=0?'ok':net>=-50000?'warn':'ng';
+  const totalAF=calcTotalAnnualFee();
+  const rank=getAfRank(totalAF);
+  const nextRank=AF_RANKS[Math.max(0,AF_RANKS.indexOf(rank)-1)];
+  const nextThresh=rank===AF_RANKS[0]?null:nextRank.thresh;
+  const progress=nextThresh?Math.min(100,totalAF/nextThresh*100):100;
+
+  // 今月引落リスト（日付ごと）
+  const billByDate={};
+  vis.forEach(c=>{
+    const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
+    const act=nextBiz(y,m,raw);
+    const ds=fmtD(act);
+    if(!billByDate[ds])billByDate[ds]={date:act,total:0,cards:[]};
+    const amt=md.cardAmounts[c.id]||0;
+    billByDate[ds].total+=amt;
+    if(amt>0)billByDate[ds].cards.push({name:c.name,amt});
+  });
+  const billDates=Object.values(billByDate).sort((a,b)=>a.date-b.date);
+  const ts=todayStr();
+
+  const billList=billDates.length?billDates.map(b=>{
+    const dateStr=`${m}/${b.date.getDate()}`;
+    const diff=(b.date-new Date(ts))/864e5;
+    let urgency='';
+    if(diff>=0&&diff<1)urgency='color:var(--ng);font-weight:700';
+    else if(diff>=0&&diff<=5)urgency='color:var(--warn)';
+    return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+      <span style="font-family:var(--mono);font-size:12px;color:var(--t2);min-width:36px;${urgency}">${dateStr}</span>
+      <div style="flex:1">
+        ${b.cards.filter(c=>c.amt>0).map(c=>`<div style="font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div>`).join('')}
+        ${b.total===0?`<div style="font-size:12px;color:var(--t3)">未入力</div>`:''}
+      </div>
+      <span style="font-family:var(--mono);font-size:13px;${b.total>0?'color:var(--ng)':'color:var(--t3)'}">${b.total>0?fy(b.total):'—'}</span>
+    </div>`;
+  }).join(''):`<div class="empty">引き落とし予定なし</div>`;
+
+  document.getElementById('home-body').innerHTML=`
+    <!-- 予測残高ヒーロー -->
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:18px;margin-bottom:13px">
+      <div style="font-size:11px;color:var(--t2);letter-spacing:.4px;margin-bottom:5px">引き落とし後の予測残高</div>
+      <div style="font-family:var(--mono);font-size:36px;font-weight:500;letter-spacing:-1px;line-height:1;color:${net>=0?'var(--ok)':net>=-50000?'var(--warn)':'var(--ng)'}">${fy(net)}</div>
+      <div style="font-size:12px;color:var(--t2);margin-top:5px">${net>=0?'問題なし':'⚠ 残高不足の可能性あり'}</div>
+      <div style="display:flex;gap:8px;margin-top:13px;padding-top:13px;border-top:1px solid var(--b1)">
+        <div style="flex:1;background:var(--s2);border-radius:10px;padding:10px 12px;border:1px solid var(--b1)">
+          <div style="font-size:10px;color:var(--t2);margin-bottom:3px">残高</div>
+          <div style="font-family:var(--mono);font-size:14px;color:var(--ok)">${fy(assets)}</div>
+        </div>
+        <div style="flex:1;background:var(--s2);border-radius:10px;padding:10px 12px;border:1px solid var(--b1)">
+          <div style="font-size:10px;color:var(--t2);margin-bottom:3px">引き落とし</div>
+          <div style="font-family:var(--mono);font-size:14px;color:var(--ng)">${fy(liab)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 今月引落リスト -->
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:16px;margin-bottom:13px">
+      <div style="font-size:11px;font-weight:700;color:var(--t2);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px">${ymLbl(ymStr)} 引き落とし予定</div>
+      ${billList}
+      ${liab>0?`<div style="display:flex;justify-content:space-between;padding-top:9px;margin-top:4px">
+        <span style="font-size:12px;color:var(--t2);font-weight:700">合計</span>
+        <span style="font-family:var(--mono);font-size:14px;color:var(--ng)">${fy(liab)}</span>
+      </div>`:''}
+    </div>
+
+    <!-- 年会費ランク -->
+    <div style="background:${rank.bg};border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:18px;margin-bottom:13px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-20px;right:-20px;font-size:80px;opacity:.08;pointer-events:none">${rank.icon}</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px">年会費ランク</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <span style="font-size:22px">${rank.icon}</span>
+        <div>
+          <div style="font-size:18px;font-weight:700;color:${rank.color}">${rank.name}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4)">${rank.desc}</div>
+        </div>
+      </div>
+      <div style="font-family:var(--mono);font-size:22px;font-weight:500;color:rgba(255,255,255,0.9);margin:8px 0 4px">${fy(totalAF)}<span style="font-size:12px;opacity:.5">/年</span></div>
+      ${nextThresh?`
+        <div style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">
+            <span>次のランク: ${nextRank.name}</span>
+            <span>${fy(nextThresh-totalAF)} 不足</span>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border-radius:4px;height:4px;overflow:hidden">
+            <div style="width:${progress}%;height:100%;background:${rank.color};border-radius:4px;transition:.3s"></div>
+          </div>
+        </div>
+      `:'<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px">最高ランク到達</div>'}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════
+// STATS TAB
+// ═══════════════════════════════════════════
+let statsIdx=0;
+function switchStatsMonth(idx){statsIdx=idx;renderStats();}
+
+function renderStats(){
+  const yms=getDisplayYms();
+  const cur=document.getElementById('smsw0'),nxt=document.getElementById('smsw1');
+  if(!cur||!nxt)return;
+  cur.textContent=ymLbl(yms[0]);nxt.textContent=ymLbl(yms[1]);
+  cur.classList.toggle('on',statsIdx===0);nxt.classList.toggle('on',statsIdx===1);
+  const ymStr=yms[statsIdx];
+  const[,m]=ymStr.split('-').map(Number),md=getMD(ymStr);
+  const vis=S.cards.filter(c=>c.visible);
+  const COLORS=['#5b8dee','#7c5cfc','#27c485','#e8506a','#f09c2a','#e060d0','#40c8e0','#a0d040','#f06090','#80a0ff','#ffb040'];
+  const entries=vis.map((c,i)=>({
+    name:c.name,
+    amt:(md.cardAmounts[c.id]||0),
+    color:COLORS[i%COLORS.length]
+  })).filter(e=>e.amt>0).sort((a,b)=>b.amt-a.amt);
+  const total=entries.reduce((s,e)=>s+e.amt,0);
+
+  const statsEl=document.getElementById('stats-body');
+  if(!statsEl)return;
+
+  statsEl.innerHTML=`
+    <div class="cal-pie-wrap">
+      <div class="cal-pie-title" id="cal-pie-title">${ymLbl(ymStr)} カード別利用額</div>
+      <div class="cal-pie-inner">
+        <div class="cal-pie-canvas-wrap">
+          <canvas id="cal-pie-canvas" width="130" height="130"></canvas>
+          <div class="cal-pie-center">
+            <div class="cal-pie-center-lbl">合計</div>
+            <div class="cal-pie-center-val" id="cal-pie-total">${fy(total)}</div>
+          </div>
+        </div>
+        <div id="cal-pie-legend" style="flex:1;overflow:hidden;">
+          ${entries.slice(0,8).map(e=>`<div class="pie-leg-row"><div class="pie-leg-dot" style="background:${e.color}"></div><span class="pie-leg-name">${e.name}</span><span class="pie-leg-val">${fy(e.amt)}</span></div>`).join('')}
+          ${!entries.length?'<div class="empty">データなし</div>':''}
+        </div>
+      </div>
+    </div>
+    ${entries.length?`<div class="gb" style="margin-bottom:13px">
+      ${entries.map(e=>`<div class="row">
+        <div style="width:8px;height:8px;border-radius:2px;background:${e.color};flex-shrink:0"></div>
+        <span class="row-lbl">${e.name}</span>
+        <span style="font-size:11px;color:var(--t2)">${Math.round(e.amt/total*100)}%</span>
+        <span class="row-val neg">${fy(e.amt)}</span>
+      </div>`).join('')}
+    </div>`:''}
+  `;
+
+  // チャート描画（データなしでも空グラフ表示）
+  const ctx=document.getElementById('cal-pie-canvas')?.getContext('2d');
+  if(!ctx)return;
+  if(window._statsChart){window._statsChart.destroy();}
+  if(!entries.length){
+    window._statsChart=new Chart(ctx,{
+      type:'doughnut',
+      data:{labels:['データなし'],datasets:[{data:[1],backgroundColor:['rgba(255,255,255,0.06)'],borderWidth:0}]},
+      options:{cutout:'65%',plugins:{legend:{display:false},tooltip:{enabled:false}},animation:{duration:0}}
+    });
+    return;
+  }
+  window._statsChart=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels:entries.map(e=>e.name),datasets:[{data:entries.map(e=>e.amt),backgroundColor:entries.map(e=>e.color),borderWidth:2,borderColor:'#161927',hoverOffset:5}]},
+    options:{cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${fy(c.parsed)} (${Math.round(c.parsed/total*100)}%)`}}},animation:{duration:400}}
+  });
+}
 
 // ═══════════════════════════════════════════
 // CARDS（Wallet風）
 // ═══════════════════════════════════════════
 let expandedCardId=null;
+let cardSortMode='custom'; // custom|closeDay|billDay|brand|annualFee
+let showHiddenCards=false;
 
 function renderCards(){
   const body=document.getElementById('cards-body');
+  const visCards=S.cards.filter(c=>c.visible);
+  const hidCards=S.cards.filter(c=>!c.visible);
+
   if(!S.cards.length){
     body.innerHTML=`<div style="padding-bottom:20px">
       <button class="wallet-add-btn" onclick="openModal('addCard')">＋ カードを追加</button>
@@ -1068,21 +1323,27 @@ function renderCards(){
     return;
   }
 
-  // zIndexは上に積むほど大きく（先頭カードが一番上）
-  const total=S.cards.length;
-  const cards=S.cards.map((c,i)=>{
+  // 並び替え
+  let displayCards=[...visCards];
+  if(cardSortMode==='closeDay')displayCards.sort((a,b)=>a.closeDay-b.closeDay);
+  else if(cardSortMode==='billDay')displayCards.sort((a,b)=>a.billDay-b.billDay);
+  else if(cardSortMode==='brand')displayCards.sort((a,b)=>a.brand.localeCompare(b.brand));
+  else if(cardSortMode==='annualFee')displayCards.sort((a,b)=>b.annualFee-a.annualFee);
+
+  const total=displayCards.length;
+  const cards=displayCards.map((c,i)=>{
     const grad=CARD_GRADIENTS[c.gradientIdx||0];
     const isExp=expandedCardId===c.id;
-    const zIdx=total-i;
+    const zIdx=i+1;
 
-    const detail=`<div class="wallet-card-detail" style="display:${isExp?'block':'none'}">
+    const detail=`<div class="wallet-card-detail">
       <div class="wallet-card-detail-row">
         <span class="wallet-card-detail-lbl">締め日 / 引落日</span>
         <div class="wallet-card-detail-val">${c.closeDay===99?'末日':c.closeDay+'日'} / ${c.billDay}日</div>
       </div>
       ${c.annualFee?`<div class="wallet-card-detail-row">
         <span class="wallet-card-detail-lbl">年会費</span>
-        <div class="wallet-card-detail-val">${fy(c.annualFee)} <span style="font-family:var(--sans);font-size:11px;opacity:.7">（${c.annualMonth}月請求）</span></div>
+        <div class="wallet-card-detail-val">${fy(c.annualFee)} <span style="font-family:var(--sans);font-size:10px;opacity:.7">（${c.annualMonth}月請求）</span></div>
       </div>`:''}
       ${(c.phones||[]).map(p=>`<div class="wallet-card-detail-row">
         <span class="wallet-card-detail-lbl">${p.label}</span>
@@ -1095,53 +1356,85 @@ function renderCards(){
         <span class="wallet-card-detail-lbl">備考</span>
         <div class="wallet-card-detail-val" style="font-family:var(--sans)">${c.note}</div>
       </div>`:''}
-      ${!c.visible?`<div class="wallet-card-detail-row">
-        <span class="wallet-card-detail-lbl">ダッシュボード</span>
-        <div class="wallet-card-detail-val" style="font-family:var(--sans);color:rgba(255,255,255,0.5)">非表示</div>
-      </div>`:''}
       <div class="wallet-actions">
         <button class="btn btn-g btn-sm" onclick="openModal('addCard',${c.id});event.stopPropagation()">編集</button>
         <button class="btn-d" onclick="delCard(${c.id});event.stopPropagation()">削除</button>
-        <button class="btn btn-g btn-sm" onclick="toggleCardVis(${c.id});event.stopPropagation()">${c.visible?'ダッシュ非表示':'ダッシュ表示'}</button>
+        <button class="btn btn-g btn-sm" onclick="hideCard(${c.id});event.stopPropagation()">非表示</button>
       </div>
     </div>`;
 
-    const isLast=i===total-1;
-    const isPC=window.innerWidth>=768;
-    const mb=isPC?'':(isLast?'0':(isExp?'12px':'-72px'));
-    return`<div class="wallet-card${isExp?' expanded':''}${!c.visible?' wallet-vis-off':''}"
+    return`<div class="wallet-card${isExp?' expanded':''}"
         data-id="${c.id}"
-        style="background:${grad};z-index:${zIdx};${mb?'margin-bottom:'+mb:''}"
+        style="background:${grad};z-index:${zIdx}"
         onclick="toggleWalletCard(${c.id})">
-      <!-- 常時表示：カード名とブランド -->
+      <!-- 上部: 常時表示 -->
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="flex:1;min-width:0">
           <div class="wallet-card-name">${c.name}</div>
-          <div style="display:flex;gap:14px;margin-top:10px">
-            <div>
-              <div style="font-size:9px;color:rgba(255,255,255,0.5);letter-spacing:.6px;text-transform:uppercase;margin-bottom:2px">締め日</div>
-              <div style="font-family:var(--mono);font-size:13px;color:rgba(255,255,255,0.9)">${c.closeDay===99?'末日':c.closeDay+'日'}</div>
-            </div>
-            <div>
-              <div style="font-size:9px;color:rgba(255,255,255,0.5);letter-spacing:.6px;text-transform:uppercase;margin-bottom:2px">引落日</div>
-              <div style="font-family:var(--mono);font-size:13px;color:rgba(255,255,255,0.9)">${c.billDay}日</div>
-            </div>
-          </div>
         </div>
         <div style="flex-shrink:0;margin-left:8px">${brandIcon(c.brand)}</div>
+      </div>
+      <!-- 下部: 常時表示 -->
+      <div class="wallet-card-bottom">
+        <div class="wallet-card-meta-item">
+          <div class="wallet-card-meta-lbl">締め日</div>
+          <div class="wallet-card-meta-val">${c.closeDay===99?'末日':c.closeDay+'日'}</div>
+        </div>
+        <div class="wallet-card-meta-item">
+          <div class="wallet-card-meta-lbl">引落日</div>
+          <div class="wallet-card-meta-val">${c.billDay}日</div>
+        </div>
       </div>
       ${detail}
     </div>`;
   }).join('');
 
-  const addBtn=`<div style="display:flex;justify-content:flex-end;margin-bottom:12px">
-    <button class="edit-mode-btn" onclick="openModal('addCard')">＋ カードを追加</button>
+  // ツールバー
+  const sortOpts=[
+    {v:'custom',l:'追加順'},
+    {v:'billDay',l:'引落日順'},
+    {v:'closeDay',l:'締め日順'},
+    {v:'brand',l:'ブランド順'},
+    {v:'annualFee',l:'年会費順'},
+  ];
+  const sortSel=`<select onchange="cardSortMode=this.value;renderCards()" style="background:var(--s2);border:1px solid var(--b1);border-radius:7px;color:var(--text);font-size:12px;padding:5px 8px;outline:none;cursor:pointer">
+    ${sortOpts.map(o=>`<option value="${o.v}"${cardSortMode===o.v?' selected':''}>${o.l}</option>`).join('')}
+  </select>`;
+
+  const hidBtn=hidCards.length?`<button class="edit-mode-btn${showHiddenCards?' on':''}" onclick="showHiddenCards=!showHiddenCards;renderCards()" style="font-size:11px">非表示 ${hidCards.length}枚</button>`:'';
+
+  const toolbar=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+    <button class="edit-mode-btn" onclick="openModal('addCard')" style="font-size:12px">＋ カードを追加</button>
+    <div style="flex:1"></div>
+    ${hidBtn}
+    ${!showHiddenCards?sortSel:''}
   </div>`;
-  body.innerHTML=addBtn+`<div class="wallet-wrap">${cards}</div><div style="height:32px"></div>`;
+
+  // 非表示カード一覧（排他表示）
+  if(showHiddenCards){
+    const hidList=hidCards.length?hidCards.map(c=>`<div class="row">
+      <span class="row-lbl">${c.name}</span>
+      <button class="edit-mode-btn" onclick="showCard(${c.id})" style="font-size:11px">表示に戻す</button>
+      <button class="btn-d" onclick="delCard(${c.id})">削除</button>
+    </div>`).join(''):`<div class="empty">非表示のカードなし</div>`;
+    body.innerHTML=toolbar+`<div class="gb">${hidList}</div><div style="height:32px"></div>`;
+    return;
+  }
+
+  body.innerHTML=toolbar+`<div class="wallet-wrap">${cards}</div><div style="height:32px"></div>`;
 }
 
+function hideCard(id){
+  const c=S.cards.find(x=>x.id===id);
+  if(c){c.visible=false;expandedCardId=null;save();renderCards();if(activeTab==='home')renderHome();}
+}
+function showCard(id){
+  const c=S.cards.find(x=>x.id===id);
+  if(c){c.visible=true;save();renderCards();if(activeTab==='home')renderHome();}
+}
+function toggleCardVis(id){const c=S.cards.find(x=>x.id===id);if(c){c.visible=!c.visible;save();renderCards();}}
+
 function toggleWalletCard(id){
-  const PEEK=-72, GAP=12;
   const isPC=window.innerWidth>=768;
   const allCards=document.querySelectorAll('.wallet-card');
 
@@ -1152,7 +1445,6 @@ function toggleWalletCard(id){
       prevEl.classList.remove('expanded');
       const detail=prevEl.querySelector('.wallet-card-detail');
       if(detail)detail.style.display='none';
-      if(!isPC&&prevEl!==allCards[allCards.length-1])prevEl.style.marginBottom=PEEK+'px';
     }
   }
 
@@ -1165,11 +1457,6 @@ function toggleWalletCard(id){
       el.classList.add('expanded');
       const detail=el.querySelector('.wallet-card-detail');
       if(detail)detail.style.display='block';
-      if(!isPC){
-        requestAnimationFrame(()=>{
-          if(el!==allCards[allCards.length-1])el.style.marginBottom=GAP+'px';
-        });
-      }
     }
   }
 }
@@ -1198,9 +1485,8 @@ function renderSettings(){
     if(days>=7)showReminder=true;
   }
   const order=S.tabOrder||TAB_DEFS.map(t=>t.id);
-  if(!order.includes('cards'))order.push('cards');
-  const defs=order.filter(id=>id!=='stats').map(id=>TAB_DEFS.find(t=>t.id===id)).filter(Boolean);
-  TAB_DEFS.forEach(t=>{if(!defs.find(d=>d.id===t.id))defs.push(t);});
+  TAB_DEFS.forEach(t=>{if(!order.includes(t.id))order.push(t.id);});
+  const defs=order.map(id=>TAB_DEFS.find(t=>t.id===id)).filter(Boolean);
   const hidden=S.tabHidden||[];
 
   document.getElementById('settings-body').innerHTML=`
@@ -1228,13 +1514,15 @@ function renderSettings(){
     </div>
 
     <div class="st-sec"><div class="st-sec-title">タブの並び順 / 表示</div>
-      <div class="st-hint">ドラッグで並び替え（ダッシュボードは固定）</div>
+      <div class="st-hint">ドラッグで並び替え（ホームは固定）</div>
       <div id="st-tab-list">
         ${defs.filter(t=>t.id!=='settings').map(t=>{
           const isHidden=hidden.includes(t.id)&&!t.fixed;
           return`<div class="tab-order-item${isHidden?' hidden-tab':''}" draggable="${!t.fixed}" data-tab-id="${t.id}"
             ondragstart="tabDragStart(event,'${t.id}')" ondragover="tabDragOver(event)" ondrop="tabDrop(event,'${t.id}')">
-            <span class="tab-order-handle">${t.fixed?'●':'⠿'}</span>
+            <span class="tab-order-handle">${t.fixed?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+  <path d="M12 2a4 4 0 014 4c0 1.5-.5 2.8-1.4 3.8L16 21l-4-2-4 2 1.4-11.2A5.96 5.96 0 018 6a4 4 0 014-4z" fill="currentColor" opacity=".85"/>
+</svg>`:'⠿'}</span>
             <span class="tab-order-icon">${tabSvg(t.id,false)}</span>
             <span class="tab-order-name">${t.label}</span>
             ${t.fixed
@@ -1246,15 +1534,47 @@ function renderSettings(){
       </div>
     </div>
 
-    <div class="st-sec"><div class="st-sec-title">作者</div>
-      <div class="author-banner" onclick="window.open('https://x.com/_4cls','_blank')">
-        <div class="author-banner-name">CardBoard</div>
-        <div class="author-banner-x">𝕏 @_4cls</div>
+    <div class="st-sec"><div class="st-sec-title">クレジット</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="author-banner" style="flex:1;min-width:140px" onclick="window.open('https://x.com/_4cls','_blank')">
+          <div class="author-banner-name">あきれす</div>
+          <div class="author-banner-x">𝕏 @_4cls</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px">作者</div>
+        </div>
+        <div class="author-banner" style="flex:1;min-width:140px" onclick="window.open('https://x.com/m8395i','_blank')">
+          <div class="author-banner-name">Masa</div>
+          <div class="author-banner-x">𝕏 @m8395i</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px">Special Thanks</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="st-sec"><div class="st-sec-title">シェア</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="st-row" style="flex:1;min-width:140px;cursor:pointer;justify-content:center" onclick="shareToX()">
+          <span class="st-icon" style="font-size:18px">𝕏</span>
+          <div class="st-body"><div class="st-lbl">Xに投稿</div></div>
+        </button>
+        <button class="st-row" style="flex:1;min-width:140px;cursor:pointer;justify-content:center" onclick="copyShareUrl()">
+          <span class="st-icon">🔗</span>
+          <div class="st-body"><div class="st-lbl" id="copy-url-lbl">URLをコピー</div></div>
+        </button>
       </div>
     </div>`;
 }
 
-let _dragTabId=null;
+function shareToX(){
+  const url='https://wankiti.github.io/cardboard/cardboard.html';
+  const text='クレジットカードの引き落とし管理アプリ「CardBoard」を使っています！';
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,'_blank');
+}
+function copyShareUrl(){
+  const url='https://wankiti.github.io/cardboard/cardboard.html';
+  navigator.clipboard?.writeText(url).then(()=>{
+    const lbl=document.getElementById('copy-url-lbl');
+    if(lbl){lbl.textContent='コピーしました！';setTimeout(()=>lbl.textContent='URLをコピー',2000);}
+  });
+}
 function tabDragStart(e,id){_dragTabId=id;e.dataTransfer.effectAllowed='move';e.currentTarget.classList.add('dragging');}
 function tabDragOver(e){e.preventDefault();document.querySelectorAll('.tab-order-item').forEach(el=>el.classList.remove('drag-over'));e.currentTarget.classList.add('drag-over');}
 function tabDrop(e,targetId){
@@ -1381,8 +1701,27 @@ function _saveItem(isFixed){
 let _cardBrand='visa';
 let _gradIdx=0;
 
+// カード名→グラデーション自動プリセット
+function autoPresetCard(name){
+  const n=name.toLowerCase();
+  // グラデーション自動選択
+  if(n.includes('platinum')||n.includes('プラチナ')){selectGrad(2);}
+  else if(n.includes('black')||n.includes('ブラック')){selectGrad(0);}
+  else if(n.includes('titan')||n.includes('チタン')){selectGrad(1);}
+  else if(n.includes('gold')||n.includes('ゴールド')){selectGrad(3);}
+  else if(n.includes('rose')||n.includes('ローズ')){selectGrad(4);}
+  // ブランド自動選択
+  if(n.includes('visa')){selectBrand('visa');}
+  else if(n.includes('mastercard')||n.includes('master')){selectBrand('mastercard');}
+  else if(n.includes('amex')||n.includes('american express')||n.includes('americanexpress')){selectBrand('amex');}
+  else if(n.includes('jcb')){selectBrand('jcb');}
+  else if(n.includes('diners')){selectBrand('diners');}
+  else if(n.includes('unionpay')||n.includes('union pay')){selectBrand('unionpay');}
+  else if(n.includes('discover')){selectBrand('discover');}
+}
+
 function bCardForm(card){
-  const c=card||{name:'',brand:'visa',closeDay:'',billDay:'',annualFee:0,annualMonth:0,annualDay:0,note:'',phones:[],gradientIdx:0};
+  const c=card||{name:'',brand:'visa',closeDay:'',billDay:'',annualFee:0,annualMonth:0,note:'',phones:[],gradientIdx:0};
   _cardBrand=c.brand||'visa';
   _gradIdx=c.gradientIdx||0;
   const phones=c.phones||[];
@@ -1391,7 +1730,8 @@ function bCardForm(card){
     ${brandIcon(b.id)}<span>${b.label}</span>
   </button>`).join('');
 
-  const gradBtns=CARD_GRADIENTS.map((g,i)=>`<div onclick="selectGrad(${i})" style="width:40px;height:26px;border-radius:6px;background:${g};cursor:pointer;border:2px solid ${(c.gradientIdx||0)===i?'var(--accent)':'transparent'};flex-shrink:0" id="grad-opt-${i}"></div>`).join('');
+  const GRAD_LABELS=['ブラック','チタン','プラチナ','ゴールド','ローズゴールド','ネイビー','ディープブルー','エメラルド','バーガンディ','スレート','ミッドナイト'];
+  const gradBtns=CARD_GRADIENTS.map((g,i)=>`<div onclick="selectGrad(${i})" title="${GRAD_LABELS[i]}" style="width:36px;height:22px;border-radius:5px;background:${g};cursor:pointer;border:2px solid ${(_gradIdx||0)===i?'var(--accent)':'transparent'};flex-shrink:0" id="grad-opt-${i}"></div>`).join('');
 
   const phoneRows=phones.map((p,i)=>`<div class="fgrid" style="margin-bottom:6px">
     <input class="finput" id="ph_l_${i}" value="${p.label}" placeholder="例: コンシェルジュ">
@@ -1404,7 +1744,7 @@ function bCardForm(card){
      <div class="frow"><label class="flbl">カードの色</label>
      <div style="display:flex;flex-wrap:wrap;gap:6px">${gradBtns}</div></div>
      <div class="frow"><label class="flbl">カード名<span class="req">*必須</span></label>
-     <input class="finput" id="fc_n" value="${c.name}" placeholder="例: VISA GOLD"></div>
+     <input class="finput" id="fc_n" value="${c.name}" placeholder="例: VISA GOLD" oninput="autoPresetCard(this.value)"></div>
      <div class="fgrid">
        <div class="frow"><label class="flbl">締め日（末日=99）<span class="req">*必須</span></label>
        <div class="input-wrap"><input class="finput" id="fc_cl" type="text" inputmode="numeric" value="${c.closeDay||''}" oninput="this.value=toHalf(this.value).replace(/\D/g,'')"><span class="input-unit">日</span></div></div>
@@ -1417,8 +1757,6 @@ function bCardForm(card){
        <div class="frow"><label class="flbl">年会費請求月</label>
        <div class="input-wrap"><input class="finput" id="fc_am" type="text" inputmode="numeric" value="${c.annualMonth||0}" oninput="this.value=toHalf(this.value).replace(/\D/g,'')"><span class="input-unit">月</span></div></div>
      </div>
-     <div class="frow"><label class="flbl">年会費請求日</label>
-     <div class="input-wrap"><input class="finput" id="fc_ad" type="text" inputmode="numeric" value="${c.annualDay||0}" oninput="this.value=toHalf(this.value).replace(/\D/g,'')"><span class="input-unit">日</span></div></div>
      <div class="frow"><label class="flbl">電話番号</label>
      <div id="phone-list">${phoneRows}</div>
      <button class="add-pill" style="margin-top:6px;width:100%" onclick="addPhoneRow();return false">＋ 電話番号を追加</button></div>
@@ -1485,7 +1823,6 @@ function _saveCard(id){
   const bl=parseInt(toHalf(document.getElementById('fc_bl').value));
   const af=parseAmt(document.getElementById('fc_af').value)||0;
   const am=parseInt(document.getElementById('fc_am').value)||0;
-  const ad=parseInt(document.getElementById('fc_ad').value)||0;
   const nt=document.getElementById('fc_nt').value.trim();
 
   const phones=[];
@@ -1499,7 +1836,7 @@ function _saveCard(id){
 
   if(!n||isNaN(cl)||isNaN(bl)){alert('カード名・締め日・引き落とし日は必須です');return;}
 
-  const obj={name:n,brand:_cardBrand,closeDay:cl,billDay:bl,annualFee:af,annualMonth:am,annualDay:ad,note:nt,phones,gradientIdx:_gradIdx,visible:true};
+  const obj={name:n,brand:_cardBrand,closeDay:cl,billDay:bl,annualFee:af,annualMonth:am,note:nt,phones,gradientIdx:_gradIdx,visible:true};
   if(id){
     const c=S.cards.find(c=>c.id===id);
     if(c){const vis=c.visible;Object.assign(c,obj);c.visible=vis;}
@@ -1507,6 +1844,7 @@ function _saveCard(id){
     S.cards.push({id:S.nxtCard++,...obj});
   }
   save();mClose();renderCards();
+  if(activeTab==='home')renderHome();
 }
 
 // ═══════════════════════════════════════════

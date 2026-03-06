@@ -130,12 +130,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 /* ── Card accordion ── */
 .cacc-head{display:flex;align-items:center;gap:8px;padding:11px 13px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);transition:background .1s;}
 .cacc-name{flex:1;font-size:14px;font-weight:500;}
+.cacc-name.past{color:var(--t3);}
 .cacc-date{font-size:11px;color:var(--t2);font-family:var(--mono);white-space:nowrap;min-width:52px;text-align:center;}
 .cacc-date.past{color:var(--t3);}
 .cacc-date.soon{color:var(--warn);}
 .cacc-date.tod{color:var(--ng);font-weight:700;}
 .cacc-amt{font-family:var(--mono);font-size:14px;min-width:70px;text-align:right;}
 .cacc-amt.zero{color:var(--t3);}
+.cacc-amt.past{color:var(--t3);}
 .cacc-chev{font-size:11px;color:var(--t2);transition:transform .2s;flex-shrink:0;}
 .cacc-chev.open{transform:rotate(180deg);}
 .cacc-body{display:none;padding:10px 13px 13px;background:rgba(0,0,0,0.18);border-bottom:1px solid rgba(255,255,255,0.04);}
@@ -803,24 +805,30 @@ function renderDash(){
   const md0=getMD(ym0),md1=getMD(ym1);
   const[y1p,m1p]=ym1.split('-').map(Number);
 
-  // カードアコーディオン（インライン入力）
-  const cardRows=vis.map(c=>{
+  // カードアコーディオン（インライン入力）- 日付昇順→金額降順
+  const visWithMeta=vis.map(c=>{
     const amt=md.cardAmounts[c.id]||0;
     const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
     const act=nextBiz(y,m,raw);
+    return{c,amt,act};
+  }).sort((a,b)=>a.act-b.act||b.amt-a.amt);
+
+  const cardRows=visWithMeta.map(({c,amt,act})=>{
     const diff=(act-new Date(ts))/864e5;
     let dc='cacc-date';
     if(diff<0)dc+=' past';
     else if(diff>=0&&diff<1)dc+=' tod';else if(diff>=0&&diff<=5)dc+=' soon';
+    const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
     const shifted=fmtD(act)!==`${y}-${z2(m)}-${z2(raw)}`;
     const raw1=c.billDay===99?new Date(y1p,m1p,0).getDate():c.billDay;
     const act1=nextBiz(y1p,m1p,raw1);
     const amt0=md0.cardAmounts[c.id]||0;
     const amt1=md1.cardAmounts[c.id]||0;
     return`<div class="cacc-head" onclick="toggleAcc(${c.id})">
-      <span class="cacc-name">${c.name}</span>
-      <span class="${dc}">${diff<0&&amt>0?'🪦':''} ${m}月${act.getDate()}日${shifted?'*':''}</span>
-      <span class="cacc-amt${amt===0?' zero':''}">${amt===0?'—':fy(amt)}</span>
+      <span class="cacc-name${diff<0?' past':''}">${c.name}</span>
+      <span style="width:18px;text-align:center;flex-shrink:0;font-size:13px">${diff<0&&amt>0?'🪦':diff>=0&&diff<=5&&amt>0?'🔪':''}</span>
+      <span class="${dc}">${m}月${act.getDate()}日${shifted?'*':''}</span>
+      <span class="cacc-amt${amt===0?' zero':diff<0?' past':''}">${amt===0?'—':fy(amt)}</span>
       <span class="cacc-chev" id="chev-${c.id}">▾</span>
     </div>
     <div class="cacc-body" id="acc-${c.id}">
@@ -1261,34 +1269,32 @@ function renderHome(){
   </div>`:'';
 
 
-  // 今月引き落としリスト（日付ごと）
-  const billByDate={};
-  vis.forEach(c=>{
+  // 今月引き落としリスト（日付昇順→金額降順）
+  const homeCards=vis.map(c=>{
     const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
     const act=nextBiz(y,m,raw);
-    const ds=fmtD(act);
-    if(!billByDate[ds])billByDate[ds]={date:act,total:0,cards:[]};
     const amt=md.cardAmounts[c.id]||0;
-    billByDate[ds].total+=amt;
-    if(amt>0)billByDate[ds].cards.push({name:c.name,amt});
-  });
-  const billDates=Object.values(billByDate).sort((a,b)=>a.date-b.date);
+    return{name:c.name,act,amt};
+  }).sort((a,b)=>a.act-b.act||b.amt-a.amt);
   const ts=todayStr();
 
-  const billList=billDates.length?billDates.map(b=>{
-    const dateStr=`${m}/${b.date.getDate()}`;
-    const diff=(b.date-new Date(ts))/864e5;
-    let dateColor='color:var(--t3)';
-    if(diff>=0&&diff<1)dateColor='color:var(--ng);font-weight:700';
-    else if(diff>=0&&diff<=5)dateColor='color:var(--warn)';
-    return b.cards.filter(c=>c.amt>0).map((c,ci)=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
-        <div style="flex:1;min-width:0;margin-right:12px">
-          <div style="font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div>
-          ${ci===0?`<div style="font-size:10px;${dateColor};margin-top:1px">${dateStr}${diff<0?'':''}</div>`:''}
-        </div>
-        <span style="font-family:var(--mono);font-size:13px;color:var(--ng);white-space:nowrap;flex-shrink:0">${fy(c.amt)}</span>
-      </div>`).join('');
+  const billList=homeCards.length?homeCards.map(c=>{
+    const dateStr=`${m}/${c.act.getDate()}`;
+    const diff=(c.act-new Date(ts))/864e5;
+    const isPast=diff<0;
+    const isSoon=diff>=0&&diff<=5;
+    const isToday=diff>=0&&diff<1;
+    const emoji=isPast&&c.amt>0?'🪦':isSoon&&c.amt>0?'🔪':'';
+    const dateColor=isToday?'color:var(--ng);font-weight:700':isSoon?'color:var(--warn)':'color:var(--t3)';
+    const nameColor=isPast?'color:var(--t3)':'color:var(--text)';
+    const amtColor=isPast?'color:var(--t3)':'color:var(--ng)';
+    return`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;${nameColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div>
+        <div style="font-size:10px;${dateColor};margin-top:1px">${emoji} ${dateStr}</div>
+      </div>
+      <span style="font-family:var(--mono);font-size:13px;${amtColor};white-space:nowrap;flex-shrink:0">${c.amt>0?fy(c.amt):'—'}</span>
+    </div>`;
   }).join(''):`<div class="empty">引き落とし予定なし</div>`;
 
   document.getElementById('home-body').innerHTML=`

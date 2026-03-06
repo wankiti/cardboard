@@ -154,11 +154,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .cacc-meta{font-size:12px;color:var(--t2);margin-bottom:9px;line-height:1.9;}
 .cacc-months{display:flex;flex-direction:column;gap:7px;}
 .cacc-month-row{display:flex;align-items:center;gap:7px;}
-.cacc-month-lbl{font-size:11px;color:var(--t2);width:48px;flex-shrink:0;}
+.cacc-month-lbl{font-size:11px;color:var(--t2);flex:1;}
 .cacc-input{flex:1;background:var(--bg);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:15px;padding:8px 10px;outline:none;transition:.15s;-webkit-appearance:none;text-align:right;}
 .cacc-input:focus{border-color:var(--accent);}
 .inline-amt-input{background:var(--s2);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:14px;padding:5px 10px;outline:none;transition:.15s;-webkit-appearance:none;text-align:right;min-width:70px;max-width:150px;width:auto;}
-.cacc-month-row .inline-amt-input{flex:1;max-width:none;}
+.cacc-month-row .inline-amt-input{flex:none;width:140px;max-width:none;}
 .inline-amt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,141,238,0.12);}
 .inline-amt-input::placeholder{color:var(--t3);}
 .inline-amt-input.pos{color:var(--ok);}
@@ -639,7 +639,7 @@ function nextBiz(y,m,day){let d=new Date(y,m-1,day);while(isNBD(d))d=new Date(d.
 // ═══════════════════════════════════════════
 function z2(n){return String(n).padStart(2,'0');}
 function fy(n){if(isNaN(n)||n==null)return'¥0';const a=Math.abs(Math.round(n));return(n<0?'-¥':'¥')+a.toLocaleString('ja-JP');}
-function ymLbl(y){const[yr,mo]=y.split('-');return`${yr}年${parseInt(mo)}月`;}
+function ymLbl(y){const[yr,mo]=y.split('-');return`${parseInt(mo)}月`;}
 function todayStr(){return fmtD(new Date());}
 function toHalf(v){return String(v).replace(/[０-９－＋．]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/[ー−]/g,'-');}
 function fmtAmt(v){if(v===''||v==null)return'';const n=parseFloat(String(v).replace(/,/g,''));return isNaN(n)?'':n.toLocaleString('ja-JP');}
@@ -1491,7 +1491,7 @@ function openCardDetail(id){
       </div>
       ${c.annualFee?`<div class="card-detail-row">
         <span class="card-detail-lbl">年会費</span>
-        <span class="card-detail-val">${fy(c.annualFee)}<span style="font-size:10px;opacity:.6;font-family:var(--sans);margin-left:4px">（${c.annualMonth}月請求）</span></span>
+        <span class="card-detail-val"><span style="font-size:10px;opacity:.6;font-family:var(--sans);margin-right:4px">（${c.annualMonth}月請求）</span>${fy(c.annualFee)}</span>
       </div>`:''}
       ${(c.phones||[]).map(p=>`<div class="card-detail-row">
         <span class="card-detail-lbl">${p.label}</span>

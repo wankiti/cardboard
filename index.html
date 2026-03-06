@@ -1274,6 +1274,7 @@ function renderHome(){
 
 
   // 今月引き落としリスト（未来：日付昇順→金額降順、済み：下部）
+  const ts=todayStr();
   const homeCards=vis.map(c=>{
     const raw=c.billDay===99?new Date(y,m,0).getDate():c.billDay;
     const act=nextBiz(y,m,raw);
@@ -1285,7 +1286,6 @@ function renderHome(){
     if(ap!==bp)return ap?1:-1;
     return ap?b.act-a.act:a.act-b.act||b.amt-a.amt;
   });
-  const ts=todayStr();
 
   const billList=homeCards.length?homeCards.map(c=>{
     const dateStr=`${m}/${c.act.getDate()}`;

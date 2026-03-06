@@ -1659,7 +1659,12 @@ function spApplyLayout(animate,displayCards){
   const stack=document.getElementById('spStack');
   if(!stack)return;
   const wrap=stack.parentElement;
-  const contH=wrap.clientHeight||500;
+  const st=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--st'))||0;
+  const sb=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sb'))||0;
+  const tbh=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tbh'))||49;
+  const topbarH=46+st;
+  const bottomH=tbh+sb;
+  const contH=window.innerHeight-topbarH-bottomH;
 
   // 実際のカード高さをDOMから取得（aspect-ratio可変対応）
   const firstCard=document.getElementById(`spcard-${displayCards[0]?.id}`);

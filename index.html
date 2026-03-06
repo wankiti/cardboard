@@ -307,6 +307,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .card-detail-actions{display:flex;gap:8px;padding:12px 16px;background:var(--s2);border-top:1px solid var(--b1);}
 .card-detail-close{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.4);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;color:rgba(255,255,255,0.7);font-size:16px;display:flex;align-items:center;justify-content:center;line-height:1;}
 
+/* ── PC フリップアニメーション ── */
+@media(min-width:768px){
+  .card-detail-overlay{display:none!important;}/* PC では使わない */
+  #flip-ov{position:fixed;inset:0;z-index:450;pointer-events:none;}
+  #flip-ov.active{pointer-events:all;}
+  #flip-bd{position:absolute;inset:0;
+    background:rgba(0,0,0,0);backdrop-filter:blur(0px);-webkit-backdrop-filter:blur(0px);
+    transition:background .4s ease,backdrop-filter .4s ease,-webkit-backdrop-filter .4s ease;}
+  #flip-ov.active #flip-bd{background:rgba(0,0,0,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+  #flip-fc{position:absolute;overflow:hidden;perspective:1200px;}
+  #flip-fc.open{box-shadow:0 32px 80px rgba(0,0,0,0.8);}
+  #flip-inner{position:absolute;inset:0;transform-style:preserve-3d;border-radius:inherit;}
+  .flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:inherit;overflow:hidden;}
+  .flip-back{transform:rotateY(180deg);background:var(--s1);display:flex;flex-direction:column;}
+  .flip-back .card-detail-body{flex:1;overflow-y:auto;}
+  .flip-back .card-detail-body::-webkit-scrollbar{display:none;}
+}
+
 /* Brand SVGs */
 .brand-icon svg{display:block;}
 
@@ -452,6 +470,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 </div>
 <div class="card-detail-overlay" id="card-ov" onclick="cardOvClose(event)">
   <div class="card-detail-panel" id="card-panel"></div>
+</div>
+<!-- PC flip overlay -->
+<div id="flip-ov">
+  <div id="flip-bd" onclick="pcCardClose()"></div>
+  <div id="flip-fc">
+    <div id="flip-inner">
+      <div class="flip-face flip-front" id="flip-front"></div>
+      <div class="flip-face flip-back" id="flip-back">
+        <div class="card-detail-hero" id="flip-hero">
+          <button class="card-detail-close" onclick="pcCardClose()">✕</button>
+          <div id="flip-hero-name" style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.95)"></div>
+          <div id="flip-hero-brand" style="display:flex;justify-content:flex-end"></div>
+        </div>
+        <div class="card-detail-body" id="flip-body"></div>
+        <div class="card-detail-actions" id="flip-actions"></div>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
 // ═══════════════════════════════════════════
@@ -1427,7 +1463,7 @@ function renderCards(){
   // タイル（名前＋ブランドのみ）
   const tiles=displayCards.map(c=>{
     const grad=CARD_GRADIENTS[c.gradientIdx||0];
-    return`<div class="wallet-tile" style="background:${grad}" onclick="openCardDetail(${c.id})">
+    return`<div class="wallet-tile" id="wtile-${c.id}" style="background:${grad}" onclick="openCardDetail(${c.id})">
       <div class="wallet-tile-name">${c.name}</div>
       <div class="wallet-tile-brand">${brandIcon(c.brand)}</div>
     </div>`;
@@ -1474,20 +1510,29 @@ function showCard(id){
     if(activeTab==='home')renderHome();
   }
 }
+const FLIP_DURATION=480;
+let _flipAnimating=false,_flipCard=null;
+
 function openCardDetail(id){
   const c=S.cards.find(x=>x.id===id);
   if(!c)return;
-  const grad=CARD_GRADIENTS[c.gradientIdx||0];
-  document.getElementById('card-panel').innerHTML=`
-    <div class="card-detail-hero" style="background:${grad}">
-      <button class="card-detail-close" onclick="cardOvClose()">✕</button>
-      <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.95)">${c.name}</div>
-      <div style="display:flex;justify-content:flex-end">${brandIcon(c.brand)}</div>
-    </div>
-    <div class="card-detail-body">
+  if(window.innerWidth>=768){
+    _openCardFlip(c);
+  } else {
+    _openCardOverlay(c);
+  }
+}
+
+function _buildCardDetailHTML(c){
+  return {
+    body:`
       <div class="card-detail-row">
-        <span class="card-detail-lbl">締め日 / 引落日</span>
-        <span class="card-detail-val">${c.closeDay===99?'末日':c.closeDay+'日'} / ${c.billDay}日</span>
+        <span class="card-detail-lbl">締め日</span>
+        <span class="card-detail-val">${c.closeDay===99?'末日':c.closeDay+'日'}</span>
+      </div>
+      <div class="card-detail-row">
+        <span class="card-detail-lbl">引落日</span>
+        <span class="card-detail-val">${c.billDay}日</span>
       </div>
       ${c.annualFee?`<div class="card-detail-row">
         <span class="card-detail-lbl">年会費</span>
@@ -1500,15 +1545,100 @@ function openCardDetail(id){
       ${c.note?`<div class="card-detail-row">
         <span class="card-detail-lbl">備考</span>
         <span class="card-detail-val" style="font-family:var(--sans)">${c.note}</span>
-      </div>`:''}
+      </div>`:''}`,
+    actions:`
+      <button class="btn btn-g btn-sm" onclick="pcCardClose();openModal('addCard',${c.id})">編集</button>
+      <button class="btn btn-g btn-sm" onclick="pcCardClose();hideCard(${c.id})">非表示</button>
+      <button class="btn-d" onclick="if(confirm('削除しますか？')){pcCardClose();delCard(${c.id});}">削除</button>`
+  };
+}
+
+function _openCardOverlay(c){
+  const grad=CARD_GRADIENTS[c.gradientIdx||0];
+  const{body,actions}=_buildCardDetailHTML(c);
+  document.getElementById('card-panel').innerHTML=`
+    <div class="card-detail-hero" style="background:${grad}">
+      <button class="card-detail-close" onclick="cardOvClose()">✕</button>
+      <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.95)">${c.name}</div>
+      <div style="display:flex;justify-content:flex-end">${brandIcon(c.brand)}</div>
     </div>
-    <div class="card-detail-actions">
-      <button class="btn btn-g btn-sm" onclick="openModal('addCard',${c.id});cardOvClose()">編集</button>
-      <button class="btn btn-g btn-sm" onclick="hideCard(${c.id});cardOvClose()">非表示</button>
-      <button class="btn-d" onclick="if(confirm('削除しますか？')){delCard(${c.id});cardOvClose();}">削除</button>
-    </div>`;
+    <div class="card-detail-body">${body}</div>
+    <div class="card-detail-actions">${actions}</div>`;
   document.getElementById('card-ov').classList.add('on');
 }
+
+function _openCardFlip(c){
+  if(_flipAnimating)return;
+  _flipAnimating=true;
+  _flipCard=c;
+
+  const tile=document.getElementById(`wtile-${c.id}`);
+  if(!tile){_flipAnimating=false;_openCardOverlay(c);return;}
+  const src=tile.getBoundingClientRect();
+  const vw=window.innerWidth,vh=window.innerHeight;
+  const grad=CARD_GRADIENTS[c.gradientIdx||0];
+
+  // 表面
+  document.getElementById('flip-front').style.background=grad;
+  // 裏面
+  document.getElementById('flip-hero').style.background=grad;
+  document.getElementById('flip-hero-name').textContent=c.name;
+  document.getElementById('flip-hero-brand').innerHTML=brandIcon(c.brand);
+  const{body,actions}=_buildCardDetailHTML(c);
+  document.getElementById('flip-body').innerHTML=body;
+  document.getElementById('flip-actions').innerHTML=actions;
+
+  const targetW=Math.min(vw-32,420);
+  const targetH=Math.min(vh-48,580);
+  const targetL=(vw-targetW)/2;
+  const targetT=(vh-targetH)/2;
+
+  const fc=document.getElementById('flip-fc');
+  const inner=document.getElementById('flip-inner');
+  const ov=document.getElementById('flip-ov');
+
+  fc.style.cssText=`left:${src.left}px;top:${src.top}px;width:${src.width}px;height:${src.height}px;border-radius:14px;transition:none;`;
+  inner.style.cssText=`transform:rotateY(0deg);transition:none;`;
+  fc.classList.remove('open');
+  tile.style.visibility='hidden';
+  ov.classList.add('active');
+
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const ease='cubic-bezier(.4,0,.2,1)';
+    const t=`${FLIP_DURATION}ms`;
+    fc.style.cssText=`left:${targetL}px;top:${targetT}px;width:${targetW}px;height:${targetH}px;border-radius:20px;transition:left ${t} ${ease},top ${t} ${ease},width ${t} ${ease},height ${t} ${ease},border-radius ${t} ease;`;
+    inner.style.cssText=`transform:rotateY(180deg);transition:transform ${t} ${ease};`;
+    fc.classList.add('open');
+    setTimeout(()=>{_flipAnimating=false;},FLIP_DURATION+20);
+  }));
+}
+
+function pcCardClose(){
+  if(_flipAnimating||!_flipCard)return;
+  _flipAnimating=true;
+  const closingId=_flipCard.id;
+  const tile=document.getElementById(`wtile-${closingId}`);
+  if(!tile){_flipAnimating=false;return;}
+  const src=tile.getBoundingClientRect();
+  const fc=document.getElementById('flip-fc');
+  const inner=document.getElementById('flip-inner');
+  const ov=document.getElementById('flip-ov');
+
+  const ease='cubic-bezier(.4,0,.2,1)';
+  const t=`${FLIP_DURATION}ms`;
+  fc.style.cssText=`left:${src.left}px;top:${src.top}px;width:${src.width}px;height:${src.height}px;border-radius:14px;transition:left ${t} ${ease},top ${t} ${ease},width ${t} ${ease},height ${t} ${ease},border-radius ${t} ease;`;
+  inner.style.cssText=`transform:rotateY(0deg);transition:transform ${t} ${ease};`;
+  fc.classList.remove('open');
+
+  setTimeout(()=>{
+    ov.classList.remove('active');
+    fc.style.cssText=`left:-9999px;top:-9999px;width:1px;height:1px;transition:none;`;
+    tile.style.visibility='';
+    _flipCard=null;
+    _flipAnimating=false;
+  },FLIP_DURATION+20);
+}
+
 function cardOvClose(e){
   if(e&&e.target!==document.getElementById('card-ov'))return;
   document.getElementById('card-ov').classList.remove('on');

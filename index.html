@@ -163,9 +163,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 
 /* ── Banners ── */
 .tutorial-banner{background:linear-gradient(135deg,rgba(91,141,238,0.15),rgba(124,92,252,0.15));border:1px solid rgba(91,141,238,0.3);border-radius:12px;padding:13px 14px;margin-bottom:13px;}
-#tutorial-float{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);left:50%;transform:translateX(-50%);width:min(480px,calc(100vw - 28px));z-index:200;pointer-events:none;}
-#tutorial-float .tutorial-banner{pointer-events:all;margin-bottom:0;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
-@media(min-width:768px){#tutorial-float{left:calc(220px + (100vw - 220px)/2);bottom:24px;}}
 .tutorial-banner-title{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:4px;}
 .tutorial-banner-body{font-size:12px;color:var(--t2);line-height:1.8;}
 .backup-banner{background:rgba(240,156,42,0.12);border:1px solid rgba(240,156,42,0.3);border-radius:10px;padding:9px 13px;margin-bottom:11px;font-size:12px;color:var(--warn);display:flex;align-items:center;justify-content:space-between;gap:8px;}
@@ -384,6 +381,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 <div class="pages">
   <!-- HOME -->
   <div id="pg-home" class="page on">
+    <div id="home-tutorial"></div>
     <div id="home-body"></div>
   </div>
   <!-- DASH (Input) -->
@@ -448,7 +446,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 <div class="card-detail-overlay" id="card-ov" onclick="cardOvClose(event)">
   <div class="card-detail-panel" id="card-panel"></div>
 </div>
-<div id="tutorial-float"></div>
 <script>
 // ═══════════════════════════════════════════
 // CONSTANTS
@@ -950,9 +947,7 @@ function renderDash(){
 function dismissTutorial(clearData){
   S.firstLaunch=false;S.tutStep=0;
   if(clearData){S.months={};S.nxtItem=1;getDisplayYms().forEach(y=>getMD(y));}
-  save();
-  document.getElementById('tutorial-float').innerHTML='';
-  renderDash();renderHome();
+  save();renderDash();renderHome();
 }
 function completeTutorial(){
   mOpen('チュートリアル完了',
@@ -960,12 +955,14 @@ function completeTutorial(){
      <div style="display:flex;gap:8px">
        <button class="btn btn-g" style="flex:1" onclick="dismissTutorial(false);mClose()">デモのまま使う</button>
        <button class="btn btn-p" style="flex:1" onclick="dismissTutorial(true);mClose()">削除してはじめる</button>
-     </div>`
+     </div>`,
+    ''
   );
 }
 function advanceTutorial(step){
   S.tutStep=step;save();
-  renderHome();renderDash();
+  renderDash();renderHome();
+  if(step===1||step===2)goTab('home');
 }
 function toggleAcc(cid){
   const body=document.getElementById('acc-'+cid),chev=document.getElementById('chev-'+cid);
@@ -1213,7 +1210,7 @@ function renderHome(){
   const progress=nextThresh?Math.min(100,totalAF/nextThresh*100):100;
 
   // チュートリアル
-  const tutEl=document.getElementById('tutorial-float');
+  const tutEl=document.getElementById('home-tutorial');
   const tutStep=S.tutStep||0;
   if(tutEl)tutEl.innerHTML=S.firstLaunch?`<div class="tutorial-banner">
     ${tutStep===0?`
@@ -1753,7 +1750,7 @@ function doReset(){
 // MODALS
 // ═══════════════════════════════════════════
 let _mYm='';
-function mOpen(t,b,a){
+function mOpen(t,b,a=''){
   document.getElementById('m-title').textContent=t;
   document.getElementById('m-body').innerHTML=b;
   document.getElementById('m-act').innerHTML=a;

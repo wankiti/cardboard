@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CardBoard">
@@ -116,8 +116,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .row-edit-btn:hover{border-color:var(--accent);color:var(--accent);}
 .chk{width:21px;height:21px;border-radius:6px;border:1.5px solid var(--b2);background:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:.15s;}
 .chk.on{background:var(--ok);border-color:var(--ok);color:#fff;}
-.rdel{background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:0 2px;flex-shrink:0;transition:.15s;}
-.rdel:hover{color:var(--ng);}
+.rdel{background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:0 2px;flex-shrink:0;}
+@media(hover:hover){.rdel:hover{color:var(--ng);}}
 .add-strip{display:flex;gap:6px;padding:9px 13px;border-top:1px solid rgba(255,255,255,0.04);}
 .add-pill{background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.1);border-radius:7px;color:var(--t2);cursor:pointer;font-family:var(--sans);font-size:12px;padding:7px 11px;transition:.15s;}
 .add-pill:hover{border-color:var(--accent);color:var(--accent);}
@@ -294,15 +294,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .st-wrap{padding-bottom:8px;}
 .st-sec{margin-bottom:18px;}
 .st-sec-title{font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;}
-.st-row{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:12px 13px;margin-bottom:7px;cursor:pointer;transition:.15s;}
+.st-row{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:9px 11px;margin-bottom:7px;cursor:pointer;transition:.15s;}
 .st-row:hover{border-color:var(--b2);}
-.st-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center;font-family:var(--sans);}
+.st-icon{font-size:14px;flex-shrink:0;width:20px;text-align:center;font-family:var(--sans);}
 .st-body{flex:1;}
-.st-lbl{font-size:14px;font-weight:500;}
-.st-sub{font-size:12px;color:var(--t2);margin-top:2px;}
+.st-lbl{font-size:13px;font-weight:500;}
+.st-sub{font-size:11px;color:var(--t2);margin-top:2px;}
 .st-arr{color:var(--t2);font-size:16px;}
 .st-hint{font-size:12px;color:var(--t3);margin-bottom:7px;}
-.tab-order-item{display:flex;align-items:center;gap:9px;background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:11px 13px;margin-bottom:7px;cursor:grab;user-select:none;transition:.15s;}
+.tab-order-item{display:flex;align-items:center;gap:9px;background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:11px 13px;margin-bottom:7px;user-select:none;transition:.15s;}
 .tab-order-item.dragging{opacity:.4;border-color:var(--accent);}
 .tab-order-item.drag-over{border-color:var(--accent);background:var(--s3);}
 .tab-order-item.hidden-tab{opacity:.45;}
@@ -819,7 +819,7 @@ function renderDash(){
     const amt1=md1.cardAmounts[c.id]||0;
     return`<div class="cacc-head" onclick="toggleAcc(${c.id})">
       <span class="cacc-name">${c.name}</span>
-      <span class="${dc}">${diff<0&&amt>0?'💸':''} ${m}月${act.getDate()}日${shifted?'*':''}</span>
+      <span class="${dc}">${diff<0&&amt>0?'💸':diff>=0&&diff<=5&&amt>0?'🔪':''} ${m}月${act.getDate()}日${shifted?'*':''}</span>
       <span class="cacc-amt${amt===0?' zero':''}">${amt===0?'—':fy(amt)}</span>
       <span class="cacc-chev" id="chev-${c.id}">▾</span>
     </div>
@@ -1084,7 +1084,7 @@ function switchCalMonth(idx){
 }
 
 function renderCal(){
-  const yms=getYms();
+  const yms=getDisplayYms();
   const ymStr=yms[calIdx];
   const cur=document.getElementById('cmsw0');
   const nxt=document.getElementById('cmsw1');
@@ -1710,8 +1710,10 @@ let _touchDragTabId=null,_touchDragEl=null,_dragTabId=null;
 function tabTouchStart(e,id){
   const def=TAB_DEFS.find(t=>t.id===id);
   if(def?.fixed)return;
-  _touchDragTabId=id;_touchDragEl=e.currentTarget;
-  e.currentTarget.classList.add('dragging');
+  e.stopPropagation();
+  _touchDragTabId=id;
+  _touchDragEl=e.currentTarget.closest('.tab-order-item');
+  if(_touchDragEl)_touchDragEl.classList.add('dragging');
 }
 function tabTouchMove(e){
   if(!_touchDragTabId)return;

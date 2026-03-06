@@ -158,6 +158,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .cacc-input{flex:1;background:var(--bg);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:15px;padding:8px 10px;outline:none;transition:.15s;-webkit-appearance:none;text-align:right;}
 .cacc-input:focus{border-color:var(--accent);}
 .inline-amt-input{background:var(--s2);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:14px;padding:5px 10px;outline:none;transition:.15s;-webkit-appearance:none;text-align:right;min-width:70px;max-width:150px;width:auto;}
+.cacc-month-row .inline-amt-input{flex:1;max-width:none;}
 .inline-amt-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,141,238,0.12);}
 .inline-amt-input::placeholder{color:var(--t3);}
 .inline-amt-input.pos{color:var(--ok);}
@@ -850,13 +851,13 @@ function renderDash(){
     const amt1=md1.cardAmounts[c.id]||0;
     return`<div class="cacc-head" onclick="toggleAcc(${c.id})">
       <span class="cacc-name${diff<0?' past':''}">${c.name}</span>
-      <span style="width:18px;text-align:center;flex-shrink:0;font-size:13px">${diff<0&&amt>0?'🪦':''}</span>
+      <span style="width:18px;text-align:center;flex-shrink:0;font-size:13px"${diff<0&&amt>0?' title="引き落とし日を過ぎています"':''}>${diff<0&&amt>0?'🪦':''}</span>
       <span class="${dc}">${m}月${act.getDate()}日${shifted?'*':''}</span>
       <span class="cacc-amt${amt===0?' zero':diff<0?' past':''}">${amt===0?'—':fy(amt)}</span>
       <span class="cacc-chev" id="chev-${c.id}">▾</span>
     </div>
     <div class="cacc-body" id="acc-${c.id}">
-      <div class="cacc-meta">締め日 ${c.closeDay===99?'末日':c.closeDay+'日'} / 引き落とし ${m}月${act.getDate()}日${shifted?' (振替)':''} / ${m1p}月${act1.getDate()}日</div>
+      <div class="cacc-meta">締め日 ${m}月${c.closeDay===99?'末日':c.closeDay+'日'} / 引き落とし日 ${m}月${act.getDate()}日${shifted?' (振替)':''}</div>
       <div class="cacc-months">
         <div class="cacc-month-row">
           <span class="cacc-month-lbl">${ymLbl(ym0)}</span>
@@ -888,21 +889,17 @@ function renderDash(){
         ?`<span class="row-drag" style="cursor:grab;touch-action:none">⠿</span>`
         :`<div class="chk${it.checked?' on':''}" onclick="toggleItem('${ymStr}',${it.id})">${it.checked?'✓':''}</div>`
       }
-      <span class="row-lbl${it.checked&&!dashEditMode?' done':''}"
-        onclick="${dashEditMode?`editItem('${ymStr}',${it.id})`:''}"
-        style="${dashEditMode?'cursor:pointer':''}">${it.label}</span>
-      ${!dashEditMode&&it.day!=null
+      <span class="row-lbl${it.checked&&!dashEditMode?' done':''}">${it.label}</span>
+      ${it.day!=null
         ?`<span style="font-size:11px;color:var(--t3);font-family:var(--mono);white-space:nowrap;min-width:52px;text-align:center">${it.day}日<br><span style="font-size:9px;opacity:.7">${DM_LABEL[it.dayMode||'prev']}</span></span>`
         :`<span style="min-width:52px"></span>`
       }
-      ${dashEditMode
-        ?`<span class="row-val${it.amount<0?' neg':' pos'}" onclick="editItem('${ymStr}',${it.id})" style="cursor:pointer;min-width:70px;text-align:right">${fy(it.amount)}</span>`
-        :`<input class="inline-amt-input${it.amount<0?' neg':it.amount>0?' pos':''}" id="iamt-${ymStr}-${it.id}" type="text" inputmode="numeric"
-          value="${it.amount?fmtAmt(Math.abs(it.amount)):''}" placeholder="0"
-          oninput="this.value=fmtAmtInput(this.value)"
-          onkeydown="if(event.key==='Enter'){this.blur();}"
-          onblur="saveItemAmtInline('${ymStr}',${it.id},${it.amount<0})">`
-      }
+      <input class="inline-amt-input${it.amount<0?' neg':it.amount>0?' pos':''}" id="iamt-${ymStr}-${it.id}" type="text" inputmode="numeric"
+        value="${it.amount?fmtAmt(it.amount):''}" placeholder="0"
+        ${dashEditMode?'disabled style="opacity:.4;pointer-events:none"':''}
+        oninput="this.value=fmtAmtInput(this.value);this.className='inline-amt-input'+(this.value.startsWith('-')?' neg':this.value&&this.value!=='-'?' pos':'')"
+        onkeydown="if(event.key==='Enter'){this.blur();}"
+        onblur="saveItemAmtInline('${ymStr}',${it.id})">
       ${dashEditMode?`<button class="rdel" onclick="delItem('${ymStr}',${it.id})">×</button>`:''}
     </div>`;
 
@@ -993,11 +990,10 @@ function saveAmtInline(cid){
   // ホームも更新
   if(activeTab==='home')renderHome();
 }
-function saveItemAmtInline(ymStr,id,isNeg){
+function saveItemAmtInline(ymStr,id){
   const el=document.getElementById(`iamt-${ymStr}-${id}`);
   if(!el)return;
-  const abs=parseAmt(el.value);
-  const val=isNeg?-abs:abs;
+  const val=parseAmt(el.value);
   const it=(getMD(ymStr).items||[]).find(x=>x.id===id);
   if(it){it.amount=val;save();renderDash();if(activeTab==='home')renderHome();}
 }
@@ -1269,7 +1265,7 @@ function renderHome(){
     return`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
       <div style="flex:1;min-width:0">
         <div style="font-size:13px;${nameColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div>
-        <div style="font-size:10px;${dateColor};margin-top:1px">${emoji} ${dateStr}</div>
+        <div style="font-size:10px;${dateColor};margin-top:1px"><span${emoji?' title="引き落とし日を過ぎています"':''}>${emoji}</span> ${dateStr}</div>
       </div>
       <span style="font-family:var(--mono);font-size:13px;${amtColor};white-space:nowrap;flex-shrink:0">${c.amt>0?fy(c.amt):'—'}</span>
     </div>`;

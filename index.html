@@ -1556,7 +1556,7 @@ function renderCards(){
     const hidList=hidCards.length?hidCards.map(c=>`<div class="row">
       <span class="row-lbl">${c.name}</span>
       <button class="edit-mode-btn" onclick="showCard(${c.id})" style="font-size:11px">表示に戻す</button>
-      <button class="btn-d" onclick="delCard(${c.id})">削除</button>
+      <button class="btn-d" onclick="if(confirm('削除しますか？'))delCard(${c.id})">削除</button>
     </div>`).join(''):`<div class="empty">非表示のカードなし</div>`;
     body.innerHTML=toolbar+`<div class="gb">${hidList}</div>
       <button class="edit-mode-btn" onclick="showHiddenCards=false;renderCards()" style="margin-top:10px;font-size:12px;width:100%;justify-content:center">← 一覧に戻る</button>
@@ -1597,7 +1597,7 @@ function renderCards(){
       <div class="card-detail-actions" onclick="event.stopPropagation()">
         <button class="btn btn-g btn-sm" onclick="document.getElementById('card-ov').classList.remove('on');openModal('addCard',${c.id})">編集</button>
         <button class="btn btn-g btn-sm" onclick="spCardTap(null);hideCard(${c.id})">非表示</button>
-        <button class="btn-d" onclick="if(confirm('削除しますか？')){spCardTap(null);delCard(${c.id});}">削除</button>
+        <button class="btn-d" onclick="event.stopPropagation();if(confirm('削除しますか？')){spCardTap(null);delCard(${c.id});}">削除</button>
       </div>
     </div>`;
   }).join('');
@@ -1902,7 +1902,6 @@ function cardOvClose(e){
   }
 }
 function delCard(id){
-  if(!confirm('削除しますか？'))return;
   S.cards=S.cards.filter(c=>c.id!==id);save();renderCards();
 }
 function copyText(e,text){
@@ -2128,8 +2127,8 @@ function confirmReset(){
      <button class="btn" style="background:var(--ng);color:#fff" onclick="doReset()">そのまま削除</button>`);
 }
 function doReset(){
-  S=initDemoData();
-  save();mClose();goTab('home');buildTabs();renderDash();renderHome();renderSettings();
+  localStorage.removeItem(SK);
+  location.reload();
 }
 
 // ═══════════════════════════════════════════

@@ -699,8 +699,14 @@ function initDemoData(){
   };
 }
 
+function emptyState(){
+  return{cards:[],months:{},nxtCard:1,nxtItem:1,
+    tabOrder:TAB_DEFS.filter(t=>t.id!=='home').map(t=>t.id),tabHidden:[],
+    firstLaunch:true,lastBackup:null,backupCreatedAt:null,tutStep:0};
+}
 function loadState(){
   try{const r=localStorage.getItem(SK);if(r)return JSON.parse(r);}catch(e){}
+  if(localStorage.getItem('cb6_reset')){localStorage.removeItem('cb6_reset');return emptyState();}
   return initDemoData();
 }
 function save(){localStorage.setItem(SK,JSON.stringify(S));}
@@ -2127,7 +2133,8 @@ function confirmReset(){
      <button class="btn" style="background:var(--ng);color:#fff" onclick="doReset()">そのまま削除</button>`);
 }
 function doReset(){
-  localStorage.removeItem(SK);
+  localStorage.clear();
+  localStorage.setItem('cb6_reset','1');
   location.reload();
 }
 

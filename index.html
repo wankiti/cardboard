@@ -660,12 +660,12 @@ const CARD_GRADIENTS=[
 // item.dayMode: 'prev'|'next'|'exact'
 
 const DEMO_CARDS=[
-  {id:1, name:'AMEX PLTAINUM',      brand:'amex',       closeDay:19,billDay:10,annualFee:165000,annualMonth:2, note:'メイン',            visible:true, phones:[],gradientIdx:7},
-  {id:2, name:'LUXURY CARD BLACK',  brand:'mastercard', closeDay:5, billDay:27,annualFee:55000, annualMonth:9, note:'サブサブ',          visible:true, phones:[],gradientIdx:8},
-  {id:3, name:'JCB THE CLASS',      brand:'jcb',        closeDay:15,billDay:10,annualFee:55000, annualMonth:2, note:'サブ（オンライン）',visible:true, phones:[],gradientIdx:6},
-  {id:5, name:'ANA Diners SFC',     brand:'diners',     closeDay:15,billDay:10,annualFee:30800, annualMonth:11,note:'ANA用',            visible:true, phones:[],gradientIdx:0},
-  {id:6, name:'JAL CARD Suica',     brand:'jcb',        closeDay:5, billDay:4, annualFee:7700,  annualMonth:5, note:'JAL・JR用',        visible:true, phones:[],gradientIdx:3},
-  {id:8, name:'SMCC GOLD NL',       brand:'visa',       closeDay:15,billDay:10,annualFee:0,     annualMonth:0, note:'コンビニ・積立NISA',visible:true, phones:[],gradientIdx:10},
+  {id:1, name:'AMEX PLTAINUM',      brand:'amex',       closeDay:19,billDay:10,annualFee:165000,annualMonth:2, note:'メイン',            visible:true, phones:[],gradientIdx:2},
+  {id:2, name:'LUXURY CARD BLACK',  brand:'mastercard', closeDay:5, billDay:27,annualFee:55000, annualMonth:9, note:'サブサブ',          visible:true, phones:[],gradientIdx:0},
+  {id:3, name:'JCB THE CLASS',      brand:'jcb',        closeDay:15,billDay:10,annualFee:55000, annualMonth:2, note:'サブ（オンライン）',visible:true, phones:[],gradientIdx:9},
+  {id:5, name:'ANA Diners SFC',     brand:'diners',     closeDay:15,billDay:10,annualFee:30800, annualMonth:11,note:'ANA用',            visible:true, phones:[],gradientIdx:5},
+  {id:6, name:'JAL CARD Suica',     brand:'jcb',        closeDay:5, billDay:4, annualFee:7700,  annualMonth:5, note:'JAL・JR用',        visible:true, phones:[],gradientIdx:8},
+  {id:8, name:'SMCC GOLD NL',       brand:'visa',       closeDay:15,billDay:10,annualFee:0,     annualMonth:0, note:'コンビニ・積立NISA',visible:true, phones:[],gradientIdx:3},
 ];
 
 function mkMonth(ymStr){return{ym:ymStr,balance:0,items:[],cardAmounts:{}};}
@@ -1071,8 +1071,16 @@ function renderDash(){
 }
 
 function dismissTutorial(clearData){
+  if(clearData){
+    S.cards=[];S.months={};S.nxtItem=1;S.nxtCard=1;
+    getDisplayYms().forEach(y=>getMD(y));
+  } else {
+    // デモデータをフル投入
+    const demo=initDemoData();
+    S.cards=demo.cards;S.months=demo.months;
+    S.nxtCard=demo.nxtCard;S.nxtItem=demo.nxtItem;
+  }
   S.firstLaunch=false;S.tutStep=0;
-  if(clearData){S.months={};S.nxtItem=1;getDisplayYms().forEach(y=>getMD(y));}
   save();renderDash();renderHome();
 }
 function completeTutorial(){
@@ -1086,8 +1094,14 @@ function completeTutorial(){
   );
 }
 function advanceTutorial(step){
+  if(step===1&&S.tutStep===0){
+    // step0→1の時だけデモデータを投入
+    const demo=initDemoData();
+    S.cards=demo.cards;S.months=demo.months;
+    S.nxtCard=demo.nxtCard;S.nxtItem=demo.nxtItem;
+  }
   S.tutStep=step;save();
-  renderDash();renderHome();
+  renderDash();renderHome();renderCards();
   if(step===1||step===2)goTab('home');
 }
 function toggleAcc(cid){
